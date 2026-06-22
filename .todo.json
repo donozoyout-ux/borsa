@@ -1,0 +1,27 @@
+[
+  {
+    "content": "BIST alarm yapısını tasarla",
+    "active_form": "BIST alarm yapısı tasarlanıyor",
+    "status": "completed"
+  },
+  {
+    "content": "BIST veri ve alarm dosyalarını ekle",
+    "active_form": "BIST veri ve alarm dosyaları ekleniyor",
+    "status": "completed"
+  },
+  {
+    "content": "Basit arayüzü oluştur",
+    "active_form": "Basit arayüz oluşturuluyor",
+    "status": "completed"
+  },
+  {
+    "content": "Dokümantasyonu güncelle",
+    "active_form": "Dokümantasyon güncelleniyor",
+    "status": "completed"
+  },
+  {
+    "content": "Kurulum ve hızlı test yap",
+    "active_form": "Kurulum ve hızlı test yapılıyor",
+    "status": "completed"
+  }
+]

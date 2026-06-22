@@ -1,0 +1,1120 @@
+<!doctype html>
+<html class="dark" lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta http-equiv="refresh" content="300">
+<title>BIST Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet">
+<script>
+tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface":"#131314","surface-container-lowest":"#0e0e0f","on-surface":"#e5e2e2","on-surface-variant":"#c6c6cc","outline":"#909096","primary-container":"#0a0e17","primary":"#c3c6d3","up":"#10B981","down":"#EF4444","blue-accent":"#3B82F6"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem"},fontFamily:{sans:["Inter"],mono:["JetBrains Mono"]}}}}
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0A0E17;color:#e5e2e2;font-family:'Inter',sans-serif;overflow:hidden;height:100vh;font-weight:400;letter-spacing:-0.01em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#45464b;border-radius:4px}
+
+/* Animations */
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes scaleIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(59,130,246,.2)}50%{box-shadow:0 0 20px rgba(59,130,246,.4)}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.tab-content{display:none;height:100%}
+.tab-content.active{display:flex;flex-direction:column;animation:fadeSlide .25s ease}
+
+.card-hover{transition:all .2s ease}
+.card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+.price-row{border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards;letter-spacing:-0.01em}
+.price-row:hover{background:rgba(59,130,246,.04);box-shadow:inset 2px 0 0 #3B82F6}
+.price-row:nth-child(1){animation-delay:0s}
+.price-row:nth-child(2){animation-delay:.03s}
+.price-row:nth-child(3){animation-delay:.06s}
+
+.glass{background:rgba(28,33,39,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.06)}
+.solid{background:#1C2127;border:1px solid rgba(255,255,255,.06)}
+.card{border-radius:10px;padding:16px;margin-bottom:12px}
+
+.live-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse 2s infinite;display:inline-block}
+
+/* Gradient text */
+.gradient-text{background:linear-gradient(135deg,#3B82F6,#8B5CF6,#06B6D4);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite}
+.gradient-text-gold{background:linear-gradient(135deg,#F59E0B,#F97316,#EF4444);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite}
+
+/* Glow card */
+.glow-card{border:1px solid rgba(59,130,246,.15);transition:all .3s}
+.glow-card:hover{border-color:rgba(59,130,246,.4);box-shadow:0 0 24px rgba(59,130,246,.12),inset 0 0 24px rgba(59,130,246,.03)}
+.glow-card-green{border:1px solid rgba(16,185,129,.15);transition:all .3s}
+.glow-card-green:hover{border-color:rgba(16,185,129,.4);box-shadow:0 0 24px rgba(16,185,129,.12),inset 0 0 24px rgba(16,185,129,.03)}
+
+/* Search dropdown */
+.search-wrap{position:relative}
+.search-wrap input{width:100%;background:#0A0E17;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px 10px 34px;font-size:13px;color:#e5e2e2;outline:none;transition:all .2s;font-weight:450}
+.search-wrap input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.search-wrap input::placeholder{color:#6b7a8f;font-weight:400;letter-spacing:0}
+.search-wrap .icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#6b7a8f;font-size:18px}
+
+.search-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1C2127;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-height:280px;overflow-y:auto;z-index:50;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:scaleIn .15s ease}
+.search-dropdown.show{display:block}
+.search-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;letter-spacing:-0.01em}
+.search-item:last-child{border:none}
+.search-item:hover{background:rgba(59,130,246,.1)}
+.search-item .sym{font-weight:600;color:#e5e2e2;min-width:70px}
+.search-item .name{color:#6b7a8f;font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-item .price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+.search-item .price.up{color:#10B981}
+.search-item .price.down{color:#EF4444}
+.search-empty{padding:20px;text-align:center;color:#6b7a8f;font-size:12px;animation:fadeSlide .2s ease}
+
+/* Skeleton */
+.skel{background:linear-gradient(90deg,#1C2127 25%,#2a2a2b 50%,#1C2127 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:14px;margin-bottom:8px}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;animation:fadeSlide .2s ease}
+.modal-overlay.open{display:flex}
+.modal-box{background:#1C2127;border:1px solid rgba(255,255,255,.1);border-radius:14px;width:100%;max-width:720px;max-height:90vh;overflow:hidden;animation:scaleIn .2s ease}
+
+canvas.chart{width:100%;height:100%;display:block}
+canvas.chart-sm{width:100%;height:160px;border-radius:8px;display:block}
+canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
+
+@media(max-width:767px){.sidebar{display:none!important}.main{margin-left:0!important}.modal-box{margin:10px;max-height:85vh}}
+
+/* Tab navigation */
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7a8f;cursor:pointer;border-left:3px solid transparent;transition:all .2s ease;border-radius:0 8px 8px 0;margin:2px 0}
+.nav-item:hover{background:rgba(255,255,255,.03);color:#e5e2e2}
+.nav-item.active{background:linear-gradient(90deg,rgba(59,130,246,.12),transparent);color:#60A5FA;border-left-color:#3B82F6;font-weight:800}
+.nav-item .material-symbols-outlined{font-size:20px}
+
+/* Badge status */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.badge.active{background:rgba(16,185,129,.15);color:#34D399;border:1px solid rgba(16,185,129,.3)}
+.badge.buy{background:rgba(16,185,129,.15);color:#34D399;border:1px solid rgba(16,185,129,.3)}
+.badge.sell{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.3)}
+.badge.hold{background:rgba(251,191,36,.12);color:#FBBF24;border:1px solid rgba(251,191,36,.25)}
+.badge.done{background:rgba(107,114,128,.15);color:#9CA3AF;border:1px solid rgba(107,114,128,.25)}
+
+/* Alert row */
+.alert-row{border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards}
+.alert-row:hover{background:rgba(59,130,246,.03);box-shadow:inset 2px 0 0 rgba(59,130,246,.3)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s ease;border:none;letter-spacing:-0.01em}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;animation:glow 3s infinite}
+.btn-primary:hover{background:linear-gradient(135deg,#60A5FA,#3B82F6);box-shadow:0 4px 20px rgba(59,130,246,.4);transform:translateY(-1px)}
+.btn-up{background:linear-gradient(135deg,#10B981,#059669);color:#fff}
+.btn-up:hover{background:linear-gradient(135deg,#34D399,#10B981);box-shadow:0 4px 20px rgba(16,185,129,.4);transform:translateY(-1px)}
+.btn-down{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff}
+.btn-down:hover{background:linear-gradient(135deg,#F87171,#EF4444);box-shadow:0 4px 20px rgba(239,68,68,.4);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.08);color:#c6c6cc}
+.btn-ghost:hover{background:rgba(255,255,255,.08);color:#e5e2e2;border-color:rgba(255,255,255,.15)}
+.btn-sm{padding:6px 12px;font-size:11px}
+
+/* Stats card */
+.stat-card{background:linear-gradient(135deg,rgba(28,33,39,.95),rgba(28,33,39,.6));border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:18px;transition:all .3s ease}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);border-color:rgba(59,130,246,.2)}
+
+/* Gauge ring */
+.gauge-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.gauge-ring svg{transform:rotate(-90deg)}
+.gauge-ring .gauge-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:6}
+.gauge-ring .gauge-fill{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.gauge-ring .gauge-text{position:absolute;font-weight:700;font-size:11px;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+
+/* Tooltip */
+.tooltip{position:relative}
+.tooltip:hover:after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1C2127;border:1px solid rgba(255,255,255,.1);padding:4px 10px;border-radius:6px;font-size:10px;white-space:nowrap;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+
+/* Upload area */
+.upload-zone{border:2px dashed rgba(255,255,255,.08);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(59,130,246,.03)}
+.upload-zone:hover{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.06);box-shadow:0 0 20px rgba(59,130,246,.08)}
+.upload-zone.has-file{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)}
+
+.animate-float{animation:float 3s ease-in-out infinite}
+
+/* Highlight card */
+.highlight-card{background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(139,92,246,.04));border:1px solid rgba(59,130,246,.12);border-radius:10px;padding:14px}
+
+.result-card{animation:slideUp .3s ease backwards}
+.result-card:nth-child(1){animation-delay:0s}
+.result-card:nth-child(2){animation-delay:.1s}
+.result-card:nth-child(3){animation-delay:.2s}
+</style>
+</head>
+<body class="flex h-screen overflow-hidden bg-[#0A0E17]">
+
+<!-- SIDEBAR -->
+<aside class="sidebar w-64 bg-[#131314] border-r border-white/5 flex flex-col py-4 px-2 z-40 flex-shrink-0">
+<div class="flex items-center gap-3 px-3 mb-8">
+<div class="w-9 h-9 rounded-lg bg-[#0A0E17] border border-white/10 flex items-center justify-center"><span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">terminal</span></div>
+<div><h2 class="text-sm font-extrabold gradient-text">BIST Terminal</h2><div class="flex items-center gap-1.5 mt-0.5"><span class="live-dot"></span><span class="text-[10px] text-[#10B981] font-bold tracking-wider uppercase">CANLI</span></div></div>
+</div>
+<nav class="flex-1 flex flex-col gap-0.5">
+<div class="nav-item active" onclick="switchTab('watchlist',this)"><span class="material-symbols-outlined">monitoring</span>Fiyatlar</div>
+<div class="nav-item" onclick="switchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span>Grafik</div>
+<div class="nav-item" onclick="switchTab('alerts',this)"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1">notifications_active</span>Alarmlar</div>
+<div class="nav-item" onclick="switchTab('portfolio',this)"><span class="material-symbols-outlined">account_balance_wallet</span>Portföy</div>
+<div class="nav-item" onclick="switchTab('aianalysis',this)"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1">auto_awesome</span>AI Analiz</div>
+</nav>
+<div class="mt-auto pt-4 border-t border-white/5 flex flex-col gap-0.5">
+<div class="nav-item" onclick="switchTab('settings',this)"><span class="material-symbols-outlined">settings</span>Ayarlar</div>
+</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main flex-1 flex flex-col h-screen overflow-hidden">
+
+<!-- TOP BAR -->
+<header class="h-14 bg-[#131314]/90 backdrop-blur-lg border-b border-white/5 flex items-center justify-between px-5 shrink-0">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-[#6b7a8f]" onclick="toggleSidebar()"><span class="material-symbols-outlined">menu</span></button>
+<h1 class="text-sm font-bold gradient-text" id="pageTitle">Fiyatlar</h1>
+<span class="text-xs font-mono text-[#6b7a8f] tabular-nums" id="clockDisplay">--:--:--</span>
+</div>
+<div class="flex items-center gap-3">
+<div id="botStatusMini" class="flex items-center gap-2 text-xs">
+<span id="botDotMini" class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+<span id="botLabelMini" class="text-[#6b7a8f]">Durduruldu</span>
+</div>
+<button onclick="toggleBot()" id="botBtn" class="btn btn-sm btn-down">Botu Başlat</button>
+<button onclick="refreshCurrent()" class="p-2 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors tooltip" data-tip="Yenile"><span class="material-symbols-outlined text-lg">refresh</span></button>
+</div>
+</header>
+
+<!-- TAB: WATCHLIST -->
+<div id="tab-watchlist" class="tab-content active">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+<div class="xl:col-span-8">
+<div class="solid rounded-xl overflow-hidden">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#6b7a8f] text-lg">lists</span>
+<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">BIST Hisseler</h3>
+<span class="text-[10px] text-[#6b7a8f] font-mono" id="plCount"></span>
+</div>
+<div class="flex items-center gap-2">
+<div class="search-wrap w-56">
+<span class="material-symbols-outlined icon">search</span>
+<input id="plSearch" autocomplete="off" placeholder="Hisse ara (sembol veya isim)...">
+<div id="plDropdown" class="search-dropdown"></div>
+</div>
+<button onclick="loadPL()" class="p-1.5 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">refresh</span></button>
+</div>
+</div>
+<div id="plContainer"></div>
+</div>
+</div>
+<div class="xl:col-span-4 space-y-4">
+<div class="stat-card">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Alarm Botu</span>
+<span id="botStatusBadge" class="badge done">Durduruldu</span>
+</div>
+<button onclick="toggleBot()" id="botMainBtn" class="btn btn-down w-full">Botu Başlat</button>
+<div id="botMiniLogs" class="mt-3 bg-[#0A0E17] rounded-lg p-3 text-[10px] font-mono text-[#6b7a8f] h-28 overflow-y-auto leading-relaxed">
+<div class="flex items-center gap-2"><span class="text-[#45464b]">--:--:--</span> Bot durduruldu</div>
+</div>
+</div>
+<div class="stat-card">
+<div class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-3">Hızlı Erişim</div>
+<div class="flex flex-wrap gap-2">
+<button onclick="quickPrice('THYAO')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">THYAO</button>
+<button onclick="quickPrice('GARAN')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">GARAN</button>
+<button onclick="quickPrice('AKBNK')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">AKBNK</button>
+<button onclick="quickPrice('EREGL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">EREGL</button>
+<button onclick="quickPrice('KCHOL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">KCHOL</button>
+<button onclick="quickPrice('TUPRS')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">TUPRS</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TAB: CHARTS -->
+<div id="tab-charts" class="tab-content">
+<div class="flex-1 flex flex-col p-5">
+<div class="flex items-center gap-3 mb-4 flex-wrap">
+<div class="search-wrap flex-1 max-w-xs">
+<span class="material-symbols-outlined icon">search</span>
+<input id="cSearch" autocomplete="off" placeholder="Hisse ara...">
+<div id="cDropdown" class="search-dropdown"></div>
+</div>
+<button onclick="loadChart()" class="btn btn-primary">Grafik Yükle</button>
+<div class="flex gap-1 bg-[#0A0E17] rounded-lg p-0.5 border border-white/5">
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf1d" onclick="setTF('5d','15m','tf1d')">1G</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf1h" onclick="setTF('1mo','1wk','tf1h')">1H</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md bg-[#3B82F6] text-white" id="tf1mo" onclick="setTF('1mo','1d','tf1mo')">1A</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf3mo" onclick="setTF('3mo','1d','tf3mo')">3A</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf6mo" onclick="setTF('6mo','1d','tf6mo')">6A</button>
+</div>
+</div>
+    <div class="flex gap-4 flex-1 min-h-0">
+<div id="leftPanel" class="w-80 shrink-0 hidden flex-col gap-3 overflow-y-auto">
+<div id="aiPanel" class="solid rounded-xl p-4">
+<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL'1">auto_awesome</span>AI Yapay Zeka Analizi</h4>
+<div id="aiContent" class="text-xs leading-relaxed text-[#c6c6cc] whitespace-pre-line"></div>
+<div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div><div class="text-[10px] text-[#6b7a8f] mt-2">AI analiz hazırlanıyor...</div></div>
+</div>
+<div id="newsPanel" class="solid rounded-xl p-4 hidden">
+<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">newspaper</span>Haberler</h4>
+<div id="newsContent" class="text-xs space-y-2"></div>
+</div>
+<div id="fundPanel" class="solid rounded-xl p-4 hidden">
+<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">account_balance</span>Temel Analiz</h4>
+<div id="fundContent" class="text-xs space-y-1.5"></div>
+</div>
+</div>
+<div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea">
+<div class="absolute inset-0 flex items-center justify-center text-[#6b7a8f] text-sm" id="chartPlaceholder">
+<div class="text-center"><span class="material-symbols-outlined text-4xl block mb-2" style="font-variation-settings:'FILL'1">monitoring</span>Hisse seçip "Grafik Yükle" butonuna tıkla</div>
+</div>
+<canvas id="chartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
+<div id="chartInfo" class="absolute top-4 left-4 glass rounded-xl px-4 py-3 text-xs space-y-1.5 z-10" style="display:none"></div>
+</div>
+<div id="analysisPanel" class="w-64 shrink-0 hidden flex-col gap-3 overflow-y-auto">
+<div class="solid rounded-xl p-4">
+<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">insights</span>Trend</h4>
+<div id="trendContent" class="text-xs space-y-2"></div>
+</div>
+<div class="solid rounded-xl p-4">
+<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">analytics</span>Sinyaller</h4>
+<div id="signalContent" class="text-xs space-y-1.5"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TAB: ALERTS -->
+<div id="tab-alerts" class="tab-content">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-5">
+<div class="xl:col-span-4">
+<div class="stat-card">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">add_alert</span>
+<h3 class="text-sm font-bold">Alarm Ekle</h3>
+</div>
+<form id="alertForm" class="space-y-3">
+<div class="search-wrap">
+<span class="material-symbols-outlined icon">search</span>
+<input id="aSearch" autocomplete="off" placeholder="Hisse ara (sembol veya isim)...">
+<div id="aDropdown" class="search-dropdown"></div>
+<input type="hidden" id="aSymbol">
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Hedef (TL)</label>
+<input id="fTarget" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" type="number" step=".01" placeholder="315.50">
+</div>
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Yaklaşma %</label>
+<input id="fNear" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" type="number" step=".1" value="1">
+</div>
+</div>
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Koşul</label>
+<select id="fCondition" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all">
+<option value="above">Fiyat üstüne çıkarsa ↑</option>
+<option value="below">Fiyat altına düşerse ↓</option>
+</select>
+</div>
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Not (isteğe bağlı)</label>
+<input id="fNote" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" placeholder="Neden takip ediyorsun?">
+</div>
+<button type="submit" class="btn btn-primary w-full">Alarm Ekle</button>
+</form>
+</div>
+</div>
+<div class="xl:col-span-8">
+<div class="solid rounded-xl overflow-hidden">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#6b7a8f] text-lg">format_list_bulleted</span>
+<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">Alarmlar</h3>
+</div>
+<span id="alertCount" class="text-[10px] text-[#6b7a8f] font-mono"></span>
+</div>
+<div id="alertsContainer"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TAB: PORTFOLIO -->
+<div id="tab-portfolio" class="tab-content">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Toplam Yatırım</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfTotalCost">0 TL</div></div>
+<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Güncel Değer</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfTotalValue">0 TL</div></div>
+<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Kar/Zarar</div><div class="text-2xl font-bold mt-2" id="pfPL">0 TL</div><div class="text-xs mt-1" id="pfPLPct">%0</div></div>
+<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Hisse Adet</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfCount">0</div></div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+<div class="xl:col-span-4">
+<div class="stat-card">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">playlist_add</span>
+<h3 class="text-sm font-bold">Hisse Ekle</h3>
+</div>
+<form id="pfForm" class="space-y-3">
+<div class="search-wrap">
+<span class="material-symbols-outlined icon">search</span>
+<input id="pfSearch" autocomplete="off" placeholder="Hisse ara...">
+<div id="pfDropdown" class="search-dropdown"></div>
+<input type="hidden" id="pfSymbol">
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Adet</label>
+<input id="fQty" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6]" type="number" step="1" placeholder="100">
+</div>
+<div>
+<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Maliyet (TL)</label>
+<input id="fCost" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6]" type="number" step=".01" placeholder="250.50 (opsiyonel)">
+</div>
+</div>
+<button type="submit" class="btn btn-primary w-full">Ekle</button>
+</form>
+</div>
+</div>
+<div class="xl:col-span-8">
+<div class="solid rounded-xl overflow-hidden">
+<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#6b7a8f] text-lg">account_balance_wallet</span>
+<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">Portföyüm</h3>
+</div>
+<button onclick="loadPF()" class="p-1.5 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors" title="Yenile"><span class="material-symbols-outlined text-lg">refresh</span></button>
+<button onclick="sendPFTelegram()" class="p-1.5 text-[#6b7a8f] hover:text-[#10B981] hover:bg-[#10B981]/10 rounded-lg transition-colors" title="Telegram'a gönder"><span class="material-symbols-outlined text-lg">send</span></button>
+</div>
+<div id="pfList"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TAB: AI ANALYSIS -->
+<div id="tab-aianalysis" class="tab-content">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-4xl mx-auto space-y-4">
+
+<!-- Hero Header -->
+<div class="stat-card overflow-hidden relative">
+<div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#3B82F6]/5 to-transparent rounded-full blur-3xl"></div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-[#3B82F6]/20"><span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL'1">auto_awesome</span></div>
+<div>
+<h3 class="text-lg font-bold gradient-text">AI Yapay Zeka Analizi</h3>
+<div class="flex items-center gap-2 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span><span class="text-[11px] text-[#6b7a8f] font-medium">Groq Llama 3 70B + Gemini 2.5 Flash</span></div>
+</div>
+</div>
+</div>
+
+<!-- Input Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Text Analysis -->
+<div class="solid rounded-xl p-5 glow-card">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#3B82F6]">search</span></div>
+<h4 class="text-[11px] font-bold uppercase tracking-wider text-[#e5e2e2]">Metin ile Analiz</h4>
+</div>
+<div class="flex gap-2">
+<div class="search-wrap flex-1">
+<span class="material-symbols-outlined icon">search</span>
+<input id="aiSearch" autocomplete="off" placeholder="Hisse ara (örn: THYAO)">
+<div id="aiDropdown" class="search-dropdown"></div>
+</div>
+<button onclick="runAIAnalysis()" class="btn btn-primary whitespace-nowrap">Analiz Et</button>
+</div>
+<div class="mt-3 flex gap-1.5 flex-wrap">
+<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">RSI + MACD analizi</span>
+<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">Haber taraması</span>
+<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">Trend tahmini</span>
+</div>
+</div>
+
+<!-- Image Analysis -->
+<div class="solid rounded-xl p-5 glow-card-green">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#06B6D4]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#10B981]">image</span></div>
+<h4 class="text-[11px] font-bold uppercase tracking-wider text-[#e5e2e2]">Görsel ile Analiz</h4>
+</div>
+<div>
+<div id="uploadArea" class="upload-zone" onclick="document.getElementById('imageInput').click()">
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg" class="hidden" onchange="handleImageUpload(event)">
+<div id="uploadInner">
+<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span>
+<span id="uploadText" class="text-xs text-[#6b7a8f]">Grafik görseli yükle</span>
+</div>
+</div>
+<div id="imagePreview" class="hidden mt-2 relative">
+<img id="previewImg" class="w-full rounded-lg max-h-40 object-contain bg-[#0A0E17] border border-white/5">
+<button onclick="clearImage()" class="absolute top-1.5 right-1.5 p-1 bg-[#0A0E17]/80 rounded-full text-[#6b7a8f] hover:text-[#EF4444] transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<button onclick="analyzeImageUpload()" id="analyzeImgBtn" class="btn btn-primary w-full mt-3 opacity-50 cursor-not-allowed" disabled>
+<span class="material-symbols-outlined text-sm">auto_awesome</span>Görseli Analiz Et
+</button>
+</div>
+</div>
+</div>
+
+<!-- Result Area -->
+<div id="aiResultArea" class="hidden space-y-3">
+<div id="aiResultHeader" class="flex items-center gap-2 px-1">
+<span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span>
+<span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Analiz Sonucu</span>
+</div>
+<div class="solid rounded-xl p-5 glow-card result-card">
+<div id="aiResultText" class="text-sm leading-7 whitespace-pre-line text-[#c6c6cc]"></div>
+</div>
+<div id="aiResultNews" class="hidden solid rounded-xl p-5 result-card">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#3B82F6]">newspaper</span><h4 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">İlgili Haberler</h4></div>
+<div id="aiResultNewsContent" class="text-xs space-y-2"></div>
+</div>
+</div>
+
+<!-- Placeholder -->
+<div id="aiPlaceholder" class="text-center py-14 text-[#6b7a8f]">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#3B82F6]/10 to-[#8B5CF6]/5 mb-4 animate-float">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL'1">auto_awesome</span>
+</div>
+<div class="text-sm font-medium text-[#e5e2e2]">AI Analiz Başlamak İçin Hazır</div>
+<div class="text-xs mt-1.5 text-[#6b7a8f]">Hisse adı yaz veya grafik görseli yükle</div>
+<div class="grid grid-cols-3 gap-3 max-w-md mx-auto mt-6 text-left">
+<div class="bg-white/5 rounded-lg p-3">
+<div class="text-[11px] font-bold text-[#3B82F6]">Groq AI</div>
+<div class="text-[10px] text-[#6b7a8f] mt-0.5">Teknik + haber bazlı metin analizi</div>
+</div>
+<div class="bg-white/5 rounded-lg p-3">
+<div class="text-[11px] font-bold text-[#10B981]">Gemini Vision</div>
+<div class="text-[10px] text-[#6b7a8f] mt-0.5">Grafik görsellerini yorumlama</div>
+</div>
+<div class="bg-white/5 rounded-lg p-3">
+<div class="text-[11px] font-bold text-[#F59E0B]">BIST Verisi</div>
+<div class="text-[10px] text-[#6b7a8f] mt-0.5">Canlı fiyat + indikatör entegrasyonu</div>
+</div>
+</div>
+</div>
+
+<!-- Loading -->
+<div id="aiLoadingArea" class="hidden">
+<div class="flex flex-col items-center py-14">
+<div class="relative w-12 h-12">
+<div class="absolute inset-0 rounded-full border-3 border-[#3B82F6]/20"></div>
+<div class="absolute inset-0 rounded-full border-3 border-t-[#3B82F6] animate-spin"></div>
+</div>
+<div class="text-sm font-medium text-[#e5e2e2] mt-5">Analiz hazırlanıyor...</div>
+<div class="flex items-center gap-2 mt-2">
+<div class="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></div>
+<span class="text-xs text-[#6b7a8f]">Teknik göstergeler taranıyor</span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- TAB: SETTINGS -->
+<div id="tab-settings" class="tab-content">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-4">Sistem Bilgisi</h3>
+<div class="space-y-3 text-sm">
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Otomatik Yenileme</span><span class="font-mono">300 sn (5 dk)</span></div>
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Veri Kaynağı</span><span>Yahoo Finance</span></div>
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Threaded Server</span><span class="text-[#10B981]">Aktif ✓</span></div>
+<div class="flex justify-between py-1.5"><span class="text-[#6b7a8f]">Versiyon</span><span class="font-mono">v2.0</span></div>
+</div></div>
+<div class="stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-4">Bot Logları</h3>
+<div id="settingsLogs" class="bg-[#0A0E17] rounded-xl p-3 h-44 overflow-y-auto text-[10px] font-mono text-[#6b7a8f] leading-relaxed">--:--:-- Henüz log yok.</div>
+<button onclick="refreshLogs()" class="btn btn-ghost btn-sm mt-3">Yenile</button>
+</div>
+<div class="md:col-span-2 stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-2">BIST Terminal v2.0</h3>
+<p class="text-sm text-[#6b7a8f]">Flask + Tailwind CSS ile geliştirilmiş profesyonel BIST hisse takip platformu. Gerçek zamanlı fiyat verisi, teknik indikatörler (RSI, MACD, SMA/EMA), Telegram bildirimli alarm sistemi.</p></div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div id="chartModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+<div class="modal-box">
+<div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
+<h3 class="text-base font-bold" id="modalTitle">Grafik</h3>
+<button class="text-[#6b7a8f] hover:text-[#e5e2e2] p-1 rounded-lg hover:bg-white/5 transition-colors" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="p-5">
+<canvas id="modalCanvas" class="chart-lg"></canvas>
+<div id="modalInfo" class="flex gap-5 mt-4 text-xs flex-wrap"></div>
+</div>
+</div>
+</div>
+
+<script>
+const SYMBOLS=[{% for item in symbols %}{symbol:"{{ item.symbol }}",name:"{{ item.name|e }}"},{% endfor %}];
+let plc={},alertsCache=[],botRunning=false,curRange='1mo',curInterval='1d',curSym='',plTimer=null;
+
+function $(id){return document.getElementById(id)}
+function qs(s){return document.querySelector(s)}
+
+// ── CLOCK ──
+function uptClock(){$('clockDisplay').textContent=new Date().toLocaleTimeString('tr-TR')}
+setInterval(uptClock,1000);uptClock();
+
+// ── SEARCH DROPDOWN ──
+function initSearch(inputId,dropdownId,onSelect){
+const input=$(inputId),dd=$(dropdownId);
+let hideTimer=null;
+input.addEventListener('input',function(){
+const q=this.value.toUpperCase().trim();
+if(!q){dd.classList.remove('show');dd.innerHTML='';return}
+const matches=SYMBOLS.filter(s=>s.symbol.includes(q)||s.name.toUpperCase().includes(q)).slice(0,15);
+if(!matches.length){dd.innerHTML='<div class="search-empty">Eşleşen hisse bulunamadı</div>';dd.classList.add('show');return}
+let html='';
+matches.forEach((s,i)=>{
+const p=plc[s.symbol];
+const idx=q.indexOf(s.symbol.charAt(0));
+dd.innerHTML=matches.map((m,mi)=>{
+const p=plc[m.symbol];
+const priceStr=p!==undefined?`<span class="price ${p>=plc[matches[0]?.symbol]||!plc[matches[0]?.symbol]?'up':'down'}">${p.toFixed(2)}</span>`:'<span class="price" style="color:#6b7a8f">—</span>';
+return `<div class="search-item" style="animation-delay:${mi*0.03}s" onclick="selectSearch('${inputId}','${dropdownId}','${m.symbol}','${onSelect}')">
+<span class="sym">${m.symbol}</span>
+<span class="name">${m.name.slice(0,35)}</span>
+${priceStr}
+</div>`}).join('');
+dd.classList.add('show');
+});
+});
+
+input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
+input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value&&dd.children.length)dd.classList.add('show')});
+}
+
+function selectSearch(inputId,dropdownId,symbol,action){
+$(inputId).value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');
+$(dropdownId).classList.remove('show');
+if(action==='alert'){$('aSymbol').value=symbol;}
+if(action==='chart'){curSym=symbol;$('cSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');loadChart();}
+if(action==='price'){openChart(symbol,true)}
+if(action==='portfolio'){$('pfSymbol').value=symbol;}
+if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');}
+}
+
+// ── TOGGLE SIDEBAR ──
+function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('hidden')}
+
+// ── TAB ──
+function switchTab(tab,el){
+document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+if(el)el.classList.add('active');
+$('tab-'+tab).classList.add('active');
+const titles={watchlist:'Fiyatlar',charts:'Grafik',alerts:'Alarmlar',portfolio:'Portföy',settings:'Ayarlar'};
+$('pageTitle').textContent=titles[tab]||'BIST Terminal';
+if(tab==='alerts')loadAlerts();
+if(tab==='settings')refreshLogs();
+if(tab==='portfolio')loadPF();
+}
+
+// ── BOT ──
+async function checkBot(){
+try{const r=await fetch('/api/bot/status');botRunning=(await r.json()).running}catch(e){botRunning=false}
+const dot=$('botDotMini'),label=$('botLabelMini'),badge=$('botStatusBadge'),mbtn=$('botMainBtn'),btn=$('botBtn'),pdot=$('pfDot'),pl=$('pfLabel');
+if(botRunning){
+dot.className='w-2 h-2 rounded-full bg-[#10B981] shadow-[0_0_6px_#10B981]';
+label.textContent='Çalışıyor';label.style.color='#10B981';
+badge.textContent='🟢 Aktif';badge.className='badge active';
+mbtn.textContent='Botu Durdur';mbtn.className='btn btn-down w-full';
+btn.textContent='Durdur';btn.className='btn btn-sm btn-down';
+pdot.className='w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981]';
+pl.textContent='Çalışıyor';pl.style.color='#10B981';
+}else{
+dot.className='w-2 h-2 rounded-full bg-[#EF4444]';
+label.textContent='Durduruldu';label.style.color='#6b7a8f';
+badge.textContent='🔴 Durduruldu';badge.className='badge done';
+mbtn.textContent='Botu Başlat';mbtn.className='btn btn-up w-full';
+btn.textContent='Başlat';btn.className='btn btn-sm btn-up';
+pdot.className='w-2.5 h-2.5 rounded-full bg-[#EF4444]';
+pl.textContent='Durduruldu';pl.style.color='#6b7a8f';
+}}
+async function toggleBot(){
+try{const r=await fetch(botRunning?'/api/bot/stop':'/api/bot/start',{method:'POST'});botRunning=(await r.json()).running;checkBot();showToast(botRunning?'✅ Bot başlatıldı':'⏹ Bot durduruldu');if(botRunning){refreshLogs();addLog('Bot başlatıldı')}}catch(e){}
+}
+function addLog(m){const l=$('botMiniLogs');const t=new Date().toLocaleTimeString('tr-TR');l.innerHTML+=`<div><span class="text-[#45464b]">${t}</span> ${m}</div>`;l.scrollTop=l.scrollHeight}
+
+function showToast(m,d=2500){
+const t=document.createElement('div');
+t.className='fixed top-5 left-1/2 -translate-x-1/2 z-[9999] bg-[#1C2127] border border-white/10 rounded-xl px-5 py-3 text-sm shadow-2xl transition-all duration-300';
+t.style.transform='translateX(-50%) translateY(-30px)';t.style.opacity='0';t.textContent=m;
+document.body.appendChild(t);
+requestAnimationFrame(()=>{t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1'});
+setTimeout(()=>{t.style.transform='translateX(-50%) translateY(-30px)';t.style.opacity='0';setTimeout(()=>t.remove(),300)},d);
+}
+
+// ── WATCHLIST ──
+async function loadPL(){
+const c=$('plContainer');
+c.innerHTML=Array(10).fill(0).map(()=>'<div class="px-5 py-3"><div class="skel" style="width:60%"></div></div>').join('');
+const bs=8;let html='',count=0;
+for(let i=0;i<SYMBOLS.length;i+=bs){
+const batch=SYMBOLS.slice(i,i+bs);
+const prices=await Promise.all(batch.map(s=>fetch('/api/price/'+s.symbol,{signal:AbortSignal.timeout(7000)}).then(r=>r.json()).catch(()=>({}))));
+prices.forEach((p,idx)=>{const s=batch[idx];if(p.price){plc[s.symbol]=p.price;count++}})}
+
+const activeAlerts=new Set(alertsCache.filter(x=>x.active).map(x=>x.symbol));
+html=SYMBOLS.map((s,i)=>{
+const p=plc[s.symbol];const aa=activeAlerts.has(s.symbol);
+return `<div class="price-row flex items-center gap-4 px-5 py-3 cursor-pointer" onclick="quickPrice('${s.symbol}')" style="${aa?'border-left:3px solid #3B82F6':''}">
+<div class="w-14"><span class="font-semibold text-sm ${aa?'text-[#3B82F6]':'text-[#e5e2e2]'}">${s.symbol}</span></div>
+<div class="flex-1 text-xs text-[#6b7a8f] truncate">${s.name.slice(0,40)}</div>
+${p!==undefined?`<div class="text-sm font-mono font-medium text-right w-24 ${p>=0?'up':'up'}">${p.toFixed(2)} <span class="text-[10px] text-[#6b7a8f]">TL</span></div>`:'<div class="text-sm text-[#6b7a8f] text-right w-24">—</div>'}
+${aa?'<span class="material-symbols-outlined text-sm text-[#3B82F6]" style="font-variation-settings:\'FILL\'1">notifications_active</span>':''}
+</div>`}).join('');
+c.innerHTML=html||'<div class="p-10 text-center text-[#6b7a8f]">Hisse bulunamadı</div>';
+$('plCount').textContent=count+' canlı';
+}
+
+// ── CHART ──
+function setTF(range,interval,btnId){
+curRange=range;curInterval=interval;
+['tf1d','tf1h','tf1mo','tf3mo','tf6mo'].forEach(id=>{
+const el=$(id);
+if(el)el.className='px-3 py-1.5 text-xs font-medium rounded-md '+(id===btnId?'bg-[#3B82F6] text-white':'text-[#6b7a8f] hover:text-[#e5e2e2]')});
+if(curSym)loadChart();
+}
+async function loadChart(){
+if(!curSym){curSym=$('cSearch').value.split('—')[0].trim();if(!curSym||curSym.length<2){showToast('Önce hisse seç');return}}
+$('chartPlaceholder').style.display='none';const c=$('chartCanvas');c.style.display='block';c.style.height='100%';const info=$('chartInfo');info.style.display='none';
+try{
+const params='?range='+curRange+'&interval='+curInterval;
+const [pr,cr,an]=await Promise.all([
+fetch('/api/price/'+curSym).then(r=>r.json()),
+fetch('/api/chart/'+curSym+params).then(r=>r.json()),
+fetch('/api/analysis/'+curSym).then(r=>r.json()).catch(()=>({}))
+]);
+if(cr.prices&&cr.prices.length){$('leftPanel').classList.remove('hidden');drawChart(c,cr.prices,true);renderChartInfo(info,pr.price,cr.prices,curSym);renderAnalysis(an);}
+else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Veri alınamadı</span>';$('leftPanel').classList.add('hidden')}
+}catch(e){showToast('Grafik yüklenemedi')}
+}
+function renderChartInfo(info,price,prices,sym){
+const f=prices[0].p,l=prices[prices.length-1].p,chg=(l-f)/f*100,cl=chg>=0?'up':'down';
+const min=Math.min(...prices.map(p=>p.p)),max=Math.max(...prices.map(p=>p.p));
+info.style.display='block';
+info.innerHTML=`<div class="flex items-center gap-4"><span class="font-bold text-sm text-[#e5e2e2]">${sym}</span><span class="font-mono text-base ${cl}">${price?price.toFixed(2):'—'}</span><span class="${cl} font-medium">${chg>=0?'+':''}${chg.toFixed(2)}%</span></div>
+<div class="flex gap-4 text-[10px] text-[#6b7a8f]"><span>Y: <span class="up font-mono">${max.toFixed(2)}</span></span><span>D: <span class="down font-mono">${min.toFixed(2)}</span></span><span>Fark: <span class="font-mono">${(max-min).toFixed(2)}</span></span><span>${prices.length}gün</span></div>`;
+}
+
+function renderAnalysis(data){
+const panel=$('analysisPanel'),tc=$('trendContent'),sc=$('signalContent');
+const left=$('leftPanel'),aiPanel=$('aiPanel'),aiContent=$('aiContent'),aiLoading=$('aiLoading');
+if(!data||!data.trend||data.error){panel.classList.add('hidden');left.classList.add('hidden');return}
+panel.classList.remove('hidden');
+left.classList.remove('hidden');
+const tr=data.trend;
+const trendColors={yükseliş:'text-[#10B981]',düşüş:'text-[#EF4444]',nötr:'text-[#6b7a8f]'};
+const tcColor=trendColors[tr.trend]||'text-[#6b7a8f]';
+const trendEmoji=tr.trend==='yükseliş'?'📈':(tr.trend==='düşüş'?'📉':'➡️');
+let strengthBar='';
+for(let i=-2;i<=2;i++){strengthBar+='<span class="inline-block w-2 h-4 rounded-sm mx-0.5 '+(i<=tr.strength&&i<=0?'bg-[#EF4444]/40':(i<=tr.strength&&i>=0?'bg-[#10B981]/40':'bg-white/10'))+'"></span>'}
+tc.innerHTML='<div class="flex items-center justify-between"><span class="font-semibold '+tcColor+'">'+trendEmoji+' '+tr.trend.toUpperCase()+'</span><span class="text-[10px] text-[#6b7a8f]">güç: '+tr.strength+'</span></div><div class="flex gap-1 items-center mt-1">'+strengthBar+'</div><div class="mt-2 space-y-1"><div class="flex justify-between"><span class="text-[#6b7a8f]">Direnç</span><span class="font-mono">'+tr.resistance+'</span></div><div class="flex justify-between"><span class="text-[#6b7a8f]">Destek</span><span class="font-mono">'+tr.support+'</span></div><div class="flex justify-between"><span class="text-[#6b7a8f]">Direnç uzaklık</span><span class="'+(tr.distance_to_resistance<5?'text-[#10B981]':'text-[#6b7a8f]')+'">%'+tr.distance_to_resistance+'</span></div><div class="flex justify-between"><span class="text-[#6b7a8f]">Destek uzaklık</span><span class="'+(tr.distance_to_support<5?'text-[#EF4444]':'text-[#6b7a8f]')+'">%'+tr.distance_to_support+'</span></div></div>';
+const sigLabels={rsi_asiri_alim:'RSI aşırı alım',rsi_asiri_satim:'RSI aşırı satım',macd_bullish:'MACD yükseliş',macd_bearish:'MACD düşüş',golden_cross:'Altın kesişim',death_cross:'Ölüm kesişimi',son_5g_yukselis:'Son 5g yükseliş',son_5g_dusus:'Son 5g düşüş'};
+const sigColors={rsi_asiri_alim:'#EF4444',rsi_asiri_satim:'#10B981',macd_bullish:'#10B981',macd_bearish:'#EF4444',golden_cross:'#10B981',death_cross:'#EF4444',son_5g_yukselis:'#3B82F6',son_5g_dusus:'#3B82F6'};
+if(tr.signals&&tr.signals.length){sc.innerHTML=tr.signals.map(s=>'<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:'+(sigColors[s]||'#6b7a8f')+'"></span><span>'+(sigLabels[s]||s)+'</span></div>').join('')}
+else sc.innerHTML='<div class="text-[#6b7a8f]">Belirgin sinyal yok</div>';
+const ind=data.indicators;
+if(ind&&ind.rsi){sc.innerHTML+='<div class="mt-2 pt-2 border-t border-white/5"><div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">RSI</span><span class="font-mono">'+ind.rsi.value+'</span></div></div>'}
+
+// Score bar
+if(tr.score!==undefined){
+const scColor=tr.score>=70?'#10B981':(tr.score>=40?'#EAB308':'#EF4444');
+tc.innerHTML+=`<div class="mt-3 pt-3 border-t border-white/5"><div class="flex justify-between text-[10px] mb-1"><span class="text-[#6b7a8f]">Analiz Skoru</span><span class="font-mono font-bold" style="color:${scColor}">${tr.score}/100</span></div><div class="h-1.5 bg-[#0A0E17] rounded-full overflow-hidden"><div class="h-full rounded-full transition-all" style="width:${tr.score}%;background:${scColor}"></div></div></div>`;
+}
+
+// Forecast
+if(tr.forecast&&tr.forecast.predictions){
+const preds=tr.forecast.predictions;
+tc.innerHTML+=`<div class="mt-2 pt-2 border-t border-white/5"><div class="text-[10px] text-[#6b7a8f] mb-1">Tahmin (5 gün)</div><div class="flex gap-1">${preds.map((p,i)=>'<span class="flex-1 text-center text-[10px] font-mono py-1 rounded '+(p>=preds[0]?'bg-[#10B981]/10 text-[#10B981]':'bg-[#EF4444]/10 text-[#EF4444]')+'">'+p.toFixed(0)+'</span>').join('')}</div><div class="text-[9px] text-[#6b7a8f] mt-1 text-center">${tr.forecast.direction==='up'?'📈 ':tr.forecast.direction==='down'?'📉 ':'➡️ '}Değişim: %${tr.forecast.change_pct}</div></div>`;
+}
+
+// AI Analysis
+if(data.ai_analysis){
+aiPanel.classList.remove('hidden');
+aiLoading.classList.add('hidden');
+aiContent.textContent=data.ai_analysis;
+}else{aiPanel.classList.remove('hidden');aiLoading.classList.add('hidden');aiContent.textContent='AI analiz için GROQ_API_KEY ayarlanmamış. .env dosyasına ekleyin.'}
+
+// News
+const newsPanel=$('newsPanel'),newsContent=$('newsContent');
+if(data.news&&data.news.length){
+newsPanel.classList.remove('hidden');
+newsContent.innerHTML=data.news.map(n=>`<div class="border-b border-white/5 pb-2 last:border-0"><a href="${n.link}" target="_blank" class="text-[#3B82F6] hover:underline text-[11px] font-medium">${n.title}</a><div class="text-[9px] text-[#6b7a8f] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
+}else{newsPanel.classList.add('hidden')}
+
+// Fundamentals
+const fundPanel=$('fundPanel'),fundContent=$('fundContent');
+const fund=data.fundamentals;
+if(fund&&fund.has_data&&fund.ratios){
+fundPanel.classList.remove('hidden');
+const r=fund.ratios;
+const bs=fund.balance_sheet||{};
+const rMap={market_cap:'Piyasa Değeri',pe_ratio:'F/K',pb_ratio:'PD/DD',eps:'EPS',dividend_yield:'Temettü %',beta:'Beta',profit_margins:'Kar Marjı %',debt_to_equity:'Borç/Özkaynak',roe:'ROE %','52w_high':'52H Yüksek','52w_low':'52H Düşük'};
+let html='<div class="space-y-1">';
+Object.entries(rMap).forEach(([k,l])=>{
+const v=r[k];
+if(v!==null&&v!==undefined){
+const val=typeof v==='number'?(k==='market_cap'?(v/1e9).toFixed(2)+' Mr':v.toFixed(2)):v;
+html+=`<div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">${l}</span><span class="font-mono">${val}</span></div>`}});
+if(bs.total_assets||bs.total_debt){
+html+=`<div class="border-t border-white/5 pt-1 mt-1"></div>`;
+if(bs.total_assets)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">Aktif Toplam</span><span class="font-mono">${(bs.total_assets/1e9).toFixed(2)} Mr</span></div>`;
+if(bs.total_debt)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">Toplam Borç</span><span class="font-mono">${(bs.total_debt/1e9).toFixed(2)} Mr</span></div>`;
+if(bs.cash)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">Nakit</span><span class="font-mono">${(bs.cash/1e9).toFixed(2)} Mr</span></div>`;}
+html+='</div>';
+fundContent.innerHTML=html;
+}else{fundPanel.classList.add('hidden')}
+
+// Bollinger
+if(tr.bollinger){
+const bbPos={upper:'Üst bant',middle:'Orta bant',lower:'Alt bant'};
+tc.innerHTML+=`<div class="mt-2 pt-2 border-t border-white/5"><div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">Bollinger</span><span class="font-mono">${bbPos[tr.bollinger.position]||tr.bollinger.position}</span></div><div class="flex justify-between text-[10px]"><span class="text-[#6b7a8f]">Bant genişliği</span><span class="font-mono">%${tr.bollinger.width}</span></div></div>`;
+}
+}
+
+
+function drawChart(canvas,data,labels){
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+const rect=canvas.parentElement.getBoundingClientRect();
+const w=rect.width,h=rect.height;
+if(w<10||h<10)return;
+canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+const prices=data.map(p=>p.p);
+const volumes=data.map(p=>p.v||0);
+if(prices.length<2)return;
+const min=Math.min(...prices),max=Math.max(...prices),range=max-min||1,pad=12;
+const vh=Math.floor(h*0.25),ph=h-vh;
+const up=prices[prices.length-1]>=prices[0];
+const maxVol=Math.max(...volumes)||1;
+let crosshairIdx=-1;
+
+function drawBase(mouseX){
+ctx.clearRect(0,0,w,h);
+// ── Volume bars (bottom 25%) ──
+const volColorUp='rgba(16,185,129,.2)',volColorDn='rgba(239,68,68,.2)';
+ctx.beginPath();
+prices.forEach((p,i)=>{const x=i/(prices.length-1)*w;if(i===0)ctx.moveTo(x,ph);else ctx.lineTo(x,ph)});
+ctx.lineTo(w,ph);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.02)';ctx.fill();
+volumes.forEach((v,i)=>{
+if(v<=0)return;
+const x0=i/(prices.length-1)*w,x1=(i+1)/(prices.length-1)*w;
+const bw=Math.max(2,(x1-x0)*0.7);
+const barH=(v/maxVol)*vh*0.8;
+const y=ph+vh-barH;
+const isUp=i===0?up:prices[i]>=prices[i-1];
+ctx.fillStyle=isUp?volColorUp:volColorDn;
+ctx.fillRect(x0+(x1-x0-bw)/2,y,bw,barH);
+});
+
+// ── Price chart (top 75%) ──
+const grad=ctx.createLinearGradient(0,pad,0,ph-pad);
+grad.addColorStop(0,up?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)');
+grad.addColorStop(1,up?'rgba(16,185,129,0)':'rgba(239,68,68,0)');
+ctx.beginPath();prices.forEach((p,i)=>{const x=i/(prices.length-1)*w,y=pad+(ph-2*pad)-(p-min)/range*(ph-2*pad);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+ctx.lineTo(w,ph-pad);ctx.lineTo(0,ph-pad);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+ctx.beginPath();prices.forEach((p,i)=>{const x=i/(prices.length-1)*w,y=pad+(ph-2*pad)-(p-min)/range*(ph-2*pad);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+ctx.strokeStyle=up?'#10B981':'#EF4444';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+
+// last dot
+const lx=w,ly=pad+(ph-2*pad)-(prices[prices.length-1]-min)/range*(ph-2*pad);
+ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fillStyle=up?'#10B981':'#EF4444';ctx.fill();
+ctx.beginPath();ctx.arc(lx,ly,6,0,Math.PI*2);ctx.fillStyle=(up?'rgba(16,185,129,.2)':'rgba(239,68,68,.2)');ctx.fill();
+
+// grid
+ctx.strokeStyle='rgba(255,255,255,.03)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+for(let i=1;i<5;i++){const y=i*(ph-2*pad)/5+pad;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ctx.setLineDash([]);
+
+// labels
+if(labels){
+ctx.fillStyle='#6b7a8f';ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.textBaseline='middle';
+for(let i=0;i<=4;i++){ctx.fillText((max-(max-min)/4*i).toFixed(0),w-4,i*(ph-2*pad)/4+pad)}
+ctx.textAlign='left';ctx.textBaseline='bottom';
+ctx.fillStyle='#6b7a8f';ctx.font='9px Inter';
+ctx.fillText(new Date(data[0].t*1000).toLocaleDateString('tr-TR'),4,ph-2);
+ctx.fillText(new Date(data[data.length-1].t*1000).toLocaleDateString('tr-TR'),w-80,ph-2);
+}
+
+// ── Crosshair ──
+if(mouseX!==undefined&&labels){
+const idx=Math.round(mouseX/w*(prices.length-1));
+const ci=Math.min(Math.max(0,idx),prices.length-1);
+const p=data[ci];
+if(p){
+const cx=ci/(prices.length-1)*w;
+const cy=pad+(ph-2*pad)-(prices[ci]-min)/range*(ph-2*pad);
+const fc=prices[0],pg=(p.p-fc)/fc*100,cl2=p.p>=fc?'up':'down';
+// vertical line
+ctx.strokeStyle='rgba(59,130,246,.4)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+ctx.setLineDash([]);
+// dot on price
+ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fillStyle='#3B82F6';ctx.fill();
+ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fillStyle='rgba(59,130,246,.2)';ctx.fill();
+// price label
+const labelW=100,labelH=24;
+let lx2=cx+10,lxInfo=cx+10;
+if(lx2+labelW>w-10){lx2=cx-labelW-10;lxInfo=cx-labelW-10}
+ctx.fillStyle='rgba(28,33,39,.95)';ctx.strokeStyle='rgba(59,130,246,.3)';ctx.lineWidth=1;
+roundRect(ctx,lx2,Math.max(4,cy-28),labelW,labelH,6);ctx.fill();ctx.stroke();
+ctx.fillStyle=cl2;ctx.font='bold 11px JetBrains Mono';ctx.textAlign='left';ctx.textBaseline='middle';
+ctx.fillText(p.p.toFixed(2)+' TL',lx2+8,Math.max(4,cy-28)+labelH/2);
+// info box at bottom
+const infoW=180,infoH=28;
+let infoX=cx+10;
+if(infoX+infoW>w-10)infoX=cx-infoW-10;
+ctx.fillStyle='rgba(28,33,39,.95)';ctx.strokeStyle='rgba(59,130,246,.3)';ctx.lineWidth=1;
+roundRect(ctx,infoX,h-infoH-6,infoW,infoH,6);ctx.fill();ctx.stroke();
+ctx.fillStyle='#c6c6cc';ctx.font='10px Inter';ctx.textAlign='left';ctx.textBaseline='middle';
+ctx.fillText(new Date(p.t*1000).toLocaleDateString('tr-TR')+' | Degisim: '+(pg>=0?'+':'')+pg.toFixed(2)+'%',infoX+8,h-infoH-6+infoH/2);
+crosshairIdx=ci;
+}}
+}
+
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+
+drawBase();
+
+canvas.onmousemove=function(e){
+const rect=canvas.getBoundingClientRect();
+const x=e.clientX-rect.left;
+drawBase(x);
+// Update chartInfo div
+const w=rect.width;
+const idx=Math.round(x/w*(prices.length-1));
+const ci=Math.min(Math.max(0,idx),prices.length-1);
+const p=data[ci];
+if(p){
+const fc=prices[0],pg=(p.p-fc)/fc*100,cl2=p.p>=fc?'up':'down';
+$('chartInfo').innerHTML=`<div class="flex items-center gap-4"><span class="font-bold text-sm text-[#e5e2e2]">${new Date(p.t*1000).toLocaleDateString('tr-TR')}</span><span class="font-mono text-base ${cl2}">${p.p.toFixed(2)}</span><span class="${cl2} font-medium">${pg>=0?'+':''}${pg.toFixed(2)}%</span></div>`;
+}};
+canvas.onmouseleave=function(){drawBase();};
+}
+
+// ── ALERTS ──
+async function loadAlerts(){
+try{const r=await fetch('/api/alerts');alertsCache=await r.json();renderAlerts(alertsCache)}catch(e){}
+}
+function renderAlerts(a){
+const c=$('alertsContainer'),cnt=$('alertCount');
+const ac=a.filter(x=>x.active).length;
+cnt.textContent=ac+' aktif / '+a.length+' toplam';
+if(!a.length){c.innerHTML='<div class="p-10 text-center text-[#6b7a8f]">Henüz alarm eklenmemiş.<br>Sol panelden ilk alarmını ekle.</div>';return}
+c.innerHTML=a.map((x,i)=>`
+<div class="alert-row flex items-center gap-4 px-5 py-3.5 cursor-pointer" style="animation-delay:${i*0.04}s" onclick="quickPrice('${x.symbol}')">
+<div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm ${x.condition==='above'?'bg-[#10B981]/10 text-[#10B981]':'bg-[#EF4444]/10 text-[#EF4444]'}">${x.condition==='above'?'↑':'↓'}</div>
+<div class="flex-1 min-w-0"><div class="text-sm font-semibold text-[#e5e2e2]">${x.symbol}</div><div class="text-[11px] text-[#6b7a8f] mt-0.5">${x.target_price} TL · %${x.near_percent}${x.note?' · <span class="italic">'+x.note+'</span>':''}</div></div>
+<div class="flex items-center gap-3"><span class="badge ${x.active?'active':'done'}">${x.active?'Aktif':'Bitti'}</span>
+<button onclick="event.stopPropagation();deleteAlert('${x.id}')" class="p-1.5 text-[#6b7a8f] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-all" title="Sil"><span class="material-symbols-outlined text-lg">delete</span></button></div>
+</div>`).join('');
+}
+$('alertForm').addEventListener('submit',async e=>{
+e.preventDefault();
+const sym=$('aSymbol').value||$('aSearch').value.split('—')[0].trim();
+if(!sym||sym.length<2){showToast('Hisse seç');return}
+const d={symbol:sym,target_price:$('fTarget').value,condition:$('fCondition').value,near_percent:$('fNear').value||'1',note:$('fNote').value};
+try{const r=await fetch('/api/alerts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const j=await r.json();
+if(j.ok){showToast('✅ Alarm eklendi');$('fTarget').value='';$('fNote').value='';$('aSearch').value='';$('aSymbol').value='';loadAlerts();loadPL();}else showToast(j.error||'Hata')}catch(e){}
+});
+async function deleteAlert(id){
+try{await fetch('/api/alerts/'+id,{method:'DELETE'});showToast('🗑 Silindi');loadAlerts();loadPL();}catch(e){}
+}
+
+// ── PORTFOLIO FORM ──
+$('pfForm').addEventListener('submit',async e=>{
+e.preventDefault();
+const sym=$('pfSymbol').value||$('pfSearch').value.split('—')[0].trim();
+if(!sym||sym.length<2){showToast('Hisse seç');return}
+const qty=$('fQty').value;const cost=$('fCost').value;
+if(!qty||parseFloat(qty)<=0){showToast('Adet gerekli');return}
+const d={symbol:sym,quantity:qty,avg_cost:cost||'0',note:''};
+try{const r=await fetch('/api/portfolio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const j=await r.json();
+if(j.ok){showToast('✅ Portföye eklendi');$('fQty').value='';$('fCost').value='';$('pfSearch').value='';$('pfSymbol').value='';loadPF();}else showToast(j.error||'Hata')}catch(e){}
+});
+
+// ── PORTFOLIO ──
+async function loadPF(){
+try{const r=await fetch('/api/portfolio/summary');const d=await r.json();
+const items=d.items||[];
+$('pfCount').textContent=items.length+' hisse';
+$('pfTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
+$('pfTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
+const plEl=$('pfPL');const plPctEl=$('pfPLPct');
+const plClass=d.profit_loss>=0?'text-[#10B981]':'text-[#EF4444]';
+plEl.className='text-2xl font-bold mt-2 '+plClass;
+plEl.textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
+plPctEl.className='text-xs mt-1 '+plClass;
+plPctEl.textContent=(d.change_pct>=0?'+':'')+d.change_pct.toFixed(2)+' %';
+const c=$('pfList');
+if(!items.length){c.innerHTML='<div class="p-10 text-center text-[#6b7a8f]">Henüz hisse eklenmemiş.<br>Sol panelden portföyüne hisse ekle.</div>';return}
+c.innerHTML=items.map((x,i)=>`
+<div class="price-row flex items-center gap-4 px-5 py-3 cursor-pointer" onclick="quickPrice('${x.symbol}')">
+<div class="w-14 font-semibold text-sm text-[#e5e2e2]">${x.symbol}</div>
+<div class="flex-1">
+<div class="text-xs text-[#6b7a8f]">${x.quantity} adet</div>
+</div>
+<div class="text-right">
+${x.current_price?`<div class="text-sm font-mono font-medium">${(x.current_price*x.quantity).toFixed(0)} TL</div><div class="text-[10px] font-mono ${x.current_price>=0?'up':'down'}">${x.current_price.toFixed(2)} TL/ad</div>`:'<div class="text-sm text-[#6b7a8f]">—</div>'}
+</div>
+${x.avg_cost?`<div class="text-right text-[10px] font-mono ${x.profit_loss>=0?'up':'down'}">${x.profit_loss>=0?'+':''}${x.profit_loss_pct.toFixed(1)}%</div>`:''}
+<button onclick="event.stopPropagation();deletePF('${x.id}')" class="p-1 text-[#6b7a8f] hover:text-[#EF4444] rounded-lg" title="Sil"><span class="material-symbols-outlined text-lg">remove_circle</span></button>
+</div>`).join('')}catch(e){}
+}
+async function deletePF(id){
+try{await fetch('/api/portfolio/'+id,{method:'DELETE'});showToast('🗑 Silindi');loadPF();}catch(e){}
+}
+async function sendPFTelegram(){
+try{const r=await fetch('/api/portfolio/telegram',{method:'POST'});const j=await r.json();
+if(j.ok)showToast('✅ Portföy Telegram\'a gönderildi');else showToast(j.error||'Hata');
+}catch(e){showToast('Telegram gönderilemedi')}
+}
+
+// ── QUICK PRICE / MODAL ──
+function quickPrice(s){curSym=s;switchTab('charts',document.querySelectorAll('.nav-item')[1]);$('cSearch').value=s+' — '+(SYMBOLS.find(x=>x.symbol===s)?.name||'');$('analysisPanel').classList.remove('hidden');$('leftPanel').classList.remove('hidden');loadChart();}
+function openChart(sym,modal){
+if(!modal){curSym=sym;switchTab('charts',document.querySelectorAll('.nav-item')[1]);$('cSearch').value=sym+' — '+(SYMBOLS.find(x=>x.symbol===sym)?.name||'');setTimeout(loadChart,300);return}
+$('modalTitle').textContent=sym+' — Grafik';$('chartModal').classList.add('open');
+const c=$('modalCanvas'),info=$('modalInfo');info.innerHTML='<div class="text-[#6b7a8f]">Yükleniyor...</div>';
+Promise.all([fetch('/api/price/'+sym).then(r=>r.json()),fetch('/api/chart/'+sym).then(r=>r.json())]).then(([pr,cr])=>{
+if(cr.prices&&cr.prices.length){
+setTimeout(()=>{drawChart(c,cr.prices,true);renderChartInfo(info,pr.price,cr.prices,sym)},50);
+c.onmousemove=function(e){
+const rect=c.getBoundingClientRect(),x=e.clientX-rect.left,w=rect.width;
+const idx=Math.round(x/w*(cr.prices.length-1)),p=cr.prices[Math.min(idx,cr.prices.length-1)];
+if(p){const f=cr.prices[0].p,pg=(p.p-f)/f*100,cl=p.p>=f?'up':'down';
+info.innerHTML=`<div class="flex gap-5 text-xs flex-wrap"><div><div class="text-[10px] text-[#6b7a8f]">Tarih</div><div class="font-mono font-bold text-sm">${new Date(p.t*1000).toLocaleDateString('tr-TR')}</div></div>
+<div><div class="text-[10px] text-[#6b7a8f]">Fiyat</div><div class="font-mono font-bold text-sm ${cl}">${p.p.toFixed(2)}</div></div>
+<div><div class="text-[10px] text-[#6b7a8f]">Değişim</div><div class="font-mono font-bold text-sm ${cl}">${pg>=0?'+':''}${pg.toFixed(2)}%</div></div></div>`}};
+const min=Math.min(...cr.prices.map(p=>p.p)),max=Math.max(...cr.prices.map(p=>p.p)),f=cr.prices[0].p,l=cr.prices[cr.prices.length-1].p,chg=(l-f)/f*100,cl=chg>=0?'up':'down';
+renderChartInfo(info,pr.price,cr.prices,sym);
+}else info.innerHTML='<span class="text-[#EF4444]">Veri yok</span>'
+}).catch(()=>{info.innerHTML='<span class="text-[#EF4444]">Hata</span>'})}
+function closeModal(){$('chartModal').classList.remove('open')}
+
+// ── LOGS ──
+async function refreshLogs(){
+try{const r=await fetch('/api/bot/logs');const d=await r.json();const b=$('settingsLogs');
+if(d.logs&&d.logs.length)b.innerHTML=d.logs.map(l=>'<div>'+l+'</div>').join('');
+else b.innerHTML='<div><span class="text-[#45464b]">--:--:--</span> Henüz log yok.</div>';
+const ml=$('botMiniLogs');
+if(d.logs&&d.logs.length)ml.innerHTML=d.logs.slice(-15).map(l=>'<div>'+l+'</div>').join('');
+}catch(e){}
+}
+
+// ── REFRESH ──
+// ── AI IMAGE UPLOAD ──
+let uploadedImageBase64='';
+function handleImageUpload(event){
+const file=event.target.files[0];
+if(!file)return;
+if(file.size>5*1024*1024){showToast('Görsel çok büyük (max 5MB)');return}
+const reader=new FileReader();
+reader.onload=function(e){
+uploadedImageBase64=e.target.result.split(',')[1];
+$('uploadText').textContent=file.name+' ('+(file.size/1024).toFixed(0)+'KB)';
+$('uploadArea').classList.add('has-file');
+$('uploadInner').innerHTML='<span class="material-symbols-outlined text-2xl block mb-1 text-[#10B981]">check_circle</span><span id="uploadText" class="text-xs text-[#10B981]">'+file.name+' ('+(file.size/1024).toFixed(0)+'KB)</span>';
+$('imagePreview').classList.remove('hidden');
+$('previewImg').src=e.target.result;
+$('analyzeImgBtn').disabled=false;
+$('analyzeImgBtn').className='btn btn-primary w-full mt-3';
+};
+reader.readAsDataURL(file);
+}
+function clearImage(){
+uploadedImageBase64='';
+$('uploadArea').classList.remove('has-file');
+$('uploadInner').innerHTML='<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span><span id="uploadText" class="text-xs text-[#6b7a8f]">Grafik görseli yükle</span>';
+$('imagePreview').classList.add('hidden');$('analyzeImgBtn').disabled=true;
+$('analyzeImgBtn').className='btn btn-primary w-full mt-3 opacity-50 cursor-not-allowed';
+}
+async function analyzeImageUpload(){
+if(!uploadedImageBase64){showToast('Önce görsel yükle');return}
+$('aiPlaceholder').classList.add('hidden');$('aiResultArea').classList.add('hidden');$('aiLoadingArea').classList.remove('hidden');
+try{
+const sym=$('aiSearch').value.split('—')[0].trim();
+const r=await fetch('/api/ai/analyze-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:uploadedImageBase64,symbol:sym})});
+const d=await r.json();
+$('aiLoadingArea').classList.add('hidden');
+if(d.error){showToast(d.error);const p=$('aiPlaceholder');p.innerHTML='<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#EF4444]/10 to-[#F59E0B]/5 mb-4"><span class="material-symbols-outlined text-3xl text-[#EF4444]">image_not_supported</span></div><div class="text-sm font-medium text-[#e5e2e2]">Görsel analizi yapılamadı</div><div class="text-xs mt-1.5 text-[#6b7a8f] max-w-xs mx-auto">'+d.error+'</div><div class="text-xs mt-2 text-[#6b7a8f]"><a class="text-[#3B82F6] underline" href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></div>';p.classList.remove('hidden');return}
+$('aiResultArea').classList.remove('hidden');
+if(d.analysis&&d.analysis.startsWith('[AI Görsel Hatası]')){$('aiResultText').textContent=d.analysis;return}
+$('aiResultText').textContent=d.analysis||'Analiz alınamadı';
+}catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Görsel analiz hatası: '+e.message)}
+}
+
+// ── AI ANALYSIS TAB ──
+async function runAIAnalysis(){
+const sym=$('aiSearch').value.split('—')[0].trim();
+if(!sym||sym.length<2){showToast('Önce hisse seç');return}
+$('aiPlaceholder').classList.add('hidden');$('aiResultArea').classList.add('hidden');$('aiLoadingArea').classList.remove('hidden');
+try{
+const r=await fetch('/api/analysis/'+sym,{signal:AbortSignal.timeout(45000)});
+const d=await r.json();
+$('aiLoadingArea').classList.add('hidden');
+if(d.error){showToast(d.error);$('aiPlaceholder').classList.remove('hidden');return}
+$('aiResultArea').classList.remove('hidden');
+if(d.ai_analysis){$('aiResultText').textContent=d.ai_analysis}else{$('aiResultText').textContent='AI analiz alınamadı. GROQ_API_KEY kontrol et.'}
+if(d.news&&d.news.length){
+$('aiResultNews').classList.remove('hidden');
+$('aiResultNewsContent').innerHTML=d.news.map(n=>`<div class="border-b border-white/5 pb-2 last:border-0"><a href="${n.link}" target="_blank" class="text-[#3B82F6] hover:underline text-[11px] font-medium">${n.title}</a><div class="text-[9px] text-[#6b7a8f] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
+}else{$('aiResultNews').classList.add('hidden')}
+curSym=sym;
+}catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Analiz alınamadı: '+e.message)}
+}
+
+function refreshCurrent(){
+const a=document.querySelector('.tab-content.active');
+if(a){const id=a.id;
+if(id==='tab-watchlist')loadPL();
+else if(id==='tab-alerts')loadAlerts();
+else if(id==='tab-portfolio')loadPF();
+else if(id==='tab-settings')refreshLogs();
+showToast('🔄 Yenilendi')}}
+
+// ── INIT SEARCHES ──
+setTimeout(()=>{
+initSearch('plSearch','plDropdown','price');
+initSearch('cSearch','cDropdown','chart');
+initSearch('aSearch','aDropdown','alert');
+initSearch('pfSearch','pfDropdown','portfolio');
+initSearch('aiSearch','aiDropdown','aianalysis');
+},100);
+
+// ── INIT ──
+loadPL();loadAlerts();checkBot();
+setInterval(checkBot,5000);
+</script>
+</body>
+</html>

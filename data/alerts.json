@@ -1,0 +1,14 @@
+[
+  {
+    "id": "7ff4eb2d-e376-44b6-b2d8-a91e36e7ad34",
+    "symbol": "DMRGD",
+    "target_price": 12.0,
+    "condition": "above",
+    "near_percent": 1.0,
+    "note": "",
+    "active": true,
+    "created_at": "2026-06-23T00:17:49",
+    "near_sent": false,
+    "hit_sent": false
+  }
+]
