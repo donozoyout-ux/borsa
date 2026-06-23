@@ -719,7 +719,6 @@ ${priceStr}
 </div>`}).join('');
 dd.classList.add('show');
 });
-});
 
 input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
 input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value&&dd.children.length)dd.classList.add('show')});
