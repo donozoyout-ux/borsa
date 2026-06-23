@@ -460,7 +460,7 @@ def api_hourly(symbol):
     clean = symbol.upper().strip().replace(".IS", "")
     try:
         chart = get_price_history_chart(clean, "1d", "1h")
-        price = get_price = None
+        _price = None
         try:
             from bist_data import get_bist_price
             _price = get_bist_price(clean)
@@ -490,12 +490,13 @@ def api_daily_featured():
         for s in symbols[:100]:
             sym = s["symbol"]
             try:
-                hist = get_historical_prices(sym, range_str="5d", interval="1h")
-                if not hist or len(hist) < 10:
+                chart = get_price_history_chart(sym, "5d", "1h")
+                if not chart or not chart.get("prices") or len(chart["prices"]) < 10:
                     continue
 
-                prices = [h["Close"] for h in hist]
-                volumes = [h.get("Volume", 0) for h in hist]
+                prices_data = chart["prices"]
+                prices = [p["p"] for p in prices_data]
+                volumes = [p.get("v", 0) for p in prices_data]
 
                 open_price = prices[0]
                 close_price = prices[-1]
@@ -565,11 +566,12 @@ def api_key_stocks_daily():
         results = []
         for sym in list(all_symbols)[:20]:
             try:
-                hist = get_historical_prices(sym, range_str="5d", interval="1d")
-                if not hist or len(hist) < 2:
+                chart = get_price_history_chart(sym, "5d", "1d")
+                if not chart or not chart.get("prices") or len(chart["prices"]) < 2:
                     continue
-                open_price = hist[0]["Close"]
-                close_price = hist[-1]["Close"]
+                prices_data = chart["prices"]
+                open_price = prices_data[0]["p"]
+                close_price = prices_data[-1]["p"]
                 change_pct = (close_price - open_price) / open_price * 100
                 
                 in_pf = any(i["symbol"] == sym for i in portfolio)

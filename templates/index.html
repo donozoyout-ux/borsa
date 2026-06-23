@@ -151,7 +151,23 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 .animate-float{animation:float 3s ease-in-out infinite}
 
-@media(max-width:767px){.sidebar{display:none!important}.main{margin-left:0!important}.modal-box{margin:10px;max-height:85vh}}
+/* Mobile bottom nav */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(19,19,20,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.06);z-index:90;padding:0 8px;align-items:center;justify-content:space-around}
+.mobile-bottom-nav .mob-nav{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer;border-radius:10px;transition:all .2s ease;color:#909096;font-size:9px;font-weight:600;letter-spacing:.03em;min-width:48px;-webkit-tap-highlight-color:transparent}
+.mobile-bottom-nav .mob-nav:active{transform:scale(.92)}
+.mobile-bottom-nav .mob-nav.active{color:#C3C6D3}
+.mobile-bottom-nav .mob-nav .material-symbols-outlined{font-size:22px}
+.mobile-bottom-nav .mob-nav.active .material-symbols-outlined{font-variation-settings:'FILL'1}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:95;animation:fadeSlide .15s ease}
+.sidebar-overlay.show{display:block}
+
+/* Top search mobile */
+.top-search-mobile{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(19,19,20,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);z-index:80;padding:10px 16px}
+@media(max-width:767px){.tab-content.active{padding-bottom:72px}}
+
+@media(max-width:767px){.sidebar{display:none!important}.sidebar.mobile-open{display:flex!important;position:fixed;top:0;left:0;bottom:0;width:80px;z-index:100;animation:fadeSlide .2s ease}.main{margin-left:0!important}.modal-box{margin:10px;max-height:85vh}.mobile-bottom-nav{display:flex!important}.top-search-mobile{display:flex!important}}
 </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#0A0E17]">
@@ -647,6 +663,19 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 </div>
 
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-bottom-nav">
+  <div class="mob-nav active" onclick="mobSwitchTab('watchlist',this)"><span class="material-symbols-outlined">list_alt</span><span>Fiyatlar</span></div>
+  <div class="mob-nav" onclick="mobSwitchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span><span>Grafik</span></div>
+  <div class="mob-nav" onclick="mobSwitchTab('alerts',this)"><span class="material-symbols-outlined">notifications_active</span><span>Alarmlar</span></div>
+  <div class="mob-nav" onclick="mobSwitchTab('portfolio',this)"><span class="material-symbols-outlined">pie_chart</span><span>Portfoy</span></div>
+  <div class="mob-nav" onclick="mobSwitchTab('aianalysis',this)"><span class="material-symbols-outlined">auto_awesome</span><span>AI</span></div>
+  <div class="mob-nav" onclick="mobSwitchTab('dailyfeatured',this)"><span class="material-symbols-outlined">whatshot</span><span>One Cikan</span></div>
+</div>
+
 <!-- MODAL -->
 <div id="chartModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
@@ -706,7 +735,28 @@ if(action==='portfolio'){$('pfSymbol').value=symbol;}
 if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');}
 }
 
-function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('hidden')}
+function toggleSidebar(){
+const sb=document.querySelector('.sidebar');
+const ov=$('sidebarOverlay');
+if(window.innerWidth<=767){
+sb.classList.toggle('mobile-open');
+ov.classList.toggle('show');
+}else{
+sb.classList.toggle('hidden');
+}
+}
+function closeSidebar(){
+const sb=document.querySelector('.sidebar');
+const ov=$('sidebarOverlay');
+sb.classList.remove('mobile-open');
+ov.classList.remove('show');
+}
+function mobSwitchTab(tab,el){
+closeSidebar();
+document.querySelectorAll('.mob-nav').forEach(n=>n.classList.remove('active'));
+if(el)el.classList.add('active');
+switchTab(tab,null);
+}
 
 function switchTab(tab,el){
 document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
@@ -715,6 +765,10 @@ if(el)el.classList.add('active');
 $('tab-'+tab).classList.add('active');
 const titles={watchlist:'Fiyatlar',charts:'Grafik',alerts:'Alarmlar',portfolio:'Portfoy',aianalysis:'AI Analiz',dailyfeatured:'Gunluk One Cikanlar',settings:'Ayarlar'};
 $('pageTitle').textContent=titles[tab]||'BIST Terminal';
+document.querySelectorAll('.mob-nav').forEach(n=>n.classList.remove('active'));
+const mobTabs=['watchlist','charts','alerts','portfolio','aianalysis','dailyfeatured'];
+const mobIdx=mobTabs.indexOf(tab);
+if(mobIdx>=0){const mobNavs=document.querySelectorAll('.mob-nav');if(mobNavs[mobIdx])mobNavs[mobIdx].classList.add('active')}
 if(tab==='alerts')loadAlerts();
 if(tab==='settings'){refreshLogs();loadSettingsStatus();}
 if(tab==='portfolio')loadPF();
