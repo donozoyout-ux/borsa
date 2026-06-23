@@ -1347,9 +1347,20 @@ c.innerHTML=h;
 }
 
 loadPL();loadAlerts();checkBot();loadKeyStocksDaily();
-setInterval(checkBot,5000);
-setInterval(()=>{const a=document.querySelector('.tab-content.active');if(a&&a.id==='tab-watchlist')loadPL()},60000);
-setInterval(loadKeyStocksDaily,300000);
+function isMarketOpen(){
+var now=new Date();
+var h=now.getHours(),m=now.getMinutes(),d=now.getDay();
+if(d===0||d===6)return false;
+var mins=h*60+m;
+return mins>=570&&mins<1095;
+}
+setInterval(checkBot,15000);
+setInterval(()=>{
+if(!isMarketOpen())return;
+var a=document.querySelector('.tab-content.active');
+if(a&&a.id==='tab-watchlist')loadPL();
+},300000);
+setInterval(loadKeyStocksDaily,600000);
 </script>
 </body>
 </html>

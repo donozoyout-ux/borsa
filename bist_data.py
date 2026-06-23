@@ -52,9 +52,9 @@ def refresh_all_prices():
     from concurrent.futures import ThreadPoolExecutor, as_completed
     all_syms = load_bist_symbols()
     results = {}
-    with ThreadPoolExecutor(max_workers=20) as ex:
+    with ThreadPoolExecutor(max_workers=10) as ex:
         fut = {ex.submit(get_bist_price_nocache, s["symbol"]): s["symbol"] for s in all_syms}
-        for f in as_completed(fut, timeout=12):
+        for f in as_completed(fut, timeout=30):
             try:
                 p = f.result()
                 if p is not None:
