@@ -1,3 +1,4 @@
+import base64
 import os
 from typing import Optional
 
@@ -130,7 +131,6 @@ def analyze_image(image_base64: str, symbol: str = "", price: Optional[float] = 
     try:
         from google import genai as genai_sdk
         client = genai_sdk.Client(api_key=GEMINI_API_KEY)
-        import base64
         image_data = base64.b64decode(image_base64)
         # Detect mime from base64 header or default to png
         mime = "image/png"
@@ -138,19 +138,44 @@ def analyze_image(image_base64: str, symbol: str = "", price: Optional[float] = 
             mime = "image/jpeg"
         elif image_base64.startswith("UklGR"):
             mime = "image/webp"
-        models_to_try = ["gemini-2.5-flash", "gemini-2.5-flash-image"]
+
+        # Try Part.from_bytes approach (works with most models)
+        from google.genai import types
+
+        models_to_try = ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-2.5-flash"]
         last_error = ""
+
         for model_name in models_to_try:
             try:
                 resp = client.models.generate_content(
                     model=model_name,
-                    contents=[text_prompt, genai_sdk.types.Part.from_bytes(data=image_data, mime_type=mime)],
+                    contents=[text_prompt, types.Part.from_bytes(data=image_data, mime_type=mime)],
                 )
                 if resp.text:
                     return resp.text.strip()
             except Exception as e:
-                last_error = str(e)
+                last_error = f"[{model_name}] {str(e)}"
                 continue
-        return f"[AI Görsel Hatası] {last_error[:200]}"
+
+        # Fallback: upload file to Gemini then analyze
+        try:
+            import tempfile
+            suffix = ".png" if mime == "image/png" else ".jpg"
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+                tmp.write(image_data)
+                tmp_path = tmp.name
+            uploaded = client.files.upload(file=tmp_path)
+            resp = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[text_prompt, uploaded],
+            )
+            try: os.unlink(tmp_path)
+            except: pass
+            if resp.text:
+                return resp.text.strip()
+        except Exception as e:
+            last_error += f" | [upload] {str(e)[:100]}"
+
+        return f"[AI Görsel Hatası] {last_error[:300]}"
     except Exception as exc:
         return f"[AI Görsel Hatası] {str(exc)[:200]}"
