@@ -460,7 +460,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <!-- TAB: AI ANALYSIS -->
 <div id="tab-aianalysis" class="tab-content">
 <div class="flex-1 overflow-y-auto p-5">
-<div class="max-w-4xl mx-auto space-y-4">
+<div class="max-w-5xl mx-auto space-y-4">
 
 <!-- Hero Header -->
 <div class="glass-panel overflow-hidden relative">
@@ -469,112 +469,115 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-[#3B82F6]/20"><span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL'1">auto_awesome</span></div>
 <div>
 <h3 class="headline-sm gradient-text">AI Yapay Zeka Analizi</h3>
-<div class="flex items-center gap-2 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span><span class="label-caps text-[10px] text-[#5a5f6b]">Groq Llama 3 70B + Gemini 2.5 Flash</span></div>
+<div class="flex items-center gap-2 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span><span class="label-caps text-[10px] text-[#5a5f6b]">Groq Llama 3 70B + Gemini Vision</span></div>
 </div>
 </div>
 </div>
 
-<!-- Input Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<!-- Text Analysis -->
-<div class="glass-panel p-5 glow-card">
-<div class="flex items-center gap-2 mb-4">
-<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#60A5FA]">search</span></div>
-<h4 class="label-caps" style="color:#c6c6cc">Metin ile Analiz</h4>
-</div>
-<div class="flex gap-2">
-<div class="search-wrap flex-1">
+<!-- Hisse Sec + Hizli Erisim -->
+<div class="glass-panel p-4">
+<div class="flex items-center gap-3 flex-wrap">
+<div class="search-wrap flex-1 min-w-[200px]">
 <span class="material-symbols-outlined icon">search</span>
-<input id="aiSearch" autocomplete="off" placeholder="Hisse ara (örn: THYAO)">
+<input id="aiSearch" autocomplete="off" placeholder="Hisse sec (orn: THYAO, GARAN, ASELS...)">
 <div id="aiDropdown" class="search-dropdown"></div>
 </div>
-<button onclick="runAIAnalysis()" class="btn btn-primary whitespace-nowrap">Analiz Et</button>
-</div>
-<div class="mt-3 flex gap-1.5 flex-wrap">
-<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">RSI + MACD analizi</span>
-<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">Haber taraması</span>
-<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">Trend tahmini</span>
-</div>
-</div>
-
-<!-- Image Analysis -->
-<div class="glass-panel p-5 glow-card-green">
-<div class="flex items-center gap-2 mb-4">
-<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#06B6D4]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#10B981]">image</span></div>
-<h4 class="label-caps" style="color:#c6c6cc">Görsel ile Analiz</h4>
-</div>
-<div>
-<div id="uploadArea" class="upload-zone" onclick="document.getElementById('imageInput').click()">
-<input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg" class="hidden" onchange="handleImageUpload(event)">
-<div id="uploadInner">
-<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span>
-<span id="uploadText" class="text-xs text-[#6b7a8f]">Grafik görseli yükle</span>
-</div>
-</div>
-<div id="imagePreview" class="hidden mt-2 relative">
-<img id="previewImg" class="w-full rounded-lg max-h-40 object-contain bg-[#0A0E17] border border-white/5">
-<button onclick="clearImage()" class="absolute top-1.5 right-1.5 p-1 bg-[#0A0E17]/80 rounded-full text-[#6b7a8f] hover:text-[#EF4444] transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>
-</div>
-<button onclick="analyzeImageUpload()" id="analyzeImgBtn" class="btn btn-primary w-full mt-3 opacity-50 cursor-not-allowed" disabled>
-<span class="material-symbols-outlined text-sm">auto_awesome</span>Görseli Analiz Et
+<button onclick="runAIAnalysis()" class="btn btn-primary whitespace-nowrap" id="aiAnalyzeBtn">
+<span class="material-symbols-outlined text-sm">auto_awesome</span> Hisseyi Analiz Et
 </button>
 </div>
+<div class="flex gap-1.5 mt-3 flex-wrap">
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('THYAO')">THYAO</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('GARAN')">GARAN</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('ASELS')">ASELS</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('EREGL')">EREGL</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('KCHOL')">KCHOL</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] transition-all" onclick="quickAI('TUPRS')">TUPRS</span>
 </div>
 </div>
 
-<!-- Result Area -->
-<div id="aiResultArea" class="hidden space-y-3">
-<div id="aiResultHeader" class="flex items-center gap-2 px-1">
-<span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span>
-<span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Analiz Sonucu</span>
-</div>
-<div class="solid rounded-xl p-5 glow-card result-card">
+<!-- Iki Kolon: Sonuc + Gorsel Analiz -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+<!-- Metin Analiz Sonucu -->
+<div class="space-y-3">
+<div id="aiResultArea" class="hidden">
+<div class="solid rounded-xl p-5 glow-card">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span><span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">AI Hisse Analizi</span></div>
 <div id="aiResultText" class="text-sm leading-7 whitespace-pre-line text-[#c6c6cc]"></div>
 </div>
-<div id="aiResultNews" class="hidden solid rounded-xl p-5 result-card">
-<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#3B82F6]">newspaper</span><h4 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">İlgili Haberler</h4></div>
+<div id="aiResultNews" class="hidden solid rounded-xl p-5">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#3B82F6]">newspaper</span><h4 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Ilgili Haberler</h4></div>
 <div id="aiResultNewsContent" class="text-xs space-y-2"></div>
 </div>
 </div>
-
-<!-- Placeholder -->
 <div id="aiPlaceholder" class="text-center py-14 text-[#6b7a8f]">
-<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#3B82F6]/10 to-[#8B5CF6]/5 mb-4 animate-float">
-<span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL'1">auto_awesome</span>
+<div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3B82F6]/10 to-[#8B5CF6]/5 mb-4 animate-float">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL'1">candlestick_chart</span>
 </div>
-<div class="text-sm font-medium text-[#e5e2e2]">AI Analiz Başlamak İçin Hazır</div>
-<div class="text-xs mt-1.5 text-[#6b7a8f]">Hisse adı yaz veya grafik görseli yükle</div>
-<div class="grid grid-cols-3 gap-3 max-w-md mx-auto mt-6 text-left">
-<div class="bg-white/5 rounded-lg p-3">
-<div class="text-[11px] font-bold text-[#3B82F6]">Groq AI</div>
-<div class="text-[10px] text-[#6b7a8f] mt-0.5">Teknik + haber bazlı metin analizi</div>
-</div>
-<div class="bg-white/5 rounded-lg p-3">
-<div class="text-[11px] font-bold text-[#10B981]">Gemini Vision</div>
-<div class="text-[10px] text-[#6b7a8f] mt-0.5">Grafik görsellerini yorumlama</div>
-</div>
-<div class="bg-white/5 rounded-lg p-3">
-<div class="text-[11px] font-bold text-[#F59E0B]">BIST Verisi</div>
-<div class="text-[10px] text-[#6b7a8f] mt-0.5">Canlı fiyat + indikatör entegrasyonu</div>
+<div class="text-sm font-medium text-[#e5e2e2]">Hisse Analizi Icin Hazir</div>
+<div class="text-xs mt-1.5 text-[#6b7a8f]">Yukarıdaki alandan hisse sec ve "Analiz Et"</div>
+<div class="grid grid-cols-2 gap-2 max-w-xs mx-auto mt-4 text-left">
+<div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#3B82F6]">Teknik</div><div class="text-[9px] text-[#6b7a8f] mt-0.5">RSI, MACD, SMA/EMA</div></div>
+<div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#10B981]">Temel</div><div class="text-[9px] text-[#6b7a8f] mt-0.5">F/K, Beta, Temettu</div></div>
+<div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#F59E0B]">Haber</div><div class="text-[9px] text-[#6b7a8f] mt-0.5">Guncel haberler</div></div>
+<div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#8B5CF6]">Trend</div><div class="text-[9px] text-[#6b7a8f] mt-0.5">Destek/Direnc</div></div>
 </div>
 </div>
-</div>
-
-<!-- Loading -->
 <div id="aiLoadingArea" class="hidden">
 <div class="flex flex-col items-center py-14">
 <div class="relative w-12 h-12">
 <div class="absolute inset-0 rounded-full border-3 border-[#3B82F6]/20"></div>
 <div class="absolute inset-0 rounded-full border-3 border-t-[#3B82F6] animate-spin"></div>
 </div>
-<div class="text-sm font-medium text-[#e5e2e2] mt-5">Analiz hazırlanıyor...</div>
+<div class="text-sm font-medium text-[#e5e2e2] mt-5">AI analiz hazirlaniyor...</div>
 <div class="flex items-center gap-2 mt-2">
 <div class="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></div>
-<span class="text-xs text-[#6b7a8f]">Teknik göstergeler taranıyor</span>
+<span class="text-xs text-[#6b7a8f]">Teknik gostergeler taraniyor</span>
+</div>
 </div>
 </div>
 </div>
 
+<!-- Gorsel Grafik Analizi -->
+<div class="space-y-3">
+<div class="glass-panel p-5 glow-card-green">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#06B6D4]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#10B98]">image</span></div>
+<h4 class="label-caps" style="color:#c6c6cc">Gorsel Grafik Analizi</h4>
+</div>
+<div>
+<div id="uploadArea" class="upload-zone" onclick="document.getElementById('imageInput').click()">
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg" class="hidden" onchange="handleImageUpload(event)">
+<div id="uploadInner">
+<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span>
+<span id="uploadText" class="text-xs text-[#6b7a8f]">TradingView, Yahoo Finance veya baska bir platformdan<br>grafik goruntusu yukle</span>
+</div>
+</div>
+<div id="imagePreview" class="hidden mt-2 relative">
+<img id="previewImg" class="w-full rounded-lg max-h-48 object-contain bg-[#0A0E17] border border-white/5">
+<button onclick="clearImage()" class="absolute top-1.5 right-1.5 p-1 bg-[#0A0E17]/80 rounded-full text-[#6b7a8f] hover:text-[#EF4444] transition-colors"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<button onclick="analyzeImageUpload()" id="analyzeImgBtn" class="btn btn-primary w-full mt-3 opacity-50 cursor-not-allowed" disabled>
+<span class="material-symbols-outlined text-sm">auto_awesome</span> Gorsoleyi Analiz Et
+</button>
+</div>
+</div>
+<div id="imgResultArea" class="hidden solid rounded-xl p-5 glow-card-green">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span><span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Gorsel Analiz Sonucu</span></div>
+<div id="imgResultText" class="text-sm leading-7 whitespace-pre-line text-[#c6c6cc]"></div>
+</div>
+<div id="imgPlaceholder" class="text-center py-8 text-[#6b7a8f]">
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981]/10 to-[#06B6D4]/5 mb-3">
+<span class="material-symbols-outlined text-xl">insights</span>
+</div>
+<div class="text-xs text-[#6b7a8f]">Grafik gorseli yuklediginde<br>AI otomatik yorumlayacak</div>
+</div>
+</div>
+
+</div>
+
+</div>
 </div>
 </div>
 </div>
@@ -583,34 +586,47 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div id="tab-dailyfeatured" class="tab-content">
 <div class="flex-1 overflow-y-auto p-5">
 <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-5">
-<div class="xl:col-span-8">
+<div class="xl:col-span-9 space-y-5">
+
+<!-- Yukselenler -->
 <div class="glass-panel overflow-hidden">
-<div class="section-header">
+<div class="section-header" style="border-bottom-color:rgba(16,185,129,.15)">
 <div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-[#F59E0B]" style="font-variation-settings:'FILL'1">whatshot</span>
-<h3 class="label-caps" style="color:#c6c6cc">Günün Öne Çıkanları</h3>
-<span class="label-caps text-[10px] text-[#5a5f6b]" id="dfCount"></span>
-</div>
-<div class="flex items-center gap-2">
-<div class="glass-panel-sm p-0.5 flex gap-0.5">
-<button class="tf-btn active" id="dfTf1d" onclick="setDFTF('1d','1h','dfTf1d')">1G (1S)</button>
-<button class="tf-btn" id="dfTf1h" onclick="setDFTF('1d','5m','dfTf1h')">1G (5DK)</button>
+<span class="material-symbols-outlined text-[#10B981]" style="font-variation-settings:'FILL'1">trending_up</span>
+<h3 class="label-caps" style="color:#10B981">Yukselenler</h3>
+<span class="label-caps text-[10px] text-[#5a5f6b]" id="dfRisersCount"></span>
 </div>
 <button onclick="loadDailyFeatured()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
 </div>
+<div id="dfRisersContainer">
+<div class="p-6 text-center text-[#6b7280] text-xs">Yukleniyor...</div>
 </div>
-<div id="dfContainer"></div>
+</div>
+
+<!-- Dusenler -->
+<div class="glass-panel overflow-hidden">
+<div class="section-header" style="border-bottom-color:rgba(239,68,68,.15)">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#EF4444]" style="font-variation-settings:'FILL'1">trending_down</span>
+<h3 class="label-caps" style="color:#EF4444">Dusenler</h3>
+<span class="label-caps text-[10px] text-[#5a5f6b]" id="dfFallersCount"></span>
 </div>
 </div>
-<div class="xl:col-span-4 space-y-4">
+<div id="dfFallersContainer">
+<div class="p-6 text-center text-[#6b7280] text-xs">Yukleniyor...</div>
+</div>
+</div>
+
+</div>
+<div class="xl:col-span-3 space-y-4">
 <div class="glass-panel">
 <div class="px-4 py-3 border-b border-white/5">
-<span class="label-caps text-[#5a5f6b]">AI Seçim Kriterleri</span>
+<span class="label-caps text-[#5a5f6b]">Secim Kriterleri</span>
 </div>
 <div class="p-4 text-xs text-[#6b7280] space-y-2">
-<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#10B981]"></span>Günlük değişim pozitif</div>
-<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#3B82F6]"></span>Hacim ortalama üstü</div>
-<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>Momentum güçlü</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#10B981]"></span>Gunluk degisim</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#3B82F6]"></span>Hacim orani</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>Momentum</div>
 <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#8B5CF6]"></span>Skor: 0-100</div>
 </div>
 </div>
@@ -622,7 +638,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div id="dfChartArea" class="bg-[#0A0E17] rounded-lg border border-white/5 h-64 relative">
 <canvas id="dfChartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
 <div class="absolute inset-0 flex items-center justify-center text-[#5a5f6b] text-sm" id="dfChartPlaceholder">
-<div class="text-center"><span class="material-symbols-outlined text-3xl block mb-2 opacity-40">show_chart</span>Hisse tıkla grafiği gör</div>
+<div class="text-center"><span class="material-symbols-outlined text-3xl block mb-2 opacity-40">show_chart</span>Hisse tikla grafigi gor</div>
 </div>
 <div id="dfChartInfo" class="absolute top-3 left-3 glass-panel-sm px-3 py-2 text-[10px] space-y-1 z-10" style="display:none"></div>
 </div>
@@ -1158,7 +1174,7 @@ let uploadedImageBase64='';
 function handleImageUpload(event){
 const file=event.target.files[0];
 if(!file)return;
-if(file.size>5*1024*1024){showToast('Görsel çok büyük (max 5MB)');return}
+if(file.size>5*1024*1024){showToast('Gorsel cok buyuk (max 5MB)');return}
 const reader=new FileReader();
 reader.onload=function(e){
 uploadedImageBase64=e.target.result.split(',')[1];
@@ -1175,29 +1191,40 @@ reader.readAsDataURL(file);
 function clearImage(){
 uploadedImageBase64='';
 $('uploadArea').classList.remove('has-file');
-$('uploadInner').innerHTML='<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span><span id="uploadText" class="text-xs text-[#6b7a8f]">Grafik görseli yükle</span>';
+$('uploadInner').innerHTML='<span class="material-symbols-outlined text-2xl block mb-1 text-[#6b7a8f]">cloud_upload</span><span id="uploadText" class="text-xs text-[#6b7a8f]">TradingView, Yahoo Finance veya baska bir platformdan<br>grafik goruntusu yukle</span>';
 $('imagePreview').classList.add('hidden');$('analyzeImgBtn').disabled=true;
 $('analyzeImgBtn').className='btn btn-primary w-full mt-3 opacity-50 cursor-not-allowed';
+$('imgResultArea').classList.add('hidden');$('imgPlaceholder').classList.remove('hidden');
+}
+function quickAI(sym){
+$('aiSearch').value=sym+' \u2014 '+(SYMBOLS.find(s=>s.symbol===sym)?.name||'');
+runAIAnalysis();
 }
 async function analyzeImageUpload(){
-if(!uploadedImageBase64){showToast('Önce görsel yükle');return}
-$('aiPlaceholder').classList.add('hidden');$('aiResultArea').classList.add('hidden');$('aiLoadingArea').classList.remove('hidden');
+if(!uploadedImageBase64){showToast('Once gorsel yukle');return}
+$('imgPlaceholder').classList.add('hidden');$('imgResultArea').classList.add('hidden');
+var loadingDiv=document.createElement('div');
+loadingDiv.id='imgLoading';loadingDiv.className='flex flex-col items-center py-8';
+loadingDiv.innerHTML='<div class="relative w-10 h-10"><div class="absolute inset-0 rounded-full border-2 border-[#10B981]/20"></div><div class="absolute inset-0 rounded-full border-2 border-t-[#10B981] animate-spin"></div></div><div class="text-xs text-[#6b7a8f] mt-3">Gorsel analiz ediliyor...</div>';
+$('imgPlaceholder').parentElement.appendChild(loadingDiv);
 try{
-const sym=$('aiSearch').value.split('—')[0].trim();
+var rawVal=$('aiSearch').value;
+var sym=rawVal.split(/[—\-]+/)[0].trim().split(' ')[0];
 const r=await fetch('/api/ai/analyze-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:uploadedImageBase64,symbol:sym})});
 const d=await r.json();
-$('aiLoadingArea').classList.add('hidden');
-if(d.error){showToast(d.error);const p=$('aiPlaceholder');p.innerHTML='<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#EF4444]/10 to-[#F59E0B]/5 mb-4"><span class="material-symbols-outlined text-3xl text-[#EF4444]">image_not_supported</span></div><div class="text-sm font-medium text-[#e5e2e2]">Görsel analizi yapılamadı</div><div class="text-xs mt-1.5 text-[#6b7a8f] max-w-xs mx-auto">'+d.error+'</div><div class="text-xs mt-2 text-[#6b7a8f]"><a class="text-[#3B82F6] underline" href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></div>';p.classList.remove('hidden');return}
-$('aiResultArea').classList.remove('hidden');
-if(d.analysis&&d.analysis.startsWith('[AI Görsel Hatası]')){$('aiResultText').textContent=d.analysis;return}
-$('aiResultText').textContent=d.analysis||'Analiz alınamadı';
-}catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Görsel analiz hatası: '+e.message)}
+var ld=$('imgLoading');if(ld)ld.remove();
+if(d.error){showToast(d.error);$('imgPlaceholder').classList.remove('hidden');return}
+$('imgResultArea').classList.remove('hidden');
+if(d.analysis&&d.analysis.startsWith('[AI Gorsel Hatasi]')){$('imgResultText').textContent=d.analysis;return}
+$('imgResultText').textContent=d.analysis||'Analiz alinamadi';
+}catch(e){var ld2=$('imgLoading');if(ld2)ld2.remove();$('imgPlaceholder').classList.remove('hidden');showToast('Gorsel analiz hatasi: '+e.message)}
 }
 
 // ── AI ANALYSIS TAB ──
 async function runAIAnalysis(){
-const sym=$('aiSearch').value.split('—')[0].trim();
-if(!sym||sym.length<2){showToast('Önce hisse seç');return}
+var rawVal=$('aiSearch').value;
+var sym=rawVal.split(/[—\-]+/)[0].trim().split(' ')[0];
+if(!sym||sym.length<2){showToast('Once hisse sec');return}
 $('aiPlaceholder').classList.add('hidden');$('aiResultArea').classList.add('hidden');$('aiLoadingArea').classList.remove('hidden');
 try{
 const r=await fetch('/api/analysis/'+sym,{signal:AbortSignal.timeout(45000)});
@@ -1205,13 +1232,13 @@ const d=await r.json();
 $('aiLoadingArea').classList.add('hidden');
 if(d.error){showToast(d.error);$('aiPlaceholder').classList.remove('hidden');return}
 $('aiResultArea').classList.remove('hidden');
-if(d.ai_analysis){$('aiResultText').textContent=d.ai_analysis}else{$('aiResultText').textContent='AI analiz alınamadı. GROQ_API_KEY kontrol et.'}
+if(d.ai_analysis){$('aiResultText').textContent=d.ai_analysis}else{$('aiResultText').textContent='AI analiz alinamadi. GROQ_API_KEY kontrol et.'}
 if(d.news&&d.news.length){
 $('aiResultNews').classList.remove('hidden');
-$('aiResultNewsContent').innerHTML=d.news.map(n=>`<div class="border-b border-white/5 pb-2 last:border-0"><a href="${n.link}" target="_blank" class="text-[#3B82F6] hover:underline text-[11px] font-medium">${n.title}</a><div class="text-[9px] text-[#6b7a8f] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
+$('aiResultNewsContent').innerHTML=d.news.map(n=>'<div class="border-b border-white/5 pb-2 last:border-0"><a href="'+n.link+'" target="_blank" class="text-[#3B82F6] hover:underline text-[11px] font-medium">'+n.title+'</a><div class="text-[9px] text-[#6b7a8f] mt-0.5">'+(n.source||'Haber')+' · '+(n.date||'')+'</div></div>').join('');
 }else{$('aiResultNews').classList.add('hidden')}
 curSym=sym;
-}catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Analiz alınamadı: '+e.message)}
+}catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Analiz alinamadi: '+e.message)}
 }
 
 function refreshCurrent(){
@@ -1242,16 +1269,39 @@ const el=$(id);
 if(el)el.className='tf-btn '+(id===btnId?'active':'');});
 if(dfCurSym)loadDFChart(dfCurSym);
 }
+
+function renderDFTable(items, containerId, emptyMsg){
+const c=$(containerId);
+if(!items||!items.length){c.innerHTML='<div class="p-6 text-center text-[#6b7280] text-xs">'+emptyMsg+'</div>';return}
+var h='<table class="price-table"><thead><tr><th>Sembol</th><th>Sirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Degisim</th><th style="text-align:right">Skor</th></tr></thead><tbody>';
+for(var i=0;i<items.length;i++){
+var f=items[i];
+var pCls=f.change_pct>=0?'text-up':'text-down';
+var bCls=f.change_pct>=0?'buy':'sell';
+var arrow=f.change_pct>=0?'▲':'▼';
+h+='<tr onclick="loadDFChart(\''+f.symbol+'\')" style="cursor:pointer">';
+h+='<td class="sym" style="color:'+(f.change_pct>=0?'#10B981':'#EF4444')+'">'+f.symbol+'</td>';
+h+='<td class="name">'+f.name.slice(0,35)+'</td>';
+h+='<td class="pr '+pCls+'">'+f.price.toFixed(2)+'</td>';
+h+='<td class="chg '+pCls+'" style="text-align:right">'+arrow+' '+(f.change_pct>=0?'+':'')+f.change_pct+'%</td>';
+h+='<td style="text-align:right"><span class="badge '+bCls+'">'+f.score+'</span></td>';
+h+='</tr>';
+}
+h+='</tbody></table>';
+c.innerHTML=h;
+}
+
 async function loadDailyFeatured(){
-const c=$('dfContainer');const cnt=$('dfCount');
-c.innerHTML='<div class="p-6 text-center text-[#6b7280] text-xs">Yükleniyor...</div>';
+const rc=$('dfRisersContainer'),fc=$('dfFallersContainer');
+rc.innerHTML='<div class="p-6 text-center text-[#6b7280] text-xs">Yukleniyor...</div>';
+fc.innerHTML='<div class="p-6 text-center text-[#6b7280] text-xs">Yukleniyor...</div>';
 try{const r=await fetch('/api/daily-featured');const d=await r.json();
-cnt.textContent=d.count+' hisse';
-if(!d.featured||!d.featured.length){c.innerHTML='<div class="p-10 text-center text-[#6b7280]">Veri yok</div>';return}
-var h='<table class="price-table"><thead><tr><th>Sembol</th><th>Şirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Skor</th></tr></thead><tbody>';
-for(var i=0;i<d.featured.length;i++){var f=d.featured[i];var pCls=f.change_pct>=0?'text-up':'text-down';var bCls=f.change_pct>=0?'buy':'sell';h+='<tr onclick="loadDFChart(\''+f.symbol+'\')"><td class="sym" style="color:#F59E0B">'+f.symbol+'</td><td class="name">'+f.name.slice(0,35)+'</td><td class="pr '+pCls+'">'+f.price.toFixed(2)+' <span class="data-md text-[10px]">'+(f.change_pct>=0?'+':'')+f.change_pct+'%</span></td><td style="text-align:right"><span class="badge '+bCls+'">'+f.score+'</span></td></tr>';}
-h+='</tbody></table>';c.innerHTML=h;
-}catch(e){c.innerHTML='<div class="p-10 text-center text-[#EF4444]">Yüklenemedi</div>'}
+if(d.error){rc.innerHTML='<div class="p-6 text-center text-[#EF4444]">'+d.error+'</div>';fc.innerHTML='';return}
+$('dfRisersCount').textContent=d.risers_count+' hisse';
+$('dfFallersCount').textContent=d.fallers_count+' hisse';
+renderDFTable(d.risers,'dfRisersContainer','Bugun yukselen hisse bulunamadi');
+renderDFTable(d.fallers,'dfFallersContainer','Bugun dusen hisse bulunamadi');
+}catch(e){rc.innerHTML='<div class="p-6 text-center text-[#EF4444]">Yuklenemedi</div>';fc.innerHTML=''}
 }
 async function loadDFChart(sym){
 dfCurSym=sym;$('dfChartPlaceholder').style.display='none';const c=$('dfChartCanvas');c.style.display='block';c.style.height='100%';const info=$('dfChartInfo');info.style.display='none';

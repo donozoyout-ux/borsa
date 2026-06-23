@@ -479,46 +479,41 @@ def api_hourly(symbol):
 
 @app.route("/api/daily-featured")
 def api_daily_featured():
-    """AI ile günün öne çıkan hisselerini seç (momentum + trend + hacim)"""
+    """Yukselen ve dusen hisseleri ayri ayri dondur"""
     try:
         symbols = load_bist_symbols()
         if not symbols:
-            return jsonify({"error": "Sembol listesi boş"}), 500
-        
-        featured = []
+            return jsonify({"error": "Sembol listesi bos"}), 500
+
         scored = []
-        
-        for s in symbols[:80]:
+
+        for s in symbols[:100]:
             sym = s["symbol"]
             try:
                 hist = get_historical_prices(sym, range_str="5d", interval="1h")
                 if not hist or len(hist) < 10:
                     continue
-                
+
                 prices = [h["Close"] for h in hist]
                 volumes = [h.get("Volume", 0) for h in hist]
-                
-                # Günlük değişim
+
                 open_price = prices[0]
                 close_price = prices[-1]
                 change_pct = (close_price - open_price) / open_price * 100
-                
-                # Hacim ortalaması
+
                 avg_vol = sum(volumes) / len(volumes) if volumes else 0
                 last_vol = volumes[-1] if volumes else 0
                 vol_ratio = last_vol / avg_vol if avg_vol > 0 else 1
-                
-                # Momentum (son 5 saatin trendi)
+
                 recent = prices[-5:] if len(prices) >= 5 else prices
                 momentum = (recent[-1] - recent[0]) / recent[0] * 100 if len(recent) > 1 else 0
-                
-                # Skorlama
+
                 score = 0
                 if change_pct > 0: score += 30
                 if vol_ratio > 1.5: score += 25
                 if momentum > 0: score += 25
                 if vol_ratio > 1 and change_pct > 0: score += 20
-                
+
                 scored.append({
                     "symbol": sym,
                     "name": s["name"],
@@ -530,12 +525,22 @@ def api_daily_featured():
                 })
             except Exception:
                 continue
-        
-        # En yüksek skorlu 6 hisse
-        scored.sort(key=lambda x: x["score"], reverse=True)
-        featured = scored[:6]
-        
-        return jsonify({"featured": featured, "count": len(featured)})
+
+        risers = [x for x in scored if x["change_pct"] > 0]
+        fallers = [x for x in scored if x["change_pct"] < 0]
+
+        risers.sort(key=lambda x: x["score"], reverse=True)
+        fallers.sort(key=lambda x: x["score"], reverse=True)
+
+        risers = risers[:8]
+        fallers = fallers[:8]
+
+        return jsonify({
+            "risers": risers,
+            "fallers": fallers,
+            "risers_count": len(risers),
+            "fallers_count": len(fallers),
+        })
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
