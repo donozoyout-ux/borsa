@@ -6,14 +6,14 @@
 <!-- Sayfa yenileme kaldırıldı, veriler AJAX ile canlı güncelleniyor -->
 <title>BIST Terminal</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet">
 <script>
-tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface":"#131314","surface-container-lowest":"#0e0e0f","on-surface":"#e5e2e2","on-surface-variant":"#c6c6cc","outline":"#909096","primary-container":"#0a0e17","primary":"#c3c6d3","up":"#10B981","down":"#EF4444","blue-accent":"#3B82F6"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem"},fontFamily:{sans:["Inter"],mono:["JetBrains Mono"]}}}}
+tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface":"#131314","surface-container-lowest":"#0e0e0f","on-surface":"#e5e2e2","on-surface-variant":"#c6c6cc","outline":"#909096","primary-container":"#0a0e17","primary":"#c3c6d3","up":"#10B981","down":"#EF4444","blue-accent":"#3B82F6"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem"},fontFamily:{sans:["Rubik"],mono:["JetBrains Mono"]}}}}
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0A0E17;color:#e5e2e2;font-family:'Inter',sans-serif;overflow:hidden;height:100vh;font-weight:400;letter-spacing:-0.01em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{background:#0A0E17;color:#e5e2e2;font-family:'Rubik',sans-serif;overflow:hidden;height:100vh;font-weight:400;letter-spacing:-0.01em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#45464b;border-radius:4px}
@@ -34,11 +34,7 @@ body{background:#0A0E17;color:#e5e2e2;font-family:'Inter',sans-serif;overflow:hi
 .card-hover{transition:all .2s ease}
 .card-hover:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
-.price-row{border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards;letter-spacing:-0.01em}
-.price-row:hover{background:rgba(59,130,246,.04);box-shadow:inset 2px 0 0 #3B82F6}
-.price-row:nth-child(1){animation-delay:0s}
-.price-row:nth-child(2){animation-delay:.03s}
-.price-row:nth-child(3){animation-delay:.06s}
+
 
 .glass{background:rgba(28,33,39,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.06)}
 .solid{background:#1C2127;border:1px solid rgba(255,255,255,.06)}
@@ -65,7 +61,7 @@ body{background:#0A0E17;color:#e5e2e2;font-family:'Inter',sans-serif;overflow:hi
 
 .search-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1C2127;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-height:280px;overflow-y:auto;z-index:50;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:scaleIn .15s ease}
 .search-dropdown.show{display:block}
-.search-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;letter-spacing:-0.01em}
+.search-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;font-family:'Rubik',sans-serif}
 .search-item:last-child{border:none}
 .search-item:hover{background:rgba(59,130,246,.1)}
 .search-item .sym{font-weight:600;color:#e5e2e2;min-width:70px}
@@ -90,10 +86,10 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 @media(max-width:767px){.sidebar{display:none!important}.main{margin-left:0!important}.modal-box{margin:10px;max-height:85vh}}
 
 /* Tab navigation */
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7a8f;cursor:pointer;border-left:3px solid transparent;transition:all .2s ease;border-radius:0 8px 8px 0;margin:2px 0}
-.nav-item:hover{background:rgba(255,255,255,.03);color:#e5e2e2}
-.nav-item.active{background:linear-gradient(90deg,rgba(59,130,246,.12),transparent);color:#60A5FA;border-left-color:#3B82F6;font-weight:800}
-.nav-item .material-symbols-outlined{font-size:20px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:.02em;color:#6b7280;cursor:pointer;border-left:3px solid transparent;transition:all .2s ease;border-radius:0 10px 10px 0;margin:1px 0}
+.nav-item:hover{background:rgba(59,130,246,.06);color:#c6c6cc}
+.nav-item.active{background:linear-gradient(90deg,rgba(59,130,246,.12),transparent);color:#60A5FA;border-left-color:#3B82F6;font-weight:700;box-shadow:inset 0 0 20px rgba(59,130,246,.04)}
+.nav-item .material-symbols-outlined{font-size:20px;font-variation-settings:'FILL'0,'wght'300}
 
 /* Badge status */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
@@ -103,21 +99,19 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 .badge.hold{background:rgba(251,191,36,.12);color:#FBBF24;border:1px solid rgba(251,191,36,.25)}
 .badge.done{background:rgba(107,114,128,.15);color:#9CA3AF;border:1px solid rgba(107,114,128,.25)}
 
-/* Alert row */
-.alert-row{border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards}
-.alert-row:hover{background:rgba(59,130,246,.03);box-shadow:inset 2px 0 0 rgba(59,130,246,.3)}
+
 
 /* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s ease;border:none;letter-spacing:-0.01em}
 .btn:active{transform:scale(.97)}
-.btn-primary{background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;animation:glow 3s infinite}
-.btn-primary:hover{background:linear-gradient(135deg,#60A5FA,#3B82F6);box-shadow:0 4px 20px rgba(59,130,246,.4);transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff}
+.btn-primary:hover{background:linear-gradient(135deg,#60A5FA,#3B82F6);box-shadow:0 4px 16px rgba(59,130,246,.35);transform:translateY(-1px)}
 .btn-up{background:linear-gradient(135deg,#10B981,#059669);color:#fff}
-.btn-up:hover{background:linear-gradient(135deg,#34D399,#10B981);box-shadow:0 4px 20px rgba(16,185,129,.4);transform:translateY(-1px)}
+.btn-up:hover{background:linear-gradient(135deg,#34D399,#10B981);box-shadow:0 4px 16px rgba(16,185,129,.35);transform:translateY(-1px)}
 .btn-down{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff}
-.btn-down:hover{background:linear-gradient(135deg,#F87171,#EF4444);box-shadow:0 4px 20px rgba(239,68,68,.4);transform:translateY(-1px)}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.08);color:#c6c6cc}
-.btn-ghost:hover{background:rgba(255,255,255,.08);color:#e5e2e2;border-color:rgba(255,255,255,.15)}
+.btn-down:hover{background:linear-gradient(135deg,#F87171,#EF4444);box-shadow:0 4px 16px rgba(239,68,68,.35);transform:translateY(-1px)}
+.btn-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#9CA3AF}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:#e5e2e2;border-color:rgba(59,130,246,.2)}
 .btn-sm{padding:6px 12px;font-size:11px}
 
 /* Stats card */
@@ -151,24 +145,58 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 .result-card:nth-child(3){animation-delay:.2s}
 
 /* ── Design System Extras ── */
-.label-caps{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif;line-height:16px}
+.label-caps{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Rubik',sans-serif;line-height:16px}
 .data-md{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;line-height:20px}
 .data-lg{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;line-height:24px}
-.headline-sm{font-size:18px;font-weight:600;line-height:24px;letter-spacing:-.01em}
-.glass-panel{background:rgba(28,33,39,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.06);border-radius:12px}
-.glass-panel-sm{background:rgba(28,33,39,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.06);border-radius:8px}
-.solid-panel{background:#1C2127;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden}
-.section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(28,33,39,.5)}
+.headline-sm{font-size:18px;font-weight:600;line-height:24px;letter-spacing:-.02em}
+.glass-panel{background:rgba(26,30,39,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06);border-radius:14px}
+.glass-panel-sm{background:rgba(26,30,39,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.06);border-radius:10px}
+.solid-panel{background:#161b22;border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(59,130,246,.08);background:linear-gradient(90deg,rgba(59,130,246,.08),transparent)}
 .text-up{color:#10B981}
 .text-down{color:#EF4444}
-.topbar-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:#7a7f8a;transition:all .2s;cursor:pointer}
-.topbar-btn:hover{background:rgba(255,255,255,.06);color:#e5e2e2}
-.topbar-btn .material-symbols-outlined{font-size:20px}
-.tf-btn{padding:6px 14px;font-size:11px;font-weight:600;border-radius:6px;color:#7a7f8a;cursor:pointer;transition:all .15s;border:none;background:transparent}
-.tf-btn:hover{color:#e5e2e2;background:rgba(255,255,255,.04)}
-.tf-btn.active{background:#3B82F6;color:#fff}
+.topbar-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:#6b7280;transition:all .2s;cursor:pointer}
+.topbar-btn:hover{background:rgba(255,255,255,.07);color:#e5e2e2;box-shadow:0 0 12px rgba(59,130,246,.08)}
+.topbar-btn .material-symbols-outlined{font-size:19px}
+.tf-btn{padding:5px 12px;font-size:11px;font-weight:600;border-radius:6px;color:#6b7280;cursor:pointer;transition:all .15s;border:none;background:transparent}
+.tf-btn:hover{color:#e5e2e2;background:rgba(59,130,246,.1)}
+.tf-btn.active{background:linear-gradient(135deg,#3B82F6,#2563EB);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.3)}
 .up{color:#10B981}
 .down{color:#EF4444}
+
+/* ── Price Row Data Table ── */
+.price-table{width:100%;border-collapse:collapse}
+.price-table th{padding:10px 18px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7280;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
+.price-table td{padding:8px 18px;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;cursor:pointer;transition:all .1s}
+.price-table tr:hover td{background:rgba(59,130,246,.05)}
+.price-table .sym{font-weight:600;color:#e5e2e2}
+.price-table .name{color:#6b7280;font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.price-table .pr{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;text-align:right}
+.price-table .chg{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;text-align:right}
+
+/* ── Donut Chart ── */
+.donut-svg{transform:rotate(-90deg)}
+.donut-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:5}
+.donut-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+
+/* ── Glow Effects ── */
+.glow-blue{box-shadow:0 0 20px rgba(59,130,246,.08)}
+.glow-blue:hover{box-shadow:0 0 30px rgba(59,130,246,.15)}
+.glow-green{box-shadow:0 0 20px rgba(16,185,129,.08)}
+.glow-green:hover{box-shadow:0 0 30px rgba(16,185,129,.15)}
+.glow-red{box-shadow:0 0 20px rgba(239,68,68,.08)}
+
+/* ── Alert Card ── */
+.alert-card{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards;cursor:pointer}
+.alert-card:hover{background:rgba(59,130,246,.05)}
+.alert-card .dir-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.alert-card .dir-up{background:rgba(16,185,129,.12);color:#10B981}
+.alert-card .dir-down{background:rgba(239,68,68,.12);color:#EF4444}
+
+/* ─── Portfolio Stats ── */
+.pf-stat{display:flex;flex-direction:column;gap:2px}
+.pf-stat .val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:-.02em}
+.pf-stat .lbl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6b7280}
 </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#0A0E17]">
@@ -244,20 +272,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 </div>
 </div>
 <div class="xl:col-span-4 space-y-4">
-<div class="glass-panel overflow-hidden">
-<div class="px-4 py-3 border-b border-white/5">
-<div class="flex items-center justify-between">
-<span class="label-caps text-[#5a5f6b]">Alarm Botu</span>
-<span id="botStatusBadge" class="badge done">Durduruldu</span>
-</div>
-</div>
-<div class="p-4">
-<button onclick="toggleBot()" id="botMainBtn" class="btn btn-down w-full">Botu Başlat</button>
-<div id="botMiniLogs" class="mt-3 bg-[#0A0E17] rounded-lg p-3 text-[10px] font-mono text-[#5a5f6b] h-28 overflow-y-auto leading-relaxed">
-<div class="flex items-center gap-2"><span class="text-[#45464b]">--:--:--</span> Bot durduruldu</div>
-</div>
-</div>
-</div>
+
 <div class="glass-panel">
 <div class="px-4 py-3 border-b border-white/5">
 <span class="label-caps text-[#5a5f6b]">Hızlı Erişim</span>
@@ -385,11 +400,11 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div id="tab-portfolio" class="tab-content">
 <div class="flex-1 overflow-y-auto p-5">
 <div class="max-w-7xl mx-auto">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Toplam Yatırım</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfTotalCost">0 TL</div></div>
-<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Güncel Değer</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfTotalValue">0 TL</div></div>
-<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Kar/Zarar</div><div class="headline-sm mt-2" id="pfPL">0 TL</div><div class="data-md text-xs mt-1" id="pfPLPct">%0</div></div>
-<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Hisse Adet</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfCount">0</div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+<div class="glass-panel p-4 glow-blue"><div class="pf-stat"><div class="lbl">Toplam Yatırım</div><div class="val" style="color:#94A3B8" id="pfTotalCost">0 TL</div></div></div>
+<div class="glass-panel p-4 glow-green"><div class="pf-stat"><div class="lbl">Güncel Değer</div><div class="val text-up" id="pfTotalValue">0 TL</div></div></div>
+<div class="glass-panel p-4"><div class="pf-stat"><div class="lbl">Kar/Zarar</div><div class="val" id="pfPL">0 TL</div><div class="data-md text-xs text-[#6b7280]" id="pfPLPct">%0</div></div></div>
+<div class="glass-panel p-4"><div class="pf-stat"><div class="lbl">Hisse Adet</div><div class="val" style="color:#E2E8F0" id="pfCount">0</div></div></div>
 </div>
 <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
 <div class="xl:col-span-4">
@@ -699,14 +714,15 @@ try{const r=await fetch('/api/prices/all',{signal:AbortSignal.timeout(15000)});c
 (d.prices||[]).forEach(p=>{plc[p.symbol]=p.price});var count=d.count||0}catch(e){var count=0}
 
 const activeAlerts=new Set(alertsCache.filter(x=>x.active).map(x=>x.symbol));
-html=SYMBOLS.map((s,i)=>{
+html=`<table class="price-table"><thead><tr><th>Sembol</th><th>Şirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Alarm</th></tr></thead><tbody>${
+SYMBOLS.map((s,i)=>{
 const p=plc[s.symbol];const aa=activeAlerts.has(s.symbol);
-return `<div class="price-row" onclick="quickPrice('${s.symbol}')" style="${aa?'box-shadow:inset 3px 0 0 #3B82F6':''}">
-<div class="symbol ${aa?'text-[#60A5FA]':''}">${s.symbol}</div>
-<div class="name">${s.name.slice(0,40)}</div>
-${p!==undefined?`<div class="price text-up">${p.toFixed(2)}</div>`:'<div class="price" style="color:#5a5f6b">—</div>'}
-${aa?'<span class="material-symbols-outlined text-sm text-[#60A5FA]" style="font-variation-settings:\'FILL\'1">notifications_active</span>':''}
-</div>`}).join('');
+return `<tr onclick="quickPrice('${s.symbol}')">
+<td class="sym" style="${aa?'color:#60A5FA':''}">${s.symbol}</td>
+<td class="name">${s.name.slice(0,40)}</td>
+<td class="pr text-up">${p!==undefined?p.toFixed(2):'—'}</td>
+<td style="text-align:right">${aa?'<span class="material-symbols-outlined text-sm text-[#60A5FA]" style="font-variation-settings:\'FILL\'1;font-size:16px">notifications_active</span>':''}</td>
+</tr>`}).join('')}</tbody></table>`;
 c.innerHTML=html||'<div class="p-10 text-center text-[#6b7a8f]">Hisse bulunamadı</div>';
 $('plCount').textContent=count+' canlı';
 }
@@ -947,11 +963,11 @@ const ac=a.filter(x=>x.active).length;
 cnt.textContent=ac+' aktif / '+a.length+' toplam';
 if(!a.length){c.innerHTML='<div class="p-10 text-center text-[#6b7a8f]">Henüz alarm eklenmemiş.<br>Sol panelden ilk alarmını ekle.</div>';return}
 c.innerHTML=a.map((x,i)=>`
-<div class="alert-row flex items-center gap-4 px-5 py-3.5 cursor-pointer" style="animation-delay:${i*0.04}s" onclick="quickPrice('${x.symbol}')">
-<div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm ${x.condition==='above'?'bg-[#10B981]/10 text-[#10B981]':'bg-[#EF4444]/10 text-[#EF4444]'}">${x.condition==='above'?'↑':'↓'}</div>
-<div class="flex-1 min-w-0"><div class="text-sm font-semibold text-[#e5e2e2]">${x.symbol}</div><div class="text-[11px] text-[#6b7a8f] mt-0.5">${x.target_price} TL · %${x.near_percent}${x.note?' · <span class="italic">'+x.note+'</span>':''}</div></div>
-<div class="flex items-center gap-3"><span class="badge ${x.active?'active':'done'}">${x.active?'Aktif':'Bitti'}</span>
-<button onclick="event.stopPropagation();deleteAlert('${x.id}')" class="p-1.5 text-[#6b7a8f] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-all" title="Sil"><span class="material-symbols-outlined text-lg">delete</span></button></div>
+<div class="alert-card" style="animation-delay:${i*0.04}s" onclick="quickPrice('${x.symbol}')">
+<div class="dir-icon ${x.condition==='above'?'dir-up':'dir-down'}">${x.condition==='above'?'↑':'↓'}</div>
+<div class="flex-1 min-w-0"><div class="text-sm font-semibold text-[#e5e2e2]" style="font-family:Rubik,sans-serif">${x.symbol}</div><div class="text-[11px] text-[#6b7280] mt-0.5">${x.target_price} TL · %${x.near_percent}${x.note?' · <span class="italic">'+x.note+'</span>':''}</div></div>
+<div class="flex items-center gap-2"><span class="badge ${x.active?'active':'done'}">${x.active?'Aktif':'Bitti'}</span>
+<button onclick="event.stopPropagation();deleteAlert('${x.id}')" class="p-1.5 text-[#6b7280] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-all" title="Sil"><span class="material-symbols-outlined text-lg">delete</span></button></div>
 </div>`).join('');
 }
 $('alertForm').addEventListener('submit',async e=>{
@@ -987,19 +1003,20 @@ $('pfTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractio
 $('pfTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
 const plEl=$('pfPL');const plPctEl=$('pfPLPct');
 const plClass=d.profit_loss>=0?'text-up':'text-down';
-plEl.className='text-2xl font-bold mt-2 '+plClass;
+plEl.className='val '+plClass;
 plEl.textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
 plPctEl.className='text-xs mt-1 '+plClass;
 plPctEl.textContent=(d.change_pct>=0?'+':'')+d.change_pct.toFixed(2)+' %';
 const c=$('pfList');
 if(!items.length){c.innerHTML='<div class="p-10 text-center text-[#6b7a8f]">Henüz hisse eklenmemiş.<br>Sol panelden portföyüne hisse ekle.</div>';return}
-c.innerHTML=items.map((x,i)=>`
-<div class="price-row" onclick="quickPrice('${x.symbol}')">
-<div class="symbol">${x.symbol}</div>
-<div class="name">${x.quantity} adet</div>
-${x.current_price?`<div class="price text-up">${(x.current_price*x.quantity).toFixed(0)} TL</div><div class="data-md text-[11px] ${x.profit_loss>=0?'text-up':'text-down'}" style="min-width:72px;text-align:right">${x.profit_loss>=0?'+':''}${x.profit_loss_pct.toFixed(1)}%</div>`:'<div class="price" style="color:#5a5f6b">—</div>'}
-<button onclick="event.stopPropagation();deletePF('${x.id}')" class="p-1 text-[#5a5f6b] hover:text-[#EF4444] rounded-lg transition-colors" title="Sil"><span class="material-symbols-outlined text-lg">remove_circle</span></button>
-</div>`).join('')}catch(e){}
+c.innerHTML=`<table class="price-table"><thead><tr><th>Sembol</th><th>Miktar</th><th style="text-align:right">Değer</th><th style="text-align:right">K/Z</th><th></th></tr></thead><tbody>${
+items.map((x,i)=>`
+<tr onclick="quickPrice('${x.symbol}')">
+<td class="sym">${x.symbol}</td>
+<td class="name">${x.quantity} adet</td>
+${x.current_price?`<td class="pr text-up">${(x.current_price*x.quantity).toFixed(0)} TL</td><td class="chg ${x.profit_loss>=0?'text-up':'text-down'}">${x.profit_loss>=0?'+':''}${x.profit_loss_pct.toFixed(1)}%</td>`:'<td class="pr" style="color:#6b7280">—</td><td class="chg">—</td>'}
+<td style="text-align:right"><button onclick="event.stopPropagation();deletePF('${x.id}')" class="p-1 text-[#6b7280] hover:text-[#EF4444] rounded-lg transition-colors" title="Sil"><span class="material-symbols-outlined" style="font-size:16px">remove_circle</span></button></td>
+</tr>`).join('')}</tbody></table>`}catch(e){}
 }
 async function deletePF(id){
 try{await fetch('/api/portfolio/'+id,{method:'DELETE'});showToast('🗑 Silindi');loadPF();}catch(e){}
