@@ -786,10 +786,6 @@ input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value
 input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
 }
 
-input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
-input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value&&dd.children.length)dd.classList.add('show')});
-}
-
 function selectSearch(inputId,dropdownId,symbol,action){
 $(inputId).value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');
 $(dropdownId).classList.remove('show');
