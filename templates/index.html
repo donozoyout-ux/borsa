@@ -213,6 +213,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="nav-item" onclick="switchTab('alerts',this)"><span class="material-symbols-outlined">notifications_active</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Alarmlar</span></div>
 <div class="nav-item" onclick="switchTab('portfolio',this)"><span class="material-symbols-outlined">account_balance_wallet</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Portföy</span></div>
 <div class="nav-item" onclick="switchTab('aianalysis',this)"><span class="material-symbols-outlined">auto_awesome</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">AI Analiz</span></div>
+<div class="nav-item" onclick="switchTab('dailyfeatured',this)"><span class="material-symbols-outlined">whatshot</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Günlük Öne Çıkanlar</span></div>
 </nav>
 <div class="mt-auto pt-4 px-2 border-t border-white/5 flex flex-col gap-0.5">
 <div class="nav-item" onclick="switchTab('settings',this)"><span class="material-symbols-outlined">settings</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Ayarlar</span></div>
@@ -284,6 +285,16 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <button onclick="quickPrice('EREGL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">EREGL</button>
 <button onclick="quickPrice('KCHOL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">KCHOL</button>
 <button onclick="quickPrice('TUPRS')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">TUPRS</button>
+</div>
+</div>
+
+<div class="glass-panel">
+<div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+<span class="label-caps text-[#5a5f6b]">Portföy + Önemli Hisseler</span>
+<button onclick="loadKeyStocksDaily()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
+</div>
+<div id="ksdContainer" class="p-2 max-h-80 overflow-y-auto">
+<div class="p-6 text-center text-[#6b7280] text-xs">Yükleniyor...</div>
 </div>
 </div>
 </div>
@@ -568,6 +579,60 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 </div>
 </div>
 
+<!-- TAB: DAILY FEATURED -->
+<div id="tab-dailyfeatured" class="tab-content">
+<div class="flex-1 overflow-y-auto p-5">
+<div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-5">
+<div class="xl:col-span-8">
+<div class="glass-panel overflow-hidden">
+<div class="section-header">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#F59E0B]" style="font-variation-settings:'FILL'1">whatshot</span>
+<h3 class="label-caps" style="color:#c6c6cc">Günün Öne Çıkanları</h3>
+<span class="label-caps text-[10px] text-[#5a5f6b]" id="dfCount"></span>
+</div>
+<div class="flex items-center gap-2">
+<div class="glass-panel-sm p-0.5 flex gap-0.5">
+<button class="tf-btn active" id="dfTf1d" onclick="setDFTF('1d','1h','dfTf1d')">1G (1S)</button>
+<button class="tf-btn" id="dfTf1h" onclick="setDFTF('1d','5m','dfTf1h')">1G (5DK)</button>
+</div>
+<button onclick="loadDailyFeatured()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
+</div>
+</div>
+<div id="dfContainer"></div>
+</div>
+</div>
+<div class="xl:col-span-4 space-y-4">
+<div class="glass-panel">
+<div class="px-4 py-3 border-b border-white/5">
+<span class="label-caps text-[#5a5f6b]">AI Seçim Kriterleri</span>
+</div>
+<div class="p-4 text-xs text-[#6b7280] space-y-2">
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#10B981]"></span>Günlük değişim pozitif</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#3B82F6]"></span>Hacim ortalama üstü</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>Momentum güçlü</div>
+<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#8B5CF6]"></span>Skor: 0-100</div>
+</div>
+</div>
+<div class="glass-panel">
+<div class="px-4 py-3 border-b border-white/5">
+<span class="label-caps text-[#5a5f6b]">Saatlik Grafik</span>
+</div>
+<div class="p-4">
+<div id="dfChartArea" class="bg-[#0A0E17] rounded-lg border border-white/5 h-64 relative">
+<canvas id="dfChartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
+<div class="absolute inset-0 flex items-center justify-center text-[#5a5f6b] text-sm" id="dfChartPlaceholder">
+<div class="text-center"><span class="material-symbols-outlined text-3xl block mb-2 opacity-40">show_chart</span>Hisse tıkla grafiği gör</div>
+</div>
+<div id="dfChartInfo" class="absolute top-3 left-3 glass-panel-sm px-3 py-2 text-[10px] space-y-1 z-10" style="display:none"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
 <!-- TAB: SETTINGS -->
 <div id="tab-settings" class="tab-content">
 <div class="flex-1 overflow-y-auto p-5">
@@ -608,6 +673,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <script>
 const SYMBOLS=[{% for item in symbols %}{symbol:"{{ item.symbol }}",name:"{{ item.name|e }}"},{% endfor %}];
 let plc={},alertsCache=[],botRunning=false,curRange='1mo',curInterval='1d',curSym='',plTimer=null;
+let dfCurTF='1d',dfCurInterval='1h',dfCurSym='',dfChart=null;
 
 function $(id){return document.getElementById(id)}
 function qs(s){return document.querySelector(s)}
@@ -664,11 +730,12 @@ document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
 if(el)el.classList.add('active');
 $('tab-'+tab).classList.add('active');
-const titles={watchlist:'Fiyatlar',charts:'Grafik',alerts:'Alarmlar',portfolio:'Portföy',settings:'Ayarlar'};
+const titles={watchlist:'Fiyatlar',charts:'Grafik',alerts:'Alarmlar',portfolio:'Portföy',aianalysis:'AI Analiz',dailyfeatured:'Günlük Öne Çıkanlar',settings:'Ayarlar'};
 $('pageTitle').textContent=titles[tab]||'BIST Terminal';
 if(tab==='alerts')loadAlerts();
 if(tab==='settings')refreshLogs();
 if(tab==='portfolio')loadPF();
+if(tab==='dailyfeatured')loadDailyFeatured();
 }
 
 // ── BOT ──
@@ -1140,10 +1207,61 @@ initSearch('aiSearch','aiDropdown','aianalysis');
 initSearch('topSearch','topDropdown','price');
 },100);
 
+// ── DAILY FEATURED ──
+function setDFTF(range,interval,btnId){
+dfCurTF=range;dfCurInterval=interval;
+['dfTf1d','dfTf1h'].forEach(id=>{
+const el=$(id);
+if(el)el.className='tf-btn '+(id===btnId?'active':'');});
+if(dfCurSym)loadDFChart(dfCurSym);
+}
+async function loadDailyFeatured(){
+const c=$('dfContainer');const cnt=$('dfCount');
+c.innerHTML=Array(6).fill(0).map(()=>'<tr class="price-table"><td class="sym"><div class="skel" style="width:50px;height:14px"></div></td><td class="name"><div class="skel" style="width:120px;height:14px"></div></td><td class="pr"><div class="skel" style="width:60px;height:14px"></div></td><td></td></tr>').join('');
+try{const r=await fetch('/api/daily-featured');const d=await r.json();
+cnt.textContent=d.count+' hisse';
+if(!d.featured||!d.featured.length){c.innerHTML='<tr><td colspan="4" class="p-10 text-center text-[#6b7280]">Veri yok</td></tr>';return}
+c.innerHTML=d.featured.map((f,i)=>`<tr class="price-table" onclick="loadDFChart('${f.symbol}')" style="animation-delay:${i*0.04}s">
+<td class="sym" style="color:#F59E0B">${f.symbol}</td>
+<td class="name">${f.name.slice(0,35)}</td>
+<td class="pr ${f.change_pct>=0?'text-up':'text-down'}">${f.price.toFixed(2)} <span class="data-md text-[10px]">${f.change_pct>=0?'+':''}${f.change_pct}%</span></td>
+<td style="text-align:right"><span class="badge ${f.change_pct>=0?'buy':'sell'}">${f.score}</span></td>
+</tr>`).join('');
+}catch(e){c.innerHTML='<tr><td colspan="4" class="p-10 text-center text-[#EF4444]">Yüklenemedi</td></tr>'}
+}
+async function loadDFChart(sym){
+dfCurSym=sym;$('dfChartPlaceholder').style.display='none';const c=$('dfChartCanvas');c.style.display='block';c.style.height='100%';const info=$('dfChartInfo');info.style.display='none';
+try{const r=await fetch('/api/hourly/'+sym);const d=await r.json();
+if(d.prices&&d.prices.length){
+drawChart(c,d.prices,true);
+renderChartInfo(info,d.current_price,d.prices,sym);
+info.style.display='block';
+}else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Saatlik veri yok</span>';}
+}catch(e){info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Hata</span>';}
+}
+async function loadKeyStocksDaily(){
+try{const r=await fetch('/api/key-stocks-daily');const d=await r.json();
+const c=$('ksdContainer');
+if(!d.stocks||!d.stocks.length){c.innerHTML='<div class="p-6 text-center text-[#6b7280]">Portföy/alarm hisseniz yok</div>';return}
+c.innerHTML=d.stocks.map((s,i)=>`<div class="alert-card" style="animation-delay:${i*0.03}s" onclick="quickPrice('${s.symbol}')">
+<div class="dir-icon ${s.change_pct>=0?'dir-up':'dir-down'}">${s.change_pct>=0?'↑':'↓'}</div>
+<div class="flex-1 min-w-0">
+<div class="text-sm font-semibold text-[#e5e2e2]">${s.symbol}</div>
+<div class="text-[11px] text-[#6b7280] mt-0.5">${s.in_portfolio?'📦 Portföy ':''}${s.in_alerts?'🔔 Alarm ':'':''}</div>
+</div>
+<div class="text-right">
+<div class="data-md ${s.change_pct>=0?'text-up':'text-down'}">${s.price.toFixed(2)}</div>
+<div class="data-md text-[11px] ${s.change_pct>=0?'text-up':'text-down'}">${s.change_pct>=0?'+':''}${s.change_pct}%</div>
+</div>
+</div>`).join('');
+}catch(e){}
+}
+
 // ── INIT ──
-loadPL();loadAlerts();checkBot();
+loadPL();loadAlerts();checkBot();loadKeyStocksDaily();
 setInterval(checkBot,5000);
 setInterval(()=>{const a=document.querySelector('.tab-content.active');if(a&&a.id==='tab-watchlist')loadPL()},60000);
+setInterval(loadKeyStocksDaily,300000);
 </script>
 </body>
 </html>

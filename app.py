@@ -442,6 +442,140 @@ def _start_price_cache_refresher():
     t.start()
 
 
+@app.route("/api/hourly/<symbol>")
+def api_hourly(symbol):
+    """1 günlük saatlik veri (1d, 1h)"""
+    clean = symbol.upper().strip().replace(".IS", "")
+    try:
+        chart = get_price_history_chart(clean, "1d", "1h")
+        price = get_price = None
+        try:
+            from bist_data import get_bist_price
+            _price = get_bist_price(clean)
+        except Exception:
+            pass
+        if chart and chart.get("prices"):
+            return jsonify({
+                "symbol": clean,
+                "current_price": _price,
+                "prices": chart["prices"]
+            })
+        return jsonify({"error": "Saatlik veri yok"}), 502
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/daily-featured")
+def api_daily_featured():
+    """AI ile günün öne çıkan hisselerini seç (momentum + trend + hacim)"""
+    try:
+        symbols = load_bist_symbols()
+        if not symbols:
+            return jsonify({"error": "Sembol listesi boş"}), 500
+        
+        featured = []
+        scored = []
+        
+        for s in symbols[:80]:
+            sym = s["symbol"]
+            try:
+                hist = get_historical_prices(sym, range_str="5d", interval="1h")
+                if not hist or len(hist) < 10:
+                    continue
+                
+                prices = [h["Close"] for h in hist]
+                volumes = [h.get("Volume", 0) for h in hist]
+                
+                # Günlük değişim
+                open_price = prices[0]
+                close_price = prices[-1]
+                change_pct = (close_price - open_price) / open_price * 100
+                
+                # Hacim ortalaması
+                avg_vol = sum(volumes) / len(volumes) if volumes else 0
+                last_vol = volumes[-1] if volumes else 0
+                vol_ratio = last_vol / avg_vol if avg_vol > 0 else 1
+                
+                # Momentum (son 5 saatin trendi)
+                recent = prices[-5:] if len(prices) >= 5 else prices
+                momentum = (recent[-1] - recent[0]) / recent[0] * 100 if len(recent) > 1 else 0
+                
+                # Skorlama
+                score = 0
+                if change_pct > 0: score += 30
+                if vol_ratio > 1.5: score += 25
+                if momentum > 0: score += 25
+                if vol_ratio > 1 and change_pct > 0: score += 20
+                
+                scored.append({
+                    "symbol": sym,
+                    "name": s["name"],
+                    "price": close_price,
+                    "change_pct": round(change_pct, 2),
+                    "volume_ratio": round(vol_ratio, 2),
+                    "momentum": round(momentum, 2),
+                    "score": score
+                })
+            except Exception:
+                continue
+        
+        # En yüksek skorlu 6 hisse
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        featured = scored[:6]
+        
+        return jsonify({"featured": featured, "count": len(featured)})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/key-stocks-daily")
+def api_key_stocks_daily():
+    """Portföy + izleme listesi hisselerinin günlük değişimleri"""
+    try:
+        portfolio = load_portfolio()
+        alerts = load_alerts()
+        all_symbols = set()
+        
+        for item in portfolio:
+            all_symbols.add(item["symbol"])
+        for a in alerts:
+            if a.get("active", True):
+                all_symbols.add(a["symbol"])
+        
+        if not all_symbols:
+            return jsonify({"stocks": []})
+        
+        results = []
+        for sym in list(all_symbols)[:20]:
+            try:
+                hist = get_historical_prices(sym, range_str="5d", interval="1d")
+                if not hist or len(hist) < 2:
+                    continue
+                open_price = hist[0]["Close"]
+                close_price = hist[-1]["Close"]
+                change_pct = (close_price - open_price) / open_price * 100
+                
+                in_pf = any(i["symbol"] == sym for i in portfolio)
+                in_alert = any(a["symbol"] == sym for a in alerts if a.get("active", True))
+                
+                results.append({
+                    "symbol": sym,
+                    "price": round(close_price, 2),
+                    "change_pct": round(change_pct, 2),
+                    "in_portfolio": in_pf,
+                    "in_alerts": in_alert
+                })
+            except Exception:
+                continue
+        
+        # Portföy hisseleri önce, sonra alarm hisseleri, sonra değişime göre
+        results.sort(key=lambda x: (not x["in_portfolio"], not x["in_alerts"], -x["change_pct"]))
+        
+        return jsonify({"stocks": results})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 if __name__ == "__main__":
     _load_logs()
     _start_price_cache_refresher()
