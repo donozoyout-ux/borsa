@@ -1194,8 +1194,9 @@ if(a){const id=a.id;
 if(id==='tab-watchlist')loadPL();
 else if(id==='tab-alerts')loadAlerts();
 else if(id==='tab-portfolio')loadPF();
+else if(id==='tab-dailyfeatured')loadDailyFeatured();
 else if(id==='tab-settings')refreshLogs();
-showToast('🔄 Yenilendi')}}
+showToast('Yenilendi')}}
 
 // ── INIT SEARCHES ──
 setTimeout(()=>{
@@ -1222,7 +1223,7 @@ try{const r=await fetch('/api/daily-featured');const d=await r.json();
 cnt.textContent=d.count+' hisse';
 if(!d.featured||!d.featured.length){c.innerHTML='<div class="p-10 text-center text-[#6b7280]">Veri yok</div>';return}
 var h='<table class="price-table"><thead><tr><th>Sembol</th><th>Şirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Skor</th></tr></thead><tbody>';
-for(var i=0;i<d.featured.length;i++){var f=d.featured[i];var pCls=f.change_pct>=0?'text-up':'text-down';var bCls=f.change_pct>=0?'buy':'sell';h+='<tr onclick="loadDFChart(\''+f.symbol+'\')"><td class="sym" style="color:#F59E0B">'+f.symbol+'</td><td class="name">'+f.name.slice(0,35)+'</td><td class="pr '+pCls+'">'+f.price.toFixed(2)+' <span class="data-md text-[10px] '+(f.change_pct>=0?'+':'')+f.change_pct+'%</span></td><td style="text-align:right"><span class="badge '+bCls+'">'+f.score+'</span></td></tr>';}
+for(var i=0;i<d.featured.length;i++){var f=d.featured[i];var pCls=f.change_pct>=0?'text-up':'text-down';var bCls=f.change_pct>=0?'buy':'sell';h+='<tr onclick="loadDFChart(\''+f.symbol+'\')"><td class="sym" style="color:#F59E0B">'+f.symbol+'</td><td class="name">'+f.name.slice(0,35)+'</td><td class="pr '+pCls+'">'+f.price.toFixed(2)+' <span class="data-md text-[10px]">'+(f.change_pct>=0?'+':'')+f.change_pct+'%</span></td><td style="text-align:right"><span class="badge '+bCls+'">'+f.score+'</span></td></tr>';}
 h+='</tbody></table>';c.innerHTML=h;
 }catch(e){c.innerHTML='<div class="p-10 text-center text-[#EF4444]">Yüklenemedi</div>'}
 }
