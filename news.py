@@ -264,6 +264,44 @@ def get_stock_news(symbol: str, max_items: int = 10) -> list[dict]:
         except Exception:
             continue
 
+    # Haber yoksa Google News ile daha genis tarama yap (14 gun)
+    if len(all_items) < 3:
+        clean = symbol.strip().upper().replace(".IS", "")
+        broader_queries = [f"{clean}", f"{clean}.IS", clean]
+        for q in broader_queries:
+            url = f"https://news.google.com/rss/search?q={q}&hl=tr&gl=TR&ceid=TR:tr"
+            try:
+                resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=8)
+                if resp.status_code != 200:
+                    continue
+                root = ET.fromstring(resp.content)
+                for item in root.findall(".//item"):
+                    title = (item.findtext("title") or "").strip()
+                    if not title or title in seen_titles:
+                        continue
+                    seen_titles.add(title)
+                    link = item.findtext("link") or ""
+                    pub_date = item.findtext("pubDate") or ""
+                    dt = _parse_date(pub_date)
+                    now = datetime.now(timezone.utc)
+                    if dt and dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
+                    if dt and (now - dt) > timedelta(days=14):
+                        continue
+                    all_items.append({
+                        "title": title,
+                        "link": link,
+                        "source": "Google News",
+                        "date": _format_date(dt),
+                        "_dt": dt,
+                    })
+                    if len(all_items) >= max_items:
+                        break
+            except Exception:
+                continue
+            if len(all_items) >= max_items:
+                break
+
     # Tarihe göre sırala (en yeniler üstte)
     def sort_key(item):
         dt = item.get("_dt")

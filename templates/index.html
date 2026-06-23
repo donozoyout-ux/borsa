@@ -308,7 +308,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 <!-- TAB: CHARTS -->
 <div id="tab-charts" class="tab-content">
-  <div class="flex-1 flex flex-col p-5">
+  <div class="flex-1 flex flex-col p-5" style="padding-bottom:80px">
     <div class="flex items-center gap-3 mb-4 flex-wrap">
       <div class="search-wrap flex-1 max-w-xs">
         <span class="material-symbols-outlined icon">search</span>
@@ -316,8 +316,11 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
         <div id="cDropdown" class="search-dropdown"></div>
       </div>
       <button onclick="loadChart()" class="btn btn-primary">Grafik Yukle</button>
+      <span id="chartWlBtn" class="hidden">
+        <span class="wl-star" style="font-size:24px;cursor:pointer" onclick="if(curSym){toggleWL(curSym);updateChartWlBtn()}">&#9733;</span>
+      </span>
       <div class="glass-panel-sm p-0.5 flex gap-0.5">
-        <button class="tf-btn" id="tf1d" onclick="setTF('5d','15m','tf1d')">1G</button>
+        <button class="tf-btn" id="tf1d" onclick="setTF('1d','5m','tf1d')">1G</button>
         <button class="tf-btn" id="tf1w" onclick="setTF('1mo','1d','tf1w')">1H</button>
         <button class="tf-btn active" id="tf1mo" onclick="setTF('3mo','1d','tf1mo')">1A</button>
         <button class="tf-btn" id="tf3mo" onclick="setTF('6mo','1d','tf3mo')">3A</button>
@@ -328,34 +331,34 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
     <div class="flex gap-4 flex-1 min-h-0">
       <div id="leftPanel" class="w-80 shrink-0 hidden flex-col gap-3 overflow-y-auto">
         <div id="aiPanel" class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#C3C6D3]" style="font-variation-settings:'FILL'1">auto_awesome</span><h4 class="label-caps" style="color:#C6C6CC;font-size:10px">AI Yapay Zeka Analizi</h4></div>
-          <div id="aiContent" class="text-xs leading-relaxed text-[#C6C6CC] whitespace-pre-line"></div>
-          <div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#C3C6D3] border-t-transparent rounded-full animate-spin"></div><div class="label-caps text-[10px] text-[#909096] mt-2" style="font-size:10px">AI analiz hazirlaniyor...</div></div>
+          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#C3C6D3]" style="font-variation-settings:'FILL'1">auto_awesome</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">AI Yapay Zeka Analizi</h4></div>
+          <div id="aiContent" class="text-sm leading-relaxed text-[#C6C6CC] whitespace-pre-line"></div>
+          <div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#C3C6D3] border-t-transparent rounded-full animate-spin"></div><div class="label-caps text-[10px] text-[#909096] mt-2">AI analiz hazirlaniyor...</div></div>
         </div>
         <div id="newsPanel" class="glass-panel p-4 hidden">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">newspaper</span><h4 class="label-caps" style="color:#C6C6CC;font-size:10px">Haberler</h4></div>
-          <div id="newsContent" class="text-xs space-y-2"></div>
+          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">newspaper</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Haberler</h4></div>
+          <div id="newsContent" class="text-sm space-y-2.5"></div>
         </div>
         <div id="fundPanel" class="glass-panel p-4 hidden">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">account_balance</span><h4 class="label-caps" style="color:#C6C6CC;font-size:10px">Temel Analiz</h4></div>
-          <div id="fundContent" class="text-xs space-y-1.5"></div>
+          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">account_balance</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Temel Analiz</h4></div>
+          <div id="fundContent" class="text-sm space-y-2"></div>
         </div>
       </div>
-      <div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea">
+      <div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea" style="min-height:400px">
         <div class="absolute inset-0 flex items-center justify-center text-[#45464B] text-sm" id="chartPlaceholder">
-          <div class="text-center"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30" style="font-variation-settings:'FILL'1">monitoring</span><div class="headline-sm" style="font-size:15px;color:#45464B">Hisse secip "Grafik Yukle" butonuna tikla</div></div>
+          <div class="text-center"><span class="material-symbols-outlined text-5xl block mb-3 opacity-30" style="font-variation-settings:'FILL'1">monitoring</span><div class="headline-sm" style="font-size:16px;color:#45464B">Hisse secip "Grafik Yukle" butonuna tikla</div></div>
         </div>
         <canvas id="chartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
-        <div id="chartInfo" class="absolute top-4 left-4 glass-panel-sm px-4 py-3 text-xs space-y-1.5 z-10" style="display:none"></div>
+        <div id="chartInfo" class="absolute top-4 left-4 glass-panel-sm px-4 py-3 text-sm space-y-1.5 z-10" style="display:none"></div>
       </div>
-      <div id="analysisPanel" class="w-64 shrink-0 hidden flex-col gap-3 overflow-y-auto">
+      <div id="analysisPanel" class="w-72 shrink-0 hidden flex-col gap-3 overflow-y-auto">
         <div class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">insights</span><h4 class="label-caps" style="color:#C6C6CC;font-size:10px">Trend</h4></div>
-          <div id="trendContent" class="text-xs space-y-2"></div>
+          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">insights</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Trend</h4></div>
+          <div id="trendContent" class="text-sm space-y-2"></div>
         </div>
         <div class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">analytics</span><h4 class="label-caps" style="color:#C6C6CC;font-size:10px">Sinyaller</h4></div>
-          <div id="signalContent" class="text-xs space-y-1.5"></div>
+          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">analytics</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Sinyaller</h4></div>
+          <div id="signalContent" class="text-sm space-y-1.5"></div>
         </div>
       </div>
     </div>
@@ -487,13 +490,13 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
             <span class="material-symbols-outlined text-sm">auto_awesome</span> Hisseyi Analiz Et
           </button>
         </div>
-        <div class="flex gap-1.5 mt-3 flex-wrap">
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('THYAO')">THYAO</span>
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('GARAN')">GARAN</span>
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('ASELS')">ASELS</span>
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('EREGL')">EREGL</span>
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('KCHOL')">KCHOL</span>
-          <span class="label-caps text-[9px] text-[#909096] px-2 py-0.5 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('TUPRS')">TUPRS</span>
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('THYAO')">THYAO</span>
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('GARAN')">GARAN</span>
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('ASELS')">ASELS</span>
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('EREGL')">EREGL</span>
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('KCHOL')">KCHOL</span>
+          <span class="label-caps text-[11px] text-[#909096] px-3 py-1 bg-white/5 rounded-full cursor-pointer hover:bg-[#C3C6D3]/10 hover:text-[#C3C6D3] transition-all" onclick="quickAI('TUPRS')">TUPRS</span>
         </div>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -501,7 +504,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           <div id="aiResultArea" class="hidden">
             <div class="solid rounded-xl p-5 glow-card">
               <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span><span class="label-caps text-[#909096]">AI Hisse Analizi</span></div>
-              <div id="aiResultText" class="text-sm leading-7 whitespace-pre-line text-[#C6C6CC]"></div>
+              <div id="aiResultText" class="text-base leading-7 whitespace-pre-line text-[#C6C6CC]"></div>
             </div>
             <div id="aiResultNews" class="hidden solid rounded-xl p-5">
               <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#C3C6D3]">newspaper</span><h4 class="label-caps text-[#909096]">Ilgili Haberler</h4></div>
@@ -513,7 +516,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
               <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL'1">candlestick_chart</span>
             </div>
             <div class="text-sm font-medium text-[#E5E2E2]">Hisse Analizi Icin Hazir</div>
-            <div class="text-xs mt-1.5 text-[#909096]">Yukaridaki alandan hisse sec ve "Analiz Et"</div>
+            <div class="text-sm mt-1.5 text-[#909096]">Yukaridaki alandan hisse sec ve "Analiz Et"</div>
             <div class="grid grid-cols-2 gap-2 max-w-xs mx-auto mt-4 text-left">
               <div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#C3C6D3]">Teknik</div><div class="text-[9px] text-[#909096] mt-0.5">RSI, MACD, SMA/EMA</div></div>
               <div class="bg-white/5 rounded-lg p-2.5"><div class="text-[10px] font-bold text-[#10B981]">Temel</div><div class="text-[9px] text-[#909096] mt-0.5">F/K, Beta, Temettu</div></div>
@@ -560,7 +563,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           </div>
           <div id="imgResultArea" class="hidden solid rounded-xl p-5 glow-card-green">
             <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#10B981]" style="font-variation-settings:'FILL'1">check_circle</span><span class="label-caps text-[#909096]">Gorsel Analiz Sonucu</span></div>
-            <div id="imgResultText" class="text-sm leading-7 whitespace-pre-line text-[#C6C6CC]"></div>
+            <div id="imgResultText" class="text-base leading-7 whitespace-pre-line text-[#C6C6CC]"></div>
           </div>
           <div id="imgPlaceholder" class="text-center py-8 text-[#909096]">
             <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981]/10 to-[#10B981]/5 mb-3">
@@ -667,8 +670,8 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           <button onclick="testTelegram()" class="btn btn-ghost btn-sm flex items-center gap-1" style="color:#10B981"><span class="material-symbols-outlined text-sm">send</span>Test</button>
         </div>
       </div>
-      <div class="md:col-span-2 glass-panel p-4"><h3 class="label-caps mb-2" style="color:#C6C6CC">BIST Terminal v2.1</h3>
-        <p class="text-sm text-[#909096]">Flask + Tailwind CSS ile gelistirilmis profesyonel BIST hisse takip platformu. Gercek zamanli fiyat verisi, teknik indikatorler (RSI, MACD, SMA/EMA), Telegram bildirimli alarm sistemi. Bot otomatik baslatilir ve 60 saniyede bir alarm kontrol eder.</p>
+      <div class="md:col-span-2 glass-panel p-4"><h3 class="label-caps mb-2" style="color:#C6C6CC">BIST Terminal v3.0</h3>
+        <p class="text-sm text-[#909096] leading-relaxed">Flask + Tailwind CSS ile gelistirilmis profesyonel BIST hisse takip platformu. Gercek zamanli fiyat verisi, teknik indikatorler (RSI, MACD, SMA/EMA), coklu AI analiz (Groq Llama3/Mixtral), Telegram bildirimli alarm sistemi. Bot piyasa saatlerinde otomatik baslatilir.</p>
       </div>
     </div>
   </div>
@@ -736,14 +739,17 @@ let hideTimer=null;
 input.addEventListener('input',function(){
 const q=this.value.toUpperCase().trim();
 if(!q){dd.classList.remove('show');dd.innerHTML='';return}
-const matches=SYMBOLS.filter(s=>s.symbol.includes(q)||s.name.toUpperCase().includes(q)).slice(0,15);
+const prefixMatches=SYMBOLS.filter(s=>s.symbol.startsWith(q));
+const containsMatches=SYMBOLS.filter(s=>!s.symbol.startsWith(q)&&(s.symbol.includes(q)||s.name.toUpperCase().includes(q)));
+const matches=[...prefixMatches,...containsMatches].slice(0,20);
 if(!matches.length){dd.innerHTML='<div class="search-empty">Eslesm bulunamadi</div>';dd.classList.add('show');return}
 dd.innerHTML=matches.map((m,mi)=>{
 const p=plc[m.symbol];
+const isPrefix=m.symbol.startsWith(q);
 const priceStr=p!==undefined?`<span class="price ${p>=plc[matches[0]?.symbol]||!plc[matches[0]?.symbol]?'up':'down'}">${p.toFixed(2)}</span>`:'<span class="price" style="color:#909096">—</span>';
-return `<div class="search-item" style="animation-delay:${mi*0.03}s" onclick="selectSearch('${inputId}','${dropdownId}','${m.symbol}','${onSelect}')">
+return `<div class="search-item" style="animation-delay:${mi*0.02}s;${isPrefix?'border-left:2px solid #C3C6D3':''}" onclick="selectSearch('${inputId}','${dropdownId}','${m.symbol}','${onSelect}')">
 <span class="sym">${m.symbol}</span>
-<span class="name">${m.name.slice(0,35)}</span>
+<span class="name">${m.name.slice(0,40)}</span>
 ${priceStr}
 </div>`}).join('');
 dd.classList.add('show');
@@ -870,12 +876,18 @@ if(!curSym){curSym=$('cSearch').value.split('—')[0].trim();if(!curSym||curSym.
 $('chartPlaceholder').style.display='none';const c=$('chartCanvas');c.style.display='block';c.style.height='100%';const info=$('chartInfo');info.style.display='none';
 try{
 const params='?range='+curRange+'&interval='+curInterval;
-const [pr,cr,an]=await Promise.all([
+const [pr,cr]=await Promise.all([
 fetch('/api/price/'+curSym).then(r=>r.json()),
 fetch('/api/chart/'+curSym+params).then(r=>r.json()),
-fetch('/api/analysis/'+curSym).then(r=>r.json()).catch(()=>({}))
 ]);
-if(cr.prices&&cr.prices.length){$('leftPanel').classList.remove('hidden');drawChart(c,cr.prices,true);renderChartInfo(info,pr.price,cr.prices,curSym);renderAnalysis(an);}
+let chartData=cr;
+if((!cr.prices||!cr.prices.length)&&curRange==='1d'&&curInterval==='5m'){
+const fb=await fetch('/api/chart/'+curSym+'?range=5d&interval=1d').then(r=>r.json());
+if(fb.prices&&fb.prices.length)chartData=fb;
+}
+let an={};
+try{an=await fetch('/api/analysis/'+curSym).then(r=>r.json())}catch(e){}
+if(chartData.prices&&chartData.prices.length){$('leftPanel').classList.remove('hidden');drawChart(c,chartData.prices,true);renderChartInfo(info,pr.price,chartData.prices,curSym);renderAnalysis(an);}
 else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Veri alinamadi</span>';$('leftPanel').classList.add('hidden')}
 }catch(e){showToast('Grafik yuklenemedi')}
 }
@@ -1142,7 +1154,13 @@ if(j.ok)showToast('Portfoy Telegrama gonderildi');else showToast(j.error||'Hata'
 }catch(e){showToast('Telegram gonderilemedi')}
 }
 
-function quickPrice(s){curSym=s;switchTab('charts',document.querySelectorAll('.nav-btn')[1]);$('cSearch').value=s+' — '+(SYMBOLS.find(x=>x.symbol===s)?.name||'');$('analysisPanel').classList.remove('hidden');$('leftPanel').classList.remove('hidden');loadChart();}
+function quickPrice(s){curSym=s;switchTab('charts',document.querySelectorAll('.nav-btn')[1]);$('cSearch').value=s+' — '+(SYMBOLS.find(x=>x.symbol===s)?.name||'');$('analysisPanel').classList.remove('hidden');$('leftPanel').classList.remove('hidden');updateChartWlBtn();loadChart();}
+function updateChartWlBtn(){
+if(!curSym){$('chartWlBtn').classList.add('hidden');return}
+$('chartWlBtn').classList.remove('hidden');
+const star=$('chartWlBtn').querySelector('.wl-star');
+if(star){star.className='wl-star '+(isWL(curSym)?'active':'');}
+}
 function openChart(sym,modal){
 if(!modal){curSym=sym;switchTab('charts',document.querySelectorAll('.nav-btn')[1]);$('cSearch').value=sym+' — '+(SYMBOLS.find(x=>x.symbol===sym)?.name||'');setTimeout(loadChart,300);return}
 $('modalTitle').textContent=sym+' — Grafik';$('chartModal').classList.add('open');

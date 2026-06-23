@@ -21,7 +21,7 @@ from bist_data import (
     _load_file_cache,
 )
 from indicators import calculate_all, analyze_trend
-from ai_analysis import get_ai_analysis, analyze_image
+from ai_analysis import get_ai_analysis, get_multi_ai_analysis, analyze_image
 from news import get_stock_news, get_fundamentals, parse_fundamentals
 
 app = Flask(__name__)
@@ -268,6 +268,34 @@ def api_news(symbol):
     clean = symbol.upper().strip().replace(".IS", "")
     news = get_stock_news(clean, 10)
     return jsonify(news)
+
+
+@app.route("/api/analysis/<symbol>/multi")
+def api_analysis_multi(symbol):
+    clean = symbol.upper().strip().replace(".IS", "")
+    hist = get_historical_prices(clean, range_str="6mo", interval="1d")
+    if not hist:
+        hist = get_historical_prices(clean, range_str="3mo", interval="1d")
+    if not hist:
+        return jsonify({"error": f"{symbol} icin veri alinamadi"}), 502
+    try:
+        indicators_result = calculate_all(hist)
+        trend_result = analyze_trend(hist)
+        current_price = indicators_result.get("current_price")
+        news = get_stock_news(clean, 5)
+        raw_fund = get_fundamentals(clean)
+        fund = parse_fundamentals(raw_fund) if raw_fund else {"has_data": False}
+        result = get_multi_ai_analysis(clean, current_price, indicators_result, trend_result, fund, news)
+        return jsonify({
+            "symbol": clean,
+            "indicators": indicators_result,
+            "trend": trend_result,
+            "news": news,
+            "fundamentals": fund,
+            **result,
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/api/fundamentals/<symbol>")
