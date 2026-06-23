@@ -28,7 +28,7 @@ body{background:#0A0E17;color:#e5e2e2;font-family:'Rubik',sans-serif;overflow:hi
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-.tab-content{display:none;height:100%}
+.tab-content{display:none;flex:1;min-height:0;overflow:hidden}
 .tab-content.active{display:flex;flex-direction:column;animation:fadeSlide .25s ease}
 
 .card-hover{transition:all .2s ease}
