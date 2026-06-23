@@ -184,8 +184,18 @@ def api_price(symbol):
 def api_prices_all():
     prices, cache_time = get_all_cached_prices()
     age = int(time.time() - cache_time) if cache_time else -1
+    # Cache bossa veya 60 sn eskiyse arka planda yenile
+    if age < 0 or age > 60:
+        threading.Thread(target=_safe_refresh_prices, daemon=True).start()
     results = [{"symbol": s, "price": p} for s, p in prices.items() if p is not None]
     return jsonify({"prices": results, "count": len(results), "cache_age": age})
+
+
+def _safe_refresh_prices():
+    try:
+        refresh_all_prices()
+    except Exception:
+        pass
 
 
 @app.route("/api/chart/<symbol>")

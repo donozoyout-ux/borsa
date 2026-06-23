@@ -58,19 +58,19 @@ body{background:#0A0E17;color:#E5E2E2;font-family:'Inter',sans-serif;overflow:hi
 
 /* Search */
 .search-wrap{position:relative}
-.search-wrap input{width:100%;background:#0A0E17;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px 10px 34px;font-size:12px;color:#E5E2E2;outline:none;transition:all .2s;font-family:'Inter',sans-serif}
+.search-wrap input{width:100%;background:#0A0E17;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px 10px 34px;font-size:13px;color:#E5E2E2;outline:none;transition:all .2s;font-family:'Inter',sans-serif}
 .search-wrap input:focus{border-color:#C3C6D3;box-shadow:0 0 0 3px rgba(195,198,211,.1)}
 .search-wrap input::placeholder{color:#909096}
 .search-wrap .icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#909096;font-size:18px}
 
 .search-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1C2127;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-height:280px;overflow-y:auto;z-index:50;display:none;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:scaleIn .15s ease}
 .search-dropdown.show{display:block}
-.search-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;font-family:'Inter',sans-serif}
+.search-item{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;font-family:'Inter',sans-serif}
 .search-item:last-child{border:none}
 .search-item:hover{background:rgba(195,198,211,.06)}
-.search-item .sym{font-weight:600;color:#E5E2E2;min-width:70px}
-.search-item .name{color:#909096;font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.search-item .price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+.search-item .sym{font-weight:700;color:#E5E2E2;min-width:75px;font-size:14px}
+.search-item .name{color:#909096;font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-item .price{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
 .search-item .price.up{color:#10B981}
 .search-item .price.down{color:#EF4444}
 .search-empty{padding:20px;text-align:center;color:#909096;font-size:12px;animation:fadeSlide .2s ease}
@@ -96,7 +96,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 .btn-sm{padding:6px 12px;font-size:11px}
 
 /* Badge */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
 .badge.active{background:rgba(16,185,129,.12);color:#34D399;border:1px solid rgba(16,185,129,.25)}
 .badge.buy{background:rgba(16,185,129,.12);color:#34D399;border:1px solid rgba(16,185,129,.25)}
 .badge.sell{background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.25)}
@@ -108,32 +108,41 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 .tf-btn.active{background:#C3C6D3;color:#0A0E17;font-weight:700}
 
 /* Data typography */
-.label-caps{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif;line-height:16px}
-.data-md{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;line-height:20px}
-.data-lg{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;line-height:24px}
-.headline-sm{font-size:18px;font-weight:600;line-height:24px;letter-spacing:-.02em}
+.label-caps{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif;line-height:18px}
+.data-md{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;line-height:22px}
+.data-lg{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;line-height:26px}
+.headline-sm{font-size:20px;font-weight:600;line-height:28px;letter-spacing:-.02em}
 
 /* Price table */
 .price-table{width:100%;border-collapse:collapse}
-.price-table th{padding:10px 18px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#909096;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
-.price-table td{padding:8px 18px;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;cursor:pointer;transition:all .1s}
+.price-table th{padding:12px 18px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#909096;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
+.price-table td{padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.03);font-size:14px;cursor:pointer;transition:all .1s}
 .price-table tr:hover td{background:rgba(195,198,211,.04)}
-.price-table .sym{font-weight:600;color:#E5E2E2}
-.price-table .name{color:#909096;font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.price-table .pr{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;text-align:right}
-.price-table .chg{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;text-align:right}
+.price-table .sym{font-weight:700;color:#E5E2E2;font-size:14px;letter-spacing:.02em}
+.price-table .name{color:#909096;font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.price-table .pr{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;text-align:right}
+.price-table .chg{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;text-align:right}
+
+/* Watchlist star */
+.wl-star{cursor:pointer;color:#45464B;transition:all .2s;font-size:18px;-webkit-tap-highlight-color:transparent;user-select:none;padding:2px}
+.wl-star:hover{color:#EAB308;transform:scale(1.2)}
+.wl-star.active{color:#EAB308;font-variation-settings:'FILL'1}
+.wl-filter-btn{padding:6px 14px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;transition:all .2s;border:none;font-family:'Inter',sans-serif}
+.wl-filter-btn.active{background:rgba(234,179,8,.12);color:#EAB308;border:1px solid rgba(234,179,8,.25)}
+.wl-filter-btn:not(.active){background:rgba(255,255,255,.04);color:#909096;border:1px solid rgba(255,255,255,.06)}
+.wl-filter-btn:not(.active):hover{background:rgba(255,255,255,.08);color:#E5E2E2}
 
 /* Alert card */
-.alert-card{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards;cursor:pointer}
+.alert-card{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:all .2s;animation:slideUp .3s ease backwards;cursor:pointer}
 .alert-card:hover{background:rgba(195,198,211,.04)}
-.alert-card .dir-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.alert-card .dir-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
 .alert-card .dir-up{background:rgba(16,185,129,.1);color:#10B981}
 .alert-card .dir-down{background:rgba(239,68,68,.1);color:#EF4444}
 
 /* Portfolio stats */
-.pf-stat{display:flex;flex-direction:column;gap:2px}
-.pf-stat .val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:-.02em}
-.pf-stat .lbl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#909096}
+.pf-stat{display:flex;flex-direction:column;gap:3px}
+.pf-stat .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.pf-stat .lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#909096}
 
 /* Glow effects */
 .glow-card{border:1px solid rgba(195,198,211,.08);transition:all .3s}
@@ -242,7 +251,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 <!-- TAB: WATCHLIST -->
 <div id="tab-watchlist" class="tab-content active">
-  <div class="flex-1 overflow-y-auto p-5">
+  <div class="flex-1 overflow-y-auto p-5" style="padding-bottom:80px">
     <div class="max-w-7xl mx-auto">
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
         <div class="xl:col-span-8">
@@ -254,6 +263,9 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
                 <span class="label-caps text-[10px] text-[#45464B]" id="plCount"></span>
               </div>
               <div class="flex items-center gap-2">
+                <button onclick="toggleWLFilter()" class="wl-filter-btn" id="wlFilterBtn">
+                  <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">star</span> Takip Listesi
+                </button>
                 <div class="search-wrap w-56">
                   <span class="material-symbols-outlined icon">search</span>
                   <input id="plSearch" autocomplete="off" placeholder="Hisse ara...">
@@ -268,20 +280,20 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
         <div class="xl:col-span-4 space-y-4">
           <div class="glass-panel">
             <div class="px-4 py-3 border-b border-white/5">
-              <span class="label-caps text-[#909096]">Hizli Erisim</span>
+              <span class="label-caps text-[#909096]" style="font-size:13px">Hizli Erisim</span>
             </div>
             <div class="p-4 flex flex-wrap gap-2">
-              <button onclick="quickPrice('THYAO')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">THYAO</button>
-              <button onclick="quickPrice('GARAN')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">GARAN</button>
-              <button onclick="quickPrice('AKBNK')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">AKBNK</button>
-              <button onclick="quickPrice('EREGL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">EREGL</button>
-              <button onclick="quickPrice('KCHOL')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">KCHOL</button>
-              <button onclick="quickPrice('TUPRS')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">TUPRS</button>
+              <button onclick="quickPrice('THYAO')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">THYAO</button>
+              <button onclick="quickPrice('GARAN')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">GARAN</button>
+              <button onclick="quickPrice('AKBNK')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">AKBNK</button>
+              <button onclick="quickPrice('EREGL')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">EREGL</button>
+              <button onclick="quickPrice('KCHOL')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">KCHOL</button>
+              <button onclick="quickPrice('TUPRS')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">TUPRS</button>
             </div>
           </div>
           <div class="glass-panel">
             <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-              <span class="label-caps text-[#909096]">Portfoy + Onemli Hisseler</span>
+              <span class="label-caps text-[#909096]" style="font-size:13px">Portfoy + Onemli Hisseler</span>
               <button onclick="loadKeyStocksDaily()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
             </div>
             <div id="ksdContainer" class="p-2 max-h-80 overflow-y-auto">
@@ -695,6 +707,22 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 const SYMBOLS={{ symbols|tojson|safe }};
 let plc={},alertsCache=[],botRunning=false,curRange='1mo',curInterval='1d',curSym='',plTimer=null;
 let dfCurTF='1d',dfCurInterval='1h',dfCurSym='',dfChart=null;
+let watchlistOnly=false;
+
+function loadWL(){try{return JSON.parse(localStorage.getItem('bist_wl')||'[]')}catch(e){return[]}}
+function saveWL(wl){localStorage.setItem('bist_wl',JSON.stringify(wl))}
+function toggleWL(sym){
+let wl=loadWL();
+if(wl.includes(sym)){wl=wl.filter(s=>s!==sym)}else{wl.push(sym)}
+saveWL(wl);loadPL();
+}
+function isWL(sym){return loadWL().includes(sym)}
+function toggleWLFilter(){
+watchlistOnly=!watchlistOnly;
+const btn=$('wlFilterBtn');
+btn.className='wl-filter-btn '+(watchlistOnly?'active':'');
+loadPL();
+}
 
 function $(id){return document.getElementById(id)}
 function qs(s){return document.querySelector(s)}
@@ -809,17 +837,25 @@ try{const r=await fetch('/api/prices/all',{signal:AbortSignal.timeout(15000)});c
 (d.prices||[]).forEach(p=>{plc[p.symbol]=p.price});var count=d.count||0}catch(e){var count=0}
 
 const activeAlerts=new Set(alertsCache.filter(x=>x.active).map(x=>x.symbol));
-html=`<table class="price-table"><thead><tr><th>Sembol</th><th>Sirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Alarm</th></tr></thead><tbody>${
-SYMBOLS.map((s,i)=>{
-const p=plc[s.symbol];const aa=activeAlerts.has(s.symbol);
+const wl=loadWL();
+let symbols=SYMBOLS;
+if(watchlistOnly){
+symbols=SYMBOLS.filter(s=>wl.includes(s.symbol));
+}
+const displayCount=watchlistOnly?symbols.length:count;
+html=`<table class="price-table"><thead><tr><th style="width:36px"></th><th>Sembol</th><th>Sirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Alarm</th></tr></thead><tbody>${
+symbols.map((s,i)=>{
+const p=plc[s.symbol];const aa=activeAlerts.has(s.symbol);const inWL=wl.includes(s.symbol);
+const pCls=p!==undefined?(p>=(plc[s.symbol+' prev']||p)?'text-up':'text-down'):'';
 return `<tr onclick="quickPrice('${s.symbol}')">
+<td onclick="event.stopPropagation()"><span class="wl-star ${inWL?'active':''}" onclick="event.stopPropagation();toggleWL('${s.symbol}')">&#9733;</span></td>
 <td class="sym" style="${aa?'color:#C3C6D3':''}">${s.symbol}</td>
 <td class="name">${s.name.slice(0,40)}</td>
-<td class="pr text-up">${p!==undefined?p.toFixed(2):'—'}</td>
+<td class="pr ${p!==undefined?'text-up':''}">${p!==undefined?p.toFixed(2):'—'}</td>
 <td style="text-align:right">${aa?'<span class="material-symbols-outlined text-sm text-[#C3C6D3]" style="font-variation-settings:\'FILL\'1;font-size:16px">notifications_active</span>':''}</td>
 </tr>`}).join('')}</tbody></table>`;
-c.innerHTML=html||'<div class="p-10 text-center text-[#909096]">Hisse bulunamadi</div>';
-$('plCount').textContent=count+' canli';
+c.innerHTML=html||'<div class="p-10 text-center text-[#909096]">'+(watchlistOnly?'Takip listesinde hisse yok. Yildiz ikonuna tiklayarak hisse ekleyin.':'Hisse bulunamadi')+'</div>';
+$('plCount').textContent=(watchlistOnly?displayCount+' takip':count+' canli');
 }
 
 function setTF(range,interval,btnId){
@@ -1304,7 +1340,7 @@ var dirSym=s.change_pct>=0?'↑':'↓';
 var priceCls=s.change_pct>=0?'text-up':'text-down';
 var pf=s.in_portfolio?'[PF] ':'';
 var al=s.in_alerts?'[ALM] ':'';
-h+='<div class="alert-card" onclick="quickPrice(\''+s.symbol+'\')"><div class="dir-icon '+dirCls+'">'+dirSym+'</div><div class="flex-1 min-w-0"><div class="text-sm font-semibold text-[#E5E2E2]">'+s.symbol+'</div><div class="text-[11px] text-[#909096] mt-0.5">'+pf+al+'</div></div><div class="text-right"><div class="data-md '+priceCls+'">'+s.price.toFixed(2)+'</div><div class="data-md text-[11px] '+priceCls+'">'+(s.change_pct>=0?'+':'')+s.change_pct+'%</div></div></div>';
+h+='<div class="alert-card" onclick="quickPrice(\''+s.symbol+'\')"><div class="dir-icon '+dirCls+'">'+dirSym+'</div><div class="flex-1 min-w-0"><div class="text-base font-bold text-[#E5E2E2]">'+s.symbol+'</div><div class="text-xs text-[#909096] mt-0.5">'+pf+al+'</div></div><div class="text-right"><div class="data-lg '+priceCls+'">'+s.price.toFixed(2)+'</div><div class="data-md '+priceCls+'">'+(s.change_pct>=0?'+':'')+s.change_pct+'%</div></div></div>';
 }
 c.innerHTML=h;
 }catch(e){}
