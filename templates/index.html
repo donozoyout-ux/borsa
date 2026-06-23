@@ -149,25 +149,45 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 .result-card:nth-child(1){animation-delay:0s}
 .result-card:nth-child(2){animation-delay:.1s}
 .result-card:nth-child(3){animation-delay:.2s}
+
+/* ── Design System Extras ── */
+.label-caps{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif;line-height:16px}
+.data-md{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;line-height:20px}
+.data-lg{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;line-height:24px}
+.headline-sm{font-size:18px;font-weight:600;line-height:24px;letter-spacing:-.01em}
+.glass-panel{background:rgba(28,33,39,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.06);border-radius:12px}
+.glass-panel-sm{background:rgba(28,33,39,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.06);border-radius:8px}
+.solid-panel{background:#1C2127;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(28,33,39,.5)}
+.text-up{color:#10B981}
+.text-down{color:#EF4444}
+.topbar-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:#7a7f8a;transition:all .2s;cursor:pointer}
+.topbar-btn:hover{background:rgba(255,255,255,.06);color:#e5e2e2}
+.topbar-btn .material-symbols-outlined{font-size:20px}
+.tf-btn{padding:6px 14px;font-size:11px;font-weight:600;border-radius:6px;color:#7a7f8a;cursor:pointer;transition:all .15s;border:none;background:transparent}
+.tf-btn:hover{color:#e5e2e2;background:rgba(255,255,255,.04)}
+.tf-btn.active{background:#3B82F6;color:#fff}
+.up{color:#10B981}
+.down{color:#EF4444}
 </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#0A0E17]">
 
 <!-- SIDEBAR -->
-<aside class="sidebar w-64 bg-[#131314] border-r border-white/5 flex flex-col py-4 px-2 z-40 flex-shrink-0">
-<div class="flex items-center gap-3 px-3 mb-8">
-<div class="w-9 h-9 rounded-lg bg-[#0A0E17] border border-white/10 flex items-center justify-center"><span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">terminal</span></div>
-<div><h2 class="text-sm font-extrabold gradient-text">BIST Terminal</h2><div class="flex items-center gap-1.5 mt-0.5"><span class="live-dot"></span><span class="text-[10px] text-[#10B981] font-bold tracking-wider uppercase">CANLI</span></div></div>
+<aside class="sidebar w-64 bg-[#131314] border-r border-white/5 flex flex-col z-40 flex-shrink-0">
+<div class="flex items-center gap-3 px-5 pt-5 pb-6">
+<div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/10 border border-white/10 flex items-center justify-center shadow-lg shadow-[#3B82F6]/10"><span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">terminal</span></div>
+<div><h2 class="text-sm font-extrabold tracking-tight gradient-text">FIN-TERMINAL</h2><div class="flex items-center gap-1.5 mt-0.5"><span class="live-dot"></span><span class="label-caps text-[10px] text-[#10B981]">CANLI</span></div></div>
 </div>
-<nav class="flex-1 flex flex-col gap-0.5">
-<div class="nav-item active" onclick="switchTab('watchlist',this)"><span class="material-symbols-outlined">monitoring</span>Fiyatlar</div>
-<div class="nav-item" onclick="switchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span>Grafik</div>
-<div class="nav-item" onclick="switchTab('alerts',this)"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1">notifications_active</span>Alarmlar</div>
-<div class="nav-item" onclick="switchTab('portfolio',this)"><span class="material-symbols-outlined">account_balance_wallet</span>Portföy</div>
-<div class="nav-item" onclick="switchTab('aianalysis',this)"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1">auto_awesome</span>AI Analiz</div>
+<nav class="flex-1 flex flex-col gap-0.5 px-2">
+<div class="nav-item active" onclick="switchTab('watchlist',this)"><span class="material-symbols-outlined">monitoring</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Fiyatlar</span></div>
+<div class="nav-item" onclick="switchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Grafik</span></div>
+<div class="nav-item" onclick="switchTab('alerts',this)"><span class="material-symbols-outlined">notifications_active</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Alarmlar</span></div>
+<div class="nav-item" onclick="switchTab('portfolio',this)"><span class="material-symbols-outlined">account_balance_wallet</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Portföy</span></div>
+<div class="nav-item" onclick="switchTab('aianalysis',this)"><span class="material-symbols-outlined">auto_awesome</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">AI Analiz</span></div>
 </nav>
-<div class="mt-auto pt-4 border-t border-white/5 flex flex-col gap-0.5">
-<div class="nav-item" onclick="switchTab('settings',this)"><span class="material-symbols-outlined">settings</span>Ayarlar</div>
+<div class="mt-auto pt-4 px-2 border-t border-white/5 flex flex-col gap-0.5">
+<div class="nav-item" onclick="switchTab('settings',this)"><span class="material-symbols-outlined">settings</span><span class="label-caps" style="text-transform:none;font-size:12px;letter-spacing:.02em">Ayarlar</span></div>
 </div>
 </aside>
 
@@ -175,19 +195,26 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="main flex-1 flex flex-col h-screen overflow-hidden">
 
 <!-- TOP BAR -->
-<header class="h-14 bg-[#131314]/90 backdrop-blur-lg border-b border-white/5 flex items-center justify-between px-5 shrink-0">
-<div class="flex items-center gap-4">
-<button class="md:hidden text-[#6b7a8f]" onclick="toggleSidebar()"><span class="material-symbols-outlined">menu</span></button>
-<h1 class="text-sm font-bold gradient-text" id="pageTitle">Fiyatlar</h1>
-<span class="text-xs font-mono text-[#6b7a8f] tabular-nums" id="clockDisplay">--:--:--</span>
-</div>
+<header class="h-14 bg-[#131314]/80 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-4 shrink-0">
 <div class="flex items-center gap-3">
-<div id="botStatusMini" class="flex items-center gap-2 text-xs">
-<span id="botDotMini" class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
-<span id="botLabelMini" class="text-[#6b7a8f]">Durduruldu</span>
+<button class="md:hidden topbar-btn" onclick="toggleSidebar()"><span class="material-symbols-outlined">menu</span></button>
+<h1 class="text-sm font-bold gradient-text" id="pageTitle">Fiyatlar</h1>
+<span class="data-md text-[11px] text-[#5a5f6b]" id="clockDisplay">--:--:--</span>
 </div>
-<button onclick="toggleBot()" id="botBtn" class="btn btn-sm btn-down">Botu Başlat</button>
-<button onclick="refreshCurrent()" class="p-2 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors tooltip" data-tip="Yenile"><span class="material-symbols-outlined text-lg">refresh</span></button>
+<div class="flex items-center gap-2">
+<div class="search-wrap hidden md:block w-56">
+<span class="material-symbols-outlined icon" style="font-size:16px">search</span>
+<input id="topSearch" autocomplete="off" placeholder="Hisse ara..." class="text-xs py-2" style="padding:7px 12px 7px 30px;font-size:12px">
+<div id="topDropdown" class="search-dropdown"></div>
+</div>
+<div id="botStatusMini" class="flex items-center gap-2 mr-1">
+<span id="botDotMini" class="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_6px_#EF4444]"></span>
+<span id="botLabelMini" class="label-caps text-[10px] text-[#5a5f6b]">Durduruldu</span>
+</div>
+<div class="topbar-btn tooltip" data-tip="Bildirimler" onclick="switchTab('alerts',document.querySelectorAll('.nav-item')[2])"><span class="material-symbols-outlined">notifications</span></div>
+<div class="topbar-btn tooltip" data-tip="Yardım"><span class="material-symbols-outlined">help</span></div>
+<div class="topbar-btn tooltip" data-tip="Tam Ekran" onclick="document.documentElement.requestFullscreen?.()"><span class="material-symbols-outlined">fullscreen</span></div>
+<button onclick="refreshCurrent()" class="topbar-btn tooltip" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
 </div>
 </header>
 
@@ -198,38 +225,44 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
 <div class="xl:col-span-8">
 <div class="solid rounded-xl overflow-hidden">
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
+<div class="section-header">
 <div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-[#6b7a8f] text-lg">lists</span>
-<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">BIST Hisseler</h3>
-<span class="text-[10px] text-[#6b7a8f] font-mono" id="plCount"></span>
+<span class="material-symbols-outlined text-[#5a5f6b] text-lg">lists</span>
+<h3 class="label-caps text-[#c6c6cc]">BIST Hisseler</h3>
+<span class="label-caps text-[10px] text-[#5a5f6b]" id="plCount"></span>
 </div>
 <div class="flex items-center gap-2">
 <div class="search-wrap w-56">
 <span class="material-symbols-outlined icon">search</span>
-<input id="plSearch" autocomplete="off" placeholder="Hisse ara (sembol veya isim)...">
+<input id="plSearch" autocomplete="off" placeholder="Hisse ara...">
 <div id="plDropdown" class="search-dropdown"></div>
 </div>
-<button onclick="loadPL()" class="p-1.5 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors"><span class="material-symbols-outlined text-lg">refresh</span></button>
+<button onclick="loadPL()" class="topbar-btn"><span class="material-symbols-outlined text-lg">refresh</span></button>
 </div>
 </div>
 <div id="plContainer"></div>
 </div>
 </div>
 <div class="xl:col-span-4 space-y-4">
-<div class="stat-card">
-<div class="flex items-center justify-between mb-3">
-<span class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f]">Alarm Botu</span>
+<div class="glass-panel overflow-hidden">
+<div class="px-4 py-3 border-b border-white/5">
+<div class="flex items-center justify-between">
+<span class="label-caps text-[#5a5f6b]">Alarm Botu</span>
 <span id="botStatusBadge" class="badge done">Durduruldu</span>
 </div>
+</div>
+<div class="p-4">
 <button onclick="toggleBot()" id="botMainBtn" class="btn btn-down w-full">Botu Başlat</button>
-<div id="botMiniLogs" class="mt-3 bg-[#0A0E17] rounded-lg p-3 text-[10px] font-mono text-[#6b7a8f] h-28 overflow-y-auto leading-relaxed">
+<div id="botMiniLogs" class="mt-3 bg-[#0A0E17] rounded-lg p-3 text-[10px] font-mono text-[#5a5f6b] h-28 overflow-y-auto leading-relaxed">
 <div class="flex items-center gap-2"><span class="text-[#45464b]">--:--:--</span> Bot durduruldu</div>
 </div>
 </div>
-<div class="stat-card">
-<div class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-3">Hızlı Erişim</div>
-<div class="flex flex-wrap gap-2">
+</div>
+<div class="glass-panel">
+<div class="px-4 py-3 border-b border-white/5">
+<span class="label-caps text-[#5a5f6b]">Hızlı Erişim</span>
+</div>
+<div class="p-4 flex flex-wrap gap-2">
 <button onclick="quickPrice('THYAO')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">THYAO</button>
 <button onclick="quickPrice('GARAN')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">GARAN</button>
 <button onclick="quickPrice('AKBNK')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0A0E17] text-[#e5e2e2] border border-white/5 hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all">AKBNK</button>
@@ -254,44 +287,44 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div id="cDropdown" class="search-dropdown"></div>
 </div>
 <button onclick="loadChart()" class="btn btn-primary">Grafik Yükle</button>
-<div class="flex gap-1 bg-[#0A0E17] rounded-lg p-0.5 border border-white/5">
-<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf1d" onclick="setTF('1d','5m','tf1d')">1G</button>
-<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf1h" onclick="setTF('1mo','1wk','tf1h')">1H</button>
-<button class="px-3 py-1.5 text-xs font-medium rounded-md bg-[#3B82F6] text-white" id="tf1mo" onclick="setTF('1mo','1d','tf1mo')">1A</button>
-<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf3mo" onclick="setTF('3mo','1d','tf3mo')">3A</button>
-<button class="px-3 py-1.5 text-xs font-medium rounded-md text-[#6b7a8f] hover:text-[#e5e2e2]" id="tf6mo" onclick="setTF('6mo','1d','tf6mo')">6A</button>
+<div class="glass-panel-sm p-0.5 flex gap-0.5">
+<button class="tf-btn" id="tf1d" onclick="setTF('1d','5m','tf1d')">1G</button>
+<button class="tf-btn" id="tf1h" onclick="setTF('1mo','1wk','tf1h')">1H</button>
+<button class="tf-btn active" id="tf1mo" onclick="setTF('1mo','1d','tf1mo')">1A</button>
+<button class="tf-btn" id="tf3mo" onclick="setTF('3mo','1d','tf3mo')">3A</button>
+<button class="tf-btn" id="tf6mo" onclick="setTF('6mo','1d','tf6mo')">6A</button>
 </div>
 </div>
     <div class="flex gap-4 flex-1 min-h-0">
 <div id="leftPanel" class="w-80 shrink-0 hidden flex-col gap-3 overflow-y-auto">
-<div id="aiPanel" class="solid rounded-xl p-4">
-<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL'1">auto_awesome</span>AI Yapay Zeka Analizi</h4>
+<div id="aiPanel" class="glass-panel p-4">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#60A5FA]" style="font-variation-settings:'FILL'1">auto_awesome</span><h4 class="label-caps" style="color:#c6c6cc;font-size:10px">AI Yapay Zeka Analizi</h4></div>
 <div id="aiContent" class="text-xs leading-relaxed text-[#c6c6cc] whitespace-pre-line"></div>
-<div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div><div class="text-[10px] text-[#6b7a8f] mt-2">AI analiz hazırlanıyor...</div></div>
+<div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div><div class="label-caps text-[10px] text-[#5a5f6b] mt-2" style="font-size:10px">AI analiz hazırlanıyor...</div></div>
 </div>
-<div id="newsPanel" class="solid rounded-xl p-4 hidden">
-<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">newspaper</span>Haberler</h4>
+<div id="newsPanel" class="glass-panel p-4 hidden">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#5a5f6b]">newspaper</span><h4 class="label-caps" style="color:#c6c6cc;font-size:10px">Haberler</h4></div>
 <div id="newsContent" class="text-xs space-y-2"></div>
 </div>
-<div id="fundPanel" class="solid rounded-xl p-4 hidden">
-<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">account_balance</span>Temel Analiz</h4>
+<div id="fundPanel" class="glass-panel p-4 hidden">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#5a5f6b]">account_balance</span><h4 class="label-caps" style="color:#c6c6cc;font-size:10px">Temel Analiz</h4></div>
 <div id="fundContent" class="text-xs space-y-1.5"></div>
 </div>
 </div>
 <div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea">
-<div class="absolute inset-0 flex items-center justify-center text-[#6b7a8f] text-sm" id="chartPlaceholder">
-<div class="text-center"><span class="material-symbols-outlined text-4xl block mb-2" style="font-variation-settings:'FILL'1">monitoring</span>Hisse seçip "Grafik Yükle" butonuna tıkla</div>
+<div class="absolute inset-0 flex items-center justify-center text-[#5a5f6b] text-sm" id="chartPlaceholder">
+<div class="text-center"><span class="material-symbols-outlined text-4xl block mb-2 opacity-40" style="font-variation-settings:'FILL'1">monitoring</span><div class="headline-sm text-[#5a5f6b]" style="font-size:15px">Hisse seçip "Grafik Yükle" butonuna tıkla</div></div>
 </div>
 <canvas id="chartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
-<div id="chartInfo" class="absolute top-4 left-4 glass rounded-xl px-4 py-3 text-xs space-y-1.5 z-10" style="display:none"></div>
+<div id="chartInfo" class="absolute top-4 left-4 glass-panel-sm px-4 py-3 text-xs space-y-1.5 z-10" style="display:none"></div>
 </div>
 <div id="analysisPanel" class="w-64 shrink-0 hidden flex-col gap-3 overflow-y-auto">
-<div class="solid rounded-xl p-4">
-<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">insights</span>Trend</h4>
+<div class="glass-panel p-4">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#5a5f6b]">insights</span><h4 class="label-caps" style="color:#c6c6cc;font-size:10px">Trend</h4></div>
 <div id="trendContent" class="text-xs space-y-2"></div>
 </div>
-<div class="solid rounded-xl p-4">
-<h4 class="text-[10px] font-bold uppercase tracking-wider text-[#6b7a8f] mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-sm">analytics</span>Sinyaller</h4>
+<div class="glass-panel p-4">
+<div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#5a5f6b]">analytics</span><h4 class="label-caps" style="color:#c6c6cc;font-size:10px">Sinyaller</h4></div>
 <div id="signalContent" class="text-xs space-y-1.5"></div>
 </div>
 </div>
@@ -304,52 +337,43 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="flex-1 overflow-y-auto p-5">
 <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-5">
 <div class="xl:col-span-4">
-<div class="stat-card">
-<div class="flex items-center gap-2 mb-4">
-<span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">add_alert</span>
-<h3 class="text-sm font-bold">Alarm Ekle</h3>
-</div>
-<form id="alertForm" class="space-y-3">
+<div class="glass-panel">
+<div class="section-header"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#60A5FA]" style="font-variation-settings:'FILL'1">add_alert</span><h3 class="label-caps" style="color:#c6c6cc">Alarm Ekle</h3></div></div>
+<form id="alertForm" class="p-4 space-y-3">
 <div class="search-wrap">
 <span class="material-symbols-outlined icon">search</span>
-<input id="aSearch" autocomplete="off" placeholder="Hisse ara (sembol veya isim)...">
+<input id="aSearch" autocomplete="off" placeholder="Hisse ara...">
 <div id="aDropdown" class="search-dropdown"></div>
 <input type="hidden" id="aSymbol">
 </div>
 <div class="grid grid-cols-2 gap-3">
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Hedef (TL)</label>
-<input id="fTarget" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" type="number" step=".01" placeholder="315.50">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Hedef (TL)</label>
+<input id="fTarget" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all" type="number" step=".01" placeholder="315.50">
 </div>
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Yaklaşma %</label>
-<input id="fNear" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" type="number" step=".1" value="1">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Yaklaşma %</label>
+<input id="fNear" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all" type="number" step=".1" value="1">
 </div>
 </div>
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Koşul</label>
-<select id="fCondition" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Koşul</label>
+<select id="fCondition" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all">
 <option value="above">Fiyat üstüne çıkarsa ↑</option>
 <option value="below">Fiyat altına düşerse ↓</option>
 </select>
 </div>
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Not (isteğe bağlı)</label>
-<input id="fNote" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 transition-all" placeholder="Neden takip ediyorsun?">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Not (isteğe bağlı)</label>
+<input id="fNote" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all" placeholder="Neden takip ediyorsun?">
 </div>
 <button type="submit" class="btn btn-primary w-full">Alarm Ekle</button>
 </form>
 </div>
 </div>
 <div class="xl:col-span-8">
-<div class="solid rounded-xl overflow-hidden">
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#6b7a8f] text-lg">format_list_bulleted</span>
-<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">Alarmlar</h3>
-</div>
-<span id="alertCount" class="text-[10px] text-[#6b7a8f] font-mono"></span>
-</div>
+<div class="solid-panel">
+<div class="section-header"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#5a5f6b] text-lg">format_list_bulleted</span><h3 class="label-caps" style="color:#c6c6cc">Alarmlar</h3></div><span class="label-caps text-[10px] text-[#5a5f6b]" id="alertCount"></span></div>
 <div id="alertsContainer"></div>
 </div>
 </div>
@@ -362,19 +386,16 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="flex-1 overflow-y-auto p-5">
 <div class="max-w-7xl mx-auto">
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Toplam Yatırım</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfTotalCost">0 TL</div></div>
-<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Güncel Değer</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfTotalValue">0 TL</div></div>
-<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Kar/Zarar</div><div class="text-2xl font-bold mt-2" id="pfPL">0 TL</div><div class="text-xs mt-1" id="pfPLPct">%0</div></div>
-<div class="stat-card"><div class="text-[10px] uppercase tracking-wider text-[#6b7a8f] font-bold">Hisse Adet</div><div class="text-2xl font-bold mt-2 text-[#e5e2e2]" id="pfCount">0</div></div>
+<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Toplam Yatırım</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfTotalCost">0 TL</div></div>
+<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Güncel Değer</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfTotalValue">0 TL</div></div>
+<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Kar/Zarar</div><div class="headline-sm mt-2" id="pfPL">0 TL</div><div class="data-md text-xs mt-1" id="pfPLPct">%0</div></div>
+<div class="glass-panel p-4"><div class="label-caps text-[10px] text-[#5a5f6b]">Hisse Adet</div><div class="headline-sm text-[#e5e2e2] mt-2" id="pfCount">0</div></div>
 </div>
 <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
 <div class="xl:col-span-4">
-<div class="stat-card">
-<div class="flex items-center gap-2 mb-4">
-<span class="material-symbols-outlined text-[#3B82F6]" style="font-variation-settings:'FILL'1">playlist_add</span>
-<h3 class="text-sm font-bold">Hisse Ekle</h3>
-</div>
-<form id="pfForm" class="space-y-3">
+<div class="glass-panel">
+<div class="section-header"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#60A5FA]" style="font-variation-settings:'FILL'1">playlist_add</span><h3 class="label-caps" style="color:#c6c6cc">Hisse Ekle</h3></div></div>
+<form id="pfForm" class="p-4 space-y-3">
 <div class="search-wrap">
 <span class="material-symbols-outlined icon">search</span>
 <input id="pfSearch" autocomplete="off" placeholder="Hisse ara...">
@@ -383,12 +404,12 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 </div>
 <div class="grid grid-cols-2 gap-3">
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Adet</label>
-<input id="fQty" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6]" type="number" step="1" placeholder="100">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Adet</label>
+<input id="fQty" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all" type="number" step="1" placeholder="100">
 </div>
 <div>
-<label class="text-[10px] font-semibold uppercase tracking-wider text-[#6b7a8f] block mb-1">Maliyet (TL)</label>
-<input id="fCost" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6]" type="number" step=".01" placeholder="250.50 (opsiyonel)">
+<label class="label-caps block mb-1.5 text-[10px] text-[#5a5f6b]">Maliyet (TL)</label>
+<input id="fCost" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e5e2e2] focus:outline-none focus:border-[#3B82F6] transition-all" type="number" step=".01" placeholder="250.50">
 </div>
 </div>
 <button type="submit" class="btn btn-primary w-full">Ekle</button>
@@ -396,14 +417,11 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 </div>
 </div>
 <div class="xl:col-span-8">
-<div class="solid rounded-xl overflow-hidden">
-<div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-[#1C2127]/50">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#6b7a8f] text-lg">account_balance_wallet</span>
-<h3 class="text-xs font-bold uppercase tracking-wider text-[#c6c6cc]">Portföyüm</h3>
-</div>
-<button onclick="loadPF()" class="p-1.5 text-[#6b7a8f] hover:text-[#e5e2e2] hover:bg-white/5 rounded-lg transition-colors" title="Yenile"><span class="material-symbols-outlined text-lg">refresh</span></button>
-<button onclick="sendPFTelegram()" class="p-1.5 text-[#6b7a8f] hover:text-[#10B981] hover:bg-[#10B981]/10 rounded-lg transition-colors" title="Telegram'a gönder"><span class="material-symbols-outlined text-lg">send</span></button>
+<div class="solid-panel">
+<div class="section-header"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[#5a5f6b] text-lg">account_balance_wallet</span><h3 class="label-caps" style="color:#c6c6cc">Portföyüm</h3></div>
+<div class="flex items-center gap-1">
+<button onclick="loadPF()" class="topbar-btn"><span class="material-symbols-outlined">refresh</span></button>
+<button onclick="sendPFTelegram()" class="topbar-btn" style="color:#10B981"><span class="material-symbols-outlined">send</span></button>
 </div>
 <div id="pfList"></div>
 </div>
@@ -419,13 +437,13 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="max-w-4xl mx-auto space-y-4">
 
 <!-- Hero Header -->
-<div class="stat-card overflow-hidden relative">
+<div class="glass-panel overflow-hidden relative">
 <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-[#3B82F6]/5 to-transparent rounded-full blur-3xl"></div>
-<div class="flex items-center gap-4 relative z-10">
+<div class="flex items-center gap-4 p-5 relative z-10">
 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-[#3B82F6]/20"><span class="material-symbols-outlined text-white" style="font-variation-settings:'FILL'1">auto_awesome</span></div>
 <div>
-<h3 class="text-lg font-bold gradient-text">AI Yapay Zeka Analizi</h3>
-<div class="flex items-center gap-2 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span><span class="text-[11px] text-[#6b7a8f] font-medium">Groq Llama 3 70B + Gemini 2.5 Flash</span></div>
+<h3 class="headline-sm gradient-text">AI Yapay Zeka Analizi</h3>
+<div class="flex items-center gap-2 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span><span class="label-caps text-[10px] text-[#5a5f6b]">Groq Llama 3 70B + Gemini 2.5 Flash</span></div>
 </div>
 </div>
 </div>
@@ -433,10 +451,10 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <!-- Input Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <!-- Text Analysis -->
-<div class="solid rounded-xl p-5 glow-card">
+<div class="glass-panel p-5 glow-card">
 <div class="flex items-center gap-2 mb-4">
-<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#3B82F6]">search</span></div>
-<h4 class="text-[11px] font-bold uppercase tracking-wider text-[#e5e2e2]">Metin ile Analiz</h4>
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#60A5FA]">search</span></div>
+<h4 class="label-caps" style="color:#c6c6cc">Metin ile Analiz</h4>
 </div>
 <div class="flex gap-2">
 <div class="search-wrap flex-1">
@@ -447,17 +465,17 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <button onclick="runAIAnalysis()" class="btn btn-primary whitespace-nowrap">Analiz Et</button>
 </div>
 <div class="mt-3 flex gap-1.5 flex-wrap">
-<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">RSI + MACD analizi</span>
-<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">Haber taraması</span>
-<span class="text-[10px] text-[#6b7a8f] px-2 py-0.5 bg-white/5 rounded-full">Trend tahmini</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">RSI + MACD analizi</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">Haber taraması</span>
+<span class="label-caps text-[9px] text-[#5a5f6b] px-2 py-0.5 bg-white/5 rounded-full">Trend tahmini</span>
 </div>
 </div>
 
 <!-- Image Analysis -->
-<div class="solid rounded-xl p-5 glow-card-green">
+<div class="glass-panel p-5 glow-card-green">
 <div class="flex items-center gap-2 mb-4">
 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#06B6D4]/10 flex items-center justify-center"><span class="material-symbols-outlined text-sm text-[#10B981]">image</span></div>
-<h4 class="text-[11px] font-bold uppercase tracking-wider text-[#e5e2e2]">Görsel ile Analiz</h4>
+<h4 class="label-caps" style="color:#c6c6cc">Görsel ile Analiz</h4>
 </div>
 <div>
 <div id="uploadArea" class="upload-zone" onclick="document.getElementById('imageInput').click()">
@@ -539,19 +557,19 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div id="tab-settings" class="tab-content">
 <div class="flex-1 overflow-y-auto p-5">
 <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-4">Sistem Bilgisi</h3>
+<div class="glass-panel p-4"><h3 class="label-caps mb-4" style="color:#c6c6cc">Sistem Bilgisi</h3>
 <div class="space-y-3 text-sm">
-<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Otomatik Yenileme</span><span class="font-mono">300 sn (5 dk)</span></div>
-<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Veri Kaynağı</span><span>Yahoo Finance</span></div>
-<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#6b7a8f]">Threaded Server</span><span class="text-[#10B981]">Aktif ✓</span></div>
-<div class="flex justify-between py-1.5"><span class="text-[#6b7a8f]">Versiyon</span><span class="font-mono">v2.0</span></div>
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#5a5f6b]">Otomatik Yenileme</span><span class="data-md text-xs">300 sn (5 dk)</span></div>
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#5a5f6b]">Veri Kaynağı</span><span>Yahoo Finance</span></div>
+<div class="flex justify-between py-1.5 border-b border-white/5"><span class="text-[#5a5f6b]">Threaded Server</span><span class="text-up" style="font-size:13px">Aktif ✓</span></div>
+<div class="flex justify-between py-1.5"><span class="text-[#5a5f6b]">Versiyon</span><span class="data-md text-xs">v2.0</span></div>
 </div></div>
-<div class="stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-4">Bot Logları</h3>
-<div id="settingsLogs" class="bg-[#0A0E17] rounded-xl p-3 h-44 overflow-y-auto text-[10px] font-mono text-[#6b7a8f] leading-relaxed">--:--:-- Henüz log yok.</div>
+<div class="glass-panel p-4"><h3 class="label-caps mb-4" style="color:#c6c6cc">Bot Logları</h3>
+<div id="settingsLogs" class="bg-[#0A0E17] rounded-xl p-3 h-44 overflow-y-auto text-[10px] font-mono text-[#5a5f6b] leading-relaxed">--:--:-- Henüz log yok.</div>
 <button onclick="refreshLogs()" class="btn btn-ghost btn-sm mt-3">Yenile</button>
 </div>
-<div class="md:col-span-2 stat-card"><h3 class="text-xs font-bold uppercase tracking-wider text-[#6b7a8f] mb-2">BIST Terminal v2.0</h3>
-<p class="text-sm text-[#6b7a8f]">Flask + Tailwind CSS ile geliştirilmiş profesyonel BIST hisse takip platformu. Gerçek zamanlı fiyat verisi, teknik indikatörler (RSI, MACD, SMA/EMA), Telegram bildirimli alarm sistemi.</p></div>
+<div class="md:col-span-2 glass-panel p-4"><h3 class="label-caps mb-2" style="color:#c6c6cc">BIST Terminal v2.0</h3>
+<p class="text-sm text-[#5a5f6b]">Flask + Tailwind CSS ile geliştirilmiş profesyonel BIST hisse takip platformu. Gerçek zamanlı fiyat verisi, teknik indikatörler (RSI, MACD, SMA/EMA), Telegram bildirimli alarm sistemi.</p></div>
 </div>
 </div>
 </div>
@@ -561,9 +579,9 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <!-- MODAL -->
 <div id="chartModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
 <div class="modal-box">
-<div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
-<h3 class="text-base font-bold" id="modalTitle">Grafik</h3>
-<button class="text-[#6b7a8f] hover:text-[#e5e2e2] p-1 rounded-lg hover:bg-white/5 transition-colors" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
+<div class="section-header">
+<h3 class="headline-sm" id="modalTitle">Grafik</h3>
+<button class="topbar-btn" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
 </div>
 <div class="p-5">
 <canvas id="modalCanvas" class="chart-lg"></canvas>
@@ -683,11 +701,11 @@ try{const r=await fetch('/api/prices/all',{signal:AbortSignal.timeout(15000)});c
 const activeAlerts=new Set(alertsCache.filter(x=>x.active).map(x=>x.symbol));
 html=SYMBOLS.map((s,i)=>{
 const p=plc[s.symbol];const aa=activeAlerts.has(s.symbol);
-return `<div class="price-row flex items-center gap-4 px-5 py-3 cursor-pointer" onclick="quickPrice('${s.symbol}')" style="${aa?'border-left:3px solid #3B82F6':''}">
-<div class="w-14"><span class="font-semibold text-sm ${aa?'text-[#3B82F6]':'text-[#e5e2e2]'}">${s.symbol}</span></div>
-<div class="flex-1 text-xs text-[#6b7a8f] truncate">${s.name.slice(0,40)}</div>
-${p!==undefined?`<div class="text-sm font-mono font-medium text-right w-24 ${p>=0?'up':'up'}">${p.toFixed(2)} <span class="text-[10px] text-[#6b7a8f]">TL</span></div>`:'<div class="text-sm text-[#6b7a8f] text-right w-24">—</div>'}
-${aa?'<span class="material-symbols-outlined text-sm text-[#3B82F6]" style="font-variation-settings:\'FILL\'1">notifications_active</span>':''}
+return `<div class="price-row" onclick="quickPrice('${s.symbol}')" style="${aa?'box-shadow:inset 3px 0 0 #3B82F6':''}">
+<div class="symbol ${aa?'text-[#60A5FA]':''}">${s.symbol}</div>
+<div class="name">${s.name.slice(0,40)}</div>
+${p!==undefined?`<div class="price text-up">${p.toFixed(2)}</div>`:'<div class="price" style="color:#5a5f6b">—</div>'}
+${aa?'<span class="material-symbols-outlined text-sm text-[#60A5FA]" style="font-variation-settings:\'FILL\'1">notifications_active</span>':''}
 </div>`}).join('');
 c.innerHTML=html||'<div class="p-10 text-center text-[#6b7a8f]">Hisse bulunamadı</div>';
 $('plCount').textContent=count+' canlı';
@@ -698,7 +716,7 @@ function setTF(range,interval,btnId){
 curRange=range;curInterval=interval;
 ['tf1d','tf1h','tf1mo','tf3mo','tf6mo'].forEach(id=>{
 const el=$(id);
-if(el)el.className='px-3 py-1.5 text-xs font-medium rounded-md '+(id===btnId?'bg-[#3B82F6] text-white':'text-[#6b7a8f] hover:text-[#e5e2e2]')});
+if(el)el.className='tf-btn '+(id===btnId?'active':'');});
 if(curSym)loadChart();
 }
 async function loadChart(){
@@ -968,7 +986,7 @@ $('pfCount').textContent=items.length+' hisse';
 $('pfTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
 $('pfTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
 const plEl=$('pfPL');const plPctEl=$('pfPLPct');
-const plClass=d.profit_loss>=0?'text-[#10B981]':'text-[#EF4444]';
+const plClass=d.profit_loss>=0?'text-up':'text-down';
 plEl.className='text-2xl font-bold mt-2 '+plClass;
 plEl.textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2})+' TL';
 plPctEl.className='text-xs mt-1 '+plClass;
@@ -976,16 +994,11 @@ plPctEl.textContent=(d.change_pct>=0?'+':'')+d.change_pct.toFixed(2)+' %';
 const c=$('pfList');
 if(!items.length){c.innerHTML='<div class="p-10 text-center text-[#6b7a8f]">Henüz hisse eklenmemiş.<br>Sol panelden portföyüne hisse ekle.</div>';return}
 c.innerHTML=items.map((x,i)=>`
-<div class="price-row flex items-center gap-4 px-5 py-3 cursor-pointer" onclick="quickPrice('${x.symbol}')">
-<div class="w-14 font-semibold text-sm text-[#e5e2e2]">${x.symbol}</div>
-<div class="flex-1">
-<div class="text-xs text-[#6b7a8f]">${x.quantity} adet</div>
-</div>
-<div class="text-right">
-${x.current_price?`<div class="text-sm font-mono font-medium">${(x.current_price*x.quantity).toFixed(0)} TL</div><div class="text-[10px] font-mono ${x.current_price>=0?'up':'down'}">${x.current_price.toFixed(2)} TL/ad</div>`:'<div class="text-sm text-[#6b7a8f]">—</div>'}
-</div>
-${x.avg_cost?`<div class="text-right text-[10px] font-mono ${x.profit_loss>=0?'up':'down'}">${x.profit_loss>=0?'+':''}${x.profit_loss_pct.toFixed(1)}%</div>`:''}
-<button onclick="event.stopPropagation();deletePF('${x.id}')" class="p-1 text-[#6b7a8f] hover:text-[#EF4444] rounded-lg" title="Sil"><span class="material-symbols-outlined text-lg">remove_circle</span></button>
+<div class="price-row" onclick="quickPrice('${x.symbol}')">
+<div class="symbol">${x.symbol}</div>
+<div class="name">${x.quantity} adet</div>
+${x.current_price?`<div class="price text-up">${(x.current_price*x.quantity).toFixed(0)} TL</div><div class="data-md text-[11px] ${x.profit_loss>=0?'text-up':'text-down'}" style="min-width:72px;text-align:right">${x.profit_loss>=0?'+':''}${x.profit_loss_pct.toFixed(1)}%</div>`:'<div class="price" style="color:#5a5f6b">—</div>'}
+<button onclick="event.stopPropagation();deletePF('${x.id}')" class="p-1 text-[#5a5f6b] hover:text-[#EF4444] rounded-lg transition-colors" title="Sil"><span class="material-symbols-outlined text-lg">remove_circle</span></button>
 </div>`).join('')}catch(e){}
 }
 async function deletePF(id){
@@ -1107,6 +1120,7 @@ initSearch('cSearch','cDropdown','chart');
 initSearch('aSearch','aDropdown','alert');
 initSearch('pfSearch','pfDropdown','portfolio');
 initSearch('aiSearch','aiDropdown','aianalysis');
+initSearch('topSearch','topDropdown','price');
 },100);
 
 // ── INIT ──

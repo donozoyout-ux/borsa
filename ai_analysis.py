@@ -111,7 +111,7 @@ TEMEL ANALİZ:
 
 
 def analyze_image(image_base64: str, symbol: str = "", price: Optional[float] = None) -> Optional[str]:
-    """Görsel yüklemesini Google Gemini API ile analiz et."""
+    """Gemini ile görsel analizi. Sadece Part.from_bytes() kullanır, upload fallback yok."""
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     if not GEMINI_API_KEY:
         return None
@@ -121,61 +121,46 @@ def analyze_image(image_base64: str, symbol: str = "", price: Optional[float] = 
 {'Güncel Fiyat: ' + str(price) + ' TL' if price else ''}
 
 Şu başlıklarla analiz yap (Türkçe, max 6 satır):
-📊 GÖRSEL YORUMU:
+GORSEL YORUMU:
 - Gördüğün trend, formasyon, destek/direnç seviyeleri
 
-🎯 YÖNLENDİRME:
-- Kısa vade: [AL/TUT/SAT]
-- Risk uyarısı varsa belirt"""
+YONLENDIRME:
+- Kisa vade: [AL/TUT/SAT]
+- Risk uyarisi varsa belirt"""
 
     try:
         from google import genai as genai_sdk
+        from google.genai import types
         client = genai_sdk.Client(api_key=GEMINI_API_KEY)
         image_data = base64.b64decode(image_base64)
-        # Detect mime from base64 header or default to png
         mime = "image/png"
         if image_base64.startswith("/9j/"):
             mime = "image/jpeg"
         elif image_base64.startswith("UklGR"):
             mime = "image/webp"
 
-        # Try Part.from_bytes approach (works with most models)
-        from google.genai import types
-
-        models_to_try = ["gemini-2.5-flash-image", "gemini-3.1-flash-image", "gemini-2.5-flash"]
-        last_error = ""
-
-        for model_name in models_to_try:
-            try:
-                resp = client.models.generate_content(
-                    model=model_name,
-                    contents=[text_prompt, types.Part.from_bytes(data=image_data, mime_type=mime)],
-                )
-                if resp.text:
-                    return resp.text.strip()
-            except Exception as e:
-                last_error = f"[{model_name}] {str(e)}"
-                continue
-
-        # Fallback: upload file to Gemini then analyze
+        # Sadece gemini-2.5-flash dene; image modelleri mevcut olmayabilir
         try:
-            import tempfile
-            suffix = ".png" if mime == "image/png" else ".jpg"
-            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-                tmp.write(image_data)
-                tmp_path = tmp.name
-            uploaded = client.files.upload(file=tmp_path)
             resp = client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=[text_prompt, uploaded],
+                contents=[text_prompt, types.Part.from_bytes(data=image_data, mime_type=mime)],
             )
-            try: os.unlink(tmp_path)
-            except: pass
             if resp.text:
                 return resp.text.strip()
-        except Exception as e:
-            last_error += f" | [upload] {str(e)[:100]}"
+        except Exception:
+            pass
 
-        return f"[AI Görsel Hatası] {last_error[:300]}"
-    except Exception as exc:
-        return f"[AI Görsel Hatası] {str(exc)[:200]}"
+        # İkinci deneme: alternatif model
+        try:
+            resp = client.models.generate_content(
+                model="gemini-3.1-flash-image",
+                contents=[text_prompt, types.Part.from_bytes(data=image_data, mime_type=mime)],
+            )
+            if resp.text:
+                return resp.text.strip()
+        except Exception:
+            pass
+
+        return None
+    except Exception:
+        return None
