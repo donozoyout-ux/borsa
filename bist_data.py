@@ -1,5 +1,6 @@
 import csv
 import json
+import threading
 import time
 from pathlib import Path
 from typing import Optional
@@ -8,9 +9,61 @@ import requests
 
 BASE_DIR = Path(__file__).resolve().parent
 SYMBOLS_FILE = BASE_DIR / "data" / "bist_symbols.csv"
+PRICE_CACHE_FILE = BASE_DIR / "data" / "price_cache.json"
 
 _price_cache: dict[str, tuple[float, float]] = {}
 _CACHE_TTL = 30
+
+_file_price_cache: dict[str, float] = {}
+_file_cache_lock = threading.Lock()
+_file_cache_time = 0.0
+
+
+def _load_file_cache():
+    global _file_cache_time, _file_price_cache
+    try:
+        if PRICE_CACHE_FILE.exists():
+            with PRICE_CACHE_FILE.open("r") as f:
+                data = json.load(f)
+            with _file_cache_lock:
+                _file_price_cache = data.get("prices", {})
+                _file_cache_time = data.get("time", 0.0)
+    except Exception:
+        pass
+
+
+def _save_file_cache():
+    try:
+        with _file_cache_lock:
+            data = {"time": time.time(), "prices": _file_price_cache}
+        PRICE_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with PRICE_CACHE_FILE.open("w") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+
+def get_all_cached_prices() -> tuple[dict[str, float], float]:
+    with _file_cache_lock:
+        return dict(_file_price_cache), _file_cache_time
+
+
+def refresh_all_prices():
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    all_syms = load_bist_symbols()
+    results = {}
+    with ThreadPoolExecutor(max_workers=20) as ex:
+        fut = {ex.submit(get_bist_price_nocache, s["symbol"]): s["symbol"] for s in all_syms}
+        for f in as_completed(fut, timeout=12):
+            try:
+                p = f.result()
+                if p is not None:
+                    results[fut[f]] = p
+            except Exception:
+                pass
+    with _file_cache_lock:
+        _file_price_cache.update(results)
+    _save_file_cache()
 
 
 class PriceFetchError(Exception):
@@ -79,6 +132,18 @@ def _fetch_yahoo_v7(symbol: str) -> Optional[float]:
                 return float(price)
     except Exception:
         pass
+    return None
+
+
+def get_bist_price_nocache(symbol: str) -> Optional[float]:
+    clean = symbol.strip().upper().replace(".IS", "")
+    for fetcher in [_fetch_yahoo_v8, _fetch_yahoo_v7]:
+        try:
+            price = fetcher(clean)
+            if price is not None and price > 0:
+                return price
+        except Exception:
+            continue
     return None
 
 

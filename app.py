@@ -12,10 +12,13 @@ from alerts import create_alert, delete_alert, load_alerts, set_alert_flags
 from portfolio import add_item as pf_add, delete_item as pf_delete, load_portfolio
 from bist_data import (
     PriceFetchError,
+    get_all_cached_prices,
     get_bist_price,
     get_historical_prices,
     get_price_history_chart,
     load_bist_symbols,
+    refresh_all_prices,
+    _load_file_cache,
 )
 from indicators import calculate_all, analyze_trend
 from ai_analysis import get_ai_analysis, analyze_image
@@ -167,18 +170,10 @@ def api_price(symbol):
 
 @app.route("/api/prices/all")
 def api_prices_all():
-    all_syms = load_bist_symbols()
-    results = []
-    with ThreadPoolExecutor(max_workers=20) as ex:
-        fut = {ex.submit(get_bist_price, s["symbol"]): s["symbol"] for s in all_syms}
-        for f in as_completed(fut, timeout=10):
-            try:
-                p = f.result()
-                if p is not None:
-                    results.append({"symbol": fut[f], "price": p})
-            except Exception:
-                pass
-    return jsonify({"prices": results, "count": len(results)})
+    prices, cache_time = get_all_cached_prices()
+    age = int(time.time() - cache_time) if cache_time else -1
+    results = [{"symbol": s, "price": p} for s, p in prices.items() if p is not None]
+    return jsonify({"prices": results, "count": len(results), "cache_age": age})
 
 
 @app.route("/api/chart/<symbol>")
@@ -434,7 +429,21 @@ def api_bot_logs():
     return jsonify({"logs": _bot_logs[-50:]})
 
 
+def _start_price_cache_refresher():
+    _load_file_cache()
+    def _run():
+        while True:
+            try:
+                refresh_all_prices()
+            except Exception:
+                pass
+            time.sleep(30)
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+
+
 if __name__ == "__main__":
     _load_logs()
+    _start_price_cache_refresher()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False)
