@@ -273,4 +273,197 @@ def calculate_all(prices: list[float], current_price: Optional[float] = None) ->
             "ema_12": round(ema(prices, 12), 2) if ema(prices, 12) else None,
             "ema_26": round(ema(prices, 26), 2) if ema(prices, 26) else None,
         },
+        "stochastic": _stochastic(prices),
+        "adx": _adx(prices),
+        "cci": _cci(prices),
+        "williams_r": _williams_r(prices),
+        "atr": _atr(prices),
+        "obv_signal": _obv_signal(prices),
     }
+
+
+def _true_range(prices: list[float]) -> list[float]:
+    """True Range hesapla (high/close yerine price-based approx)."""
+    if len(prices) < 2:
+        return []
+    trs = [abs(prices[1] - prices[0])]
+    for i in range(2, len(prices)):
+        tr = max(
+            abs(prices[i] - prices[i - 1]),
+            abs(prices[i] - prices[i - 2]),
+            abs(prices[i - 1] - prices[i - 2]),
+        )
+        trs.append(tr)
+    return trs
+
+
+def _atr(prices: list[float], period: int = 14) -> Optional[dict]:
+    """Average True Range — volatilite gostergesi."""
+    if len(prices) < period + 1:
+        return None
+    trs = _true_range(prices)
+    if len(trs) < period:
+        return None
+    atr_val = sum(trs[:period]) / period
+    for tr in trs[period:]:
+        atr_val = (atr_val * (period - 1) + tr) / period
+    current = prices[-1]
+    atr_pct = round(atr_val / current * 100, 2) if current else 0
+    return {
+        "value": round(atr_val, 2),
+        "percent": atr_pct,
+        "level": "yuksek" if atr_pct > 3 else ("orta" if atr_pct > 1.5 else "dusuk"),
+    }
+
+
+def _stochastic(prices: list[float], k_period: int = 14, d_period: int = 3) -> Optional[dict]:
+    """Stochastic Oscillator — asiri alim/satim."""
+    if len(prices) < k_period:
+        return None
+    # Close-based stochastic (high/low yok, sadece close ile approx)
+    recent = prices[-k_period:]
+    low = min(recent)
+    high = max(recent)
+    current = prices[-1]
+    if high == low:
+        k = 50.0
+    else:
+        k = ((current - low) / (high - low)) * 100
+    # D line (K'nin SMA'si) — basit approx
+    k_vals = []
+    for i in range(k_period, len(prices)):
+        window = prices[i - k_period + 1:i + 1]
+        w_low = min(window)
+        w_high = max(window)
+        if w_high == w_low:
+            k_vals.append(50.0)
+        else:
+            k_vals.append(((prices[i] - w_low) / (w_high - w_low)) * 100)
+    d = sum(k_vals[-d_period:]) / d_period if len(k_vals) >= d_period else k
+    signal = "notr"
+    if k > 80 and d > 80:
+        signal = "asiri_alim"
+    elif k < 20 and d < 20:
+        signal = "asiri_satim"
+    elif k > d and k_vals and k_vals[-1] <= d:
+        signal = "alis"
+    elif k < d and k_vals and k_vals[-1] >= d:
+        signal = "satis"
+    return {"k": round(k, 2), "d": round(d, 2), "signal": signal}
+
+
+def _adx(prices: list[float], period: int = 14) -> Optional[dict]:
+    """Average Directional Index — trend gucu."""
+    if len(prices) < period * 2:
+        return None
+    # Directional movement approximation (close-based)
+    up_moves = []
+    down_moves = []
+    for i in range(1, len(prices)):
+        diff = prices[i] - prices[i - 1]
+        up_moves.append(max(diff, 0))
+        down_moves.append(max(-diff, 0))
+
+    # +DI ve -DI (smoothed)
+    plus_dm = sum(up_moves[:period])
+    minus_dm = sum(down_moves[:period])
+    trs = _true_range(prices)
+    atr_val = sum(trs[:period]) if len(trs) >= period else sum(trs)
+
+    dx_vals = []
+    for i in range(period, len(up_moves)):
+        plus_dm = plus_dm - plus_dm / period + up_moves[i]
+        minus_dm = minus_dm - minus_dm / period + down_moves[i]
+        if atr_val == 0:
+            atr_val = 1
+        plus_di = (plus_dm / atr_val) * 100 if atr_val else 0
+        minus_di = (minus_dm / atr_val) * 100 if atr_val else 0
+        di_sum = plus_di + minus_di
+        dx = abs(plus_di - minus_di) / di_sum * 100 if di_sum else 0
+        dx_vals.append(dx)
+        atr_val = atr_val - atr_val / period + (trs[i] if i < len(trs) else trs[-1])
+
+    if not dx_vals:
+        return None
+
+    adx_val = sum(dx_vals[-period:]) / min(period, len(dx_vals))
+    # Son period icin smooth ADX
+    if len(dx_vals) >= period:
+        adx_val = sum(dx_vals[-period:]) / period
+
+    trend_strength = "guclu_trend" if adx_val > 25 else ("zayif_trend" if adx_val > 15 else "trend_yok")
+    return {"value": round(adx_val, 2), "strength": trend_strength}
+
+
+def _cci(prices: list[float], period: int = 20) -> Optional[dict]:
+    """Commodity Channel Index — asiri alim/satim + trend."""
+    if len(prices) < period:
+        return None
+    recent = prices[-period:]
+    mean = sum(recent) / period
+    mean_dev = sum(abs(p - mean) for p in recent) / period
+    if mean_dev == 0:
+        return {"value": 0, "signal": "notr"}
+    current = prices[-1]
+    cci_val = (current - mean) / (0.015 * mean_dev)
+    signal = "notr"
+    if cci_val > 200:
+        signal = "asiri_alim"
+    elif cci_val > 100:
+        signal = "yukari_trend"
+    elif cci_val < -200:
+        signal = "asiri_satim"
+    elif cci_val < -100:
+        signal = "asagi_trend"
+    return {"value": round(cci_val, 2), "signal": signal}
+
+
+def _williams_r(prices: list[float], period: int = 14) -> Optional[dict]:
+    """Williams %R — asiri alim/satim."""
+    if len(prices) < period:
+        return None
+    recent = prices[-period:]
+    high = max(recent)
+    low = min(recent)
+    current = prices[-1]
+    if high == low:
+        wr = -50.0
+    else:
+        wr = ((high - current) / (high - low)) * -100
+    signal = "notr"
+    if wr < -80:
+        signal = "asiri_satim"
+    elif wr > -20:
+        signal = "asiri_alim"
+    return {"value": round(wr, 2), "signal": signal}
+
+
+def _obv_signal(prices: list[float]) -> Optional[dict]:
+    """On-Balance Volume trendi (volume yok, fiyat degisimi ile approx)."""
+    if len(prices) < 10:
+        return None
+    obv = 0
+    obv_series = [0]
+    for i in range(1, len(prices)):
+        if prices[i] > prices[i - 1]:
+            obv += 1
+        elif prices[i] < prices[i - 1]:
+            obv -= 1
+        obv_series.append(obv)
+
+    # OBV trend (son 10 gun)
+    recent_obv = obv_series[-10:]
+    obv_change = recent_obv[-1] - recent_obv[0]
+    price_change = prices[-1] - prices[-10]
+
+    signal = "notr"
+    if obv_change > 0 and price_change > 0:
+        signal = "yukselis_teyit"
+    elif obv_change < 0 and price_change < 0:
+        signal = "dusus_teyit"
+    elif obv_change > 0 and price_change < 0:
+        signal = "ters_uyum_alis"
+    elif obv_change < 0 and price_change > 0:
+        signal = "ters_uyum_satis"
+
+    return {"obv": obv, "trend": "yukselis" if obv_change > 0 else "dusus", "signal": signal}

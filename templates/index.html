@@ -733,12 +733,39 @@ function qs(s){return document.querySelector(s)}
 function uptClock(){$('clockDisplay').textContent=new Date().toLocaleTimeString('tr-TR')}
 setInterval(uptClock,1000);uptClock();
 
+function loadSearchHistory(){try{return JSON.parse(localStorage.getItem('bist_search_history')||'[]')}catch(e){return[]}}
+function saveSearchHistory(sym){
+let h=loadSearchHistory();
+h=h.filter(s=>s!==sym);
+h.unshift(sym);
+if(h.length>10)h=h.slice(0,10);
+localStorage.setItem('bist_search_history',JSON.stringify(h));
+}
+function clearSearchHistory(){localStorage.removeItem('bist_search_history')}
+
 function initSearch(inputId,dropdownId,onSelect){
 const input=$(inputId),dd=$(dropdownId);
 let hideTimer=null;
+
+function showHistory(){
+const history=loadSearchHistory();
+if(!history.length){dd.classList.remove('show');return}
+dd.innerHTML='<div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)"><span style="font-size:10px;font-weight:700;color:#909096;text-transform:uppercase;letter-spacing:.05em">Onceki Aramalar</span><span onclick="event.stopPropagation();clearSearchHistory();dd.classList.remove(\'show\')" style="font-size:10px;color:#EF4444;cursor:pointer;font-weight:600">Temizle</span></div>'+
+history.map((sym,i)=>{
+const s=SYMBOLS.find(x=>x.symbol===sym);
+const p=plc[sym];
+const priceStr=p!==undefined?`<span class="price up">${p.toFixed(2)}</span>`:'<span class="price" style="color:#909096">—</span>';
+return `<div class="search-item" style="animation-delay:${i*0.02}s;border-left:2px solid #45464B" onclick="selectSearch('${inputId}','${dropdownId}','${sym}','${onSelect}')">
+<span class="sym">${sym}</span>
+<span class="name">${s?s.name.slice(0,40):''}</span>
+${priceStr}
+</div>`}).join('');
+dd.classList.add('show');
+}
+
 input.addEventListener('input',function(){
 const q=this.value.toUpperCase().trim();
-if(!q){dd.classList.remove('show');dd.innerHTML='';return}
+if(!q){showHistory();return}
 const prefixMatches=SYMBOLS.filter(s=>s.symbol.startsWith(q));
 const containsMatches=SYMBOLS.filter(s=>!s.symbol.startsWith(q)&&(s.symbol.includes(q)||s.name.toUpperCase().includes(q)));
 const matches=[...prefixMatches,...containsMatches].slice(0,20);
@@ -755,6 +782,10 @@ ${priceStr}
 dd.classList.add('show');
 });
 
+input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value){const q=input.value.toUpperCase().trim();if(q){input.dispatchEvent(new Event('input'));return}}showHistory()});
+input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
+}
+
 input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.remove('show'),200)});
 input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value&&dd.children.length)dd.classList.add('show')});
 }
@@ -762,9 +793,10 @@ input.addEventListener('focus',function(){clearTimeout(hideTimer);if(input.value
 function selectSearch(inputId,dropdownId,symbol,action){
 $(inputId).value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');
 $(dropdownId).classList.remove('show');
+saveSearchHistory(symbol);
 if(action==='alert'){$('aSymbol').value=symbol;}
-if(action==='chart'){curSym=symbol;$('cSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');loadChart();}
-if(action==='price'){openChart(symbol,true)}
+if(action==='chart'){curSym=symbol;$('cSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');updateChartWlBtn();loadChart();}
+if(action==='price'){quickPrice(symbol)}
 if(action==='portfolio'){$('pfSymbol').value=symbol;}
 if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');}
 }
@@ -916,7 +948,31 @@ const sigColors={rsi_asiri_alim:'#EF4444',rsi_asiri_satim:'#10B981',macd_bullish
 if(tr.signals&&tr.signals.length){sc.innerHTML=tr.signals.map(s=>'<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:'+(sigColors[s]||'#909096')+'"></span><span>'+(sigLabels[s]||s)+'</span></div>').join('')}
 else sc.innerHTML='<div class="text-[#909096]">Belirgin sinyal yok</div>';
 const ind=data.indicators;
-if(ind&&ind.rsi){sc.innerHTML+='<div class="mt-2 pt-2 border-t border-white/5"><div class="flex justify-between text-[10px]"><span class="text-[#909096]">RSI</span><span class="font-mono">'+ind.rsi.value+'</span></div></div>'}
+if(ind&&ind.rsi){sc.innerHTML+='<div class="mt-2 pt-2 border-t border-white/5"><div class="flex justify-between text-[12px]"><span class="text-[#909096]">RSI(14)</span><span class="font-mono">'+ind.rsi.value+'</span></div></div>'}
+if(ind&&ind.stochastic){
+const stSig=ind.stochastic.signal==='asiri_alim'?'text-[#EF4444]':(ind.stochastic.signal==='asiri_satim'?'text-[#10B981]':'text-[#909096]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">Stokastik</span><span class="font-mono '+stSig+'">K:'+ind.stochastic.k+' D:'+ind.stochastic.d+'</span></div>';
+}
+if(ind&&ind.adx){
+const adxSig=ind.adx.strength==='guclu_trend'?'text-[#10B981]':(ind.adx.strength==='zayif_trend'?'text-[#EAB308]':'text-[#909096]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">ADX</span><span class="font-mono '+adxSig+'">'+ind.adx.value+' ('+ind.adx.strength+')</span></div>';
+}
+if(ind&&ind.cci){
+const cciSig=ind.cci.signal==='asiri_alim'?'text-[#EF4444]':(ind.cci.signal==='asiri_satim'?'text-[#10B981]':'text-[#909096]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">CCI</span><span class="font-mono '+cciSig+'">'+ind.cci.value+'</span></div>';
+}
+if(ind&&ind.williams_r){
+const wrSig=ind.williams_r.signal==='asiri_alim'?'text-[#EF4444]':(ind.williams_r.signal==='asiri_satim'?'text-[#10B981]':'text-[#909096]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">Williams %R</span><span class="font-mono '+wrSig+'">'+ind.williams_r.value+'</span></div>';
+}
+if(ind&&ind.atr){
+const atrSig=ind.atr.level==='yuksek'?'text-[#EF4444]':(ind.atr.level==='orta'?'text-[#EAB308]':'text-[#10B981]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">ATR</span><span class="font-mono '+atrSig+'">'+ind.atr.value+' (%'+ind.atr.percent+')</span></div>';
+}
+if(ind&&ind.obv_signal){
+const obvSig=ind.obv_signal.signal.includes('alis')?'text-[#10B981]':(ind.obv_signal.signal.includes('satis')?'text-[#EF4444]':'text-[#909096]');
+sc.innerHTML+='<div class="flex justify-between text-[12px]"><span class="text-[#909096]">OBV</span><span class="font-mono '+obvSig+'">'+ind.obv_signal.trend+'</span></div>';
+}
 
 if(tr.score!==undefined){
 const scColor=tr.score>=70?'#10B981':(tr.score>=40?'#EAB308':'#EF4444');
@@ -937,7 +993,7 @@ aiContent.textContent=data.ai_analysis;
 const newsPanel=$('newsPanel'),newsContent=$('newsContent');
 if(data.news&&data.news.length){
 newsPanel.classList.remove('hidden');
-newsContent.innerHTML=data.news.map(n=>`<div class="border-b border-white/5 pb-2 last:border-0"><a href="${n.link}" target="_blank" class="text-[#C3C6D3] hover:underline text-[11px] font-medium">${n.title}</a><div class="text-[9px] text-[#909096] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
+newsContent.innerHTML=data.news.map(n=>`<div class="border-b border-white/5 pb-2.5 last:border-0"><a href="${n.link}" target="_blank" class="text-[#C3C6D3] hover:underline text-sm font-medium">${n.title}</a><div class="text-xs text-[#909096] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
 }else{newsPanel.classList.add('hidden')}
 
 const fundPanel=$('fundPanel'),fundContent=$('fundContent');
@@ -947,17 +1003,17 @@ fundPanel.classList.remove('hidden');
 const r=fund.ratios;
 const bs=fund.balance_sheet||{};
 const rMap={market_cap:'Piyasa Degeri',pe_ratio:'F/K',pb_ratio:'PD/DD',eps:'EPS',dividend_yield:'Temettu %',beta:'Beta',profit_margins:'Kar Marji %',debt_to_equity:'Borc/Ozkaynak',roe:'ROE %','52w_high':'52H Yuksek','52w_low':'52H Dusuk'};
-let html='<div class="space-y-1">';
+let html='<div class="space-y-2">';
 Object.entries(rMap).forEach(([k,l])=>{
 const v=r[k];
 if(v!==null&&v!==undefined){
 const val=typeof v==='number'?(k==='market_cap'?(v/1e9).toFixed(2)+' Mr':v.toFixed(2)):v;
-html+=`<div class="flex justify-between text-[10px]"><span class="text-[#909096]">${l}</span><span class="font-mono">${val}</span></div>`}});
+html+=`<div class="flex justify-between text-[12px]"><span class="text-[#909096]">${l}</span><span class="font-mono">${val}</span></div>`}});
 if(bs.total_assets||bs.total_debt){
-html+=`<div class="border-t border-white/5 pt-1 mt-1"></div>`;
-if(bs.total_assets)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#909096]">Aktif Toplam</span><span class="font-mono">${(bs.total_assets/1e9).toFixed(2)} Mr</span></div>`;
-if(bs.total_debt)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#909096]">Toplam Borc</span><span class="font-mono">${(bs.total_debt/1e9).toFixed(2)} Mr</span></div>`;
-if(bs.cash)html+=`<div class="flex justify-between text-[10px]"><span class="text-[#909096]">Nakit</span><span class="font-mono">${(bs.cash/1e9).toFixed(2)} Mr</span></div>`;}
+html+=`<div class="border-t border-white/5 pt-2 mt-2"></div>`;
+if(bs.total_assets)html+=`<div class="flex justify-between text-[12px]"><span class="text-[#909096]">Aktif Toplam</span><span class="font-mono">${(bs.total_assets/1e9).toFixed(2)} Mr</span></div>`;
+if(bs.total_debt)html+=`<div class="flex justify-between text-[12px]"><span class="text-[#909096]">Toplam Borc</span><span class="font-mono">${(bs.total_debt/1e9).toFixed(2)} Mr</span></div>`;
+if(bs.cash)html+=`<div class="flex justify-between text-[12px]"><span class="text-[#909096]">Nakit</span><span class="font-mono">${(bs.cash/1e9).toFixed(2)} Mr</span></div>`;}
 html+='</div>';
 fundContent.innerHTML=html;
 }else{fundPanel.classList.add('hidden')}
