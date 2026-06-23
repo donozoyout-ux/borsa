@@ -11,10 +11,10 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 def send_telegram_message(message: str) -> bool:
     """Telegram'a mesaj gonderir."""
     if not TELEGRAM_BOT_TOKEN:
-        raise ValueError("TELEGRAM_BOT_TOKEN bulunamadi. .env dosyasini kontrol et.")
+        raise ValueError("TELEGRAM_BOT_TOKEN bulunamadi. .env dosyasini veya Render Environment Variables'i kontrol et.")
 
     if not TELEGRAM_CHAT_ID:
-        raise ValueError("TELEGRAM_CHAT_ID bulunamadi. .env dosyasini kontrol et.")
+        raise ValueError("TELEGRAM_CHAT_ID bulunamadi. .env dosyasini veya Render Environment Variables'i kontrol et.")
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
@@ -23,12 +23,22 @@ def send_telegram_message(message: str) -> bool:
         "parse_mode": "HTML",
     }
 
-    response = requests.post(url, json=payload, timeout=15)
-    response.raise_for_status()
-    data = response.json()
-    return bool(data.get("ok"))
+    try:
+        response = requests.post(url, json=payload, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+        return bool(data.get("ok"))
+    except requests.exceptions.Timeout:
+        raise ValueError("Telegram API zaman asimi. Internet baglantinizi kontrol edin.")
+    except requests.exceptions.ConnectionError:
+        raise ValueError("Telegram API'ye baglanamiyor. Internet baglantinizi kontrol edin.")
+    except Exception as e:
+        raise ValueError(f"Telegram hatasi: {str(e)}")
 
 
 if __name__ == "__main__":
-    send_telegram_message("✅ Borsa takip botu Telegram bildirimi calisiyor!")
-    print("Telegram test mesaji gonderildi.")
+    try:
+        send_telegram_message("✅ Borsa takip botu Telegram bildirimi calisiyor!")
+        print("Telegram test mesaji gonderildi.")
+    except Exception as e:
+        print(f"HATA: {e}")

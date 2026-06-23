@@ -30,8 +30,19 @@ _bot_running = False
 _bot_logs: list[str] = []
 _bot_stop_event = threading.Event()
 _MAX_LOGS = 50
+_bot_auto_started = False
 
 LOGS_FILE = Path(__file__).resolve().parent / "data" / "bot_logs.json"
+
+
+def _ensure_bot_started():
+    """Botu bir kez otomatik baslat (gunicorn icin)."""
+    global _bot_auto_started
+    if _bot_auto_started:
+        return
+    _bot_auto_started = True
+    _load_logs()
+    _auto_start_bot()
 
 
 def _add_log(msg: str) -> None:
@@ -126,6 +137,7 @@ def _bot_worker() -> None:
 
 @app.route("/")
 def index():
+    _ensure_bot_started()
     return render_template("index.html", symbols=load_bist_symbols())
 
 
@@ -576,8 +588,58 @@ def api_key_stocks_daily():
         return jsonify({"error": str(exc)}), 500
 
 
+@app.route("/api/settings/telegram-status")
+def api_settings_telegram_status():
+    from telegram_notifier import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+    return jsonify({
+        "token_set": bool(TELEGRAM_BOT_TOKEN),
+        "chat_id_set": bool(TELEGRAM_CHAT_ID),
+        "token_preview": (TELEGRAM_BOT_TOKEN[:8] + "..." + TELEGRAM_BOT_TOKEN[-4:]) if TELEGRAM_BOT_TOKEN else "",
+        "chat_id": TELEGRAM_CHAT_ID or "",
+    })
+
+
+@app.route("/api/settings/check-env")
+def api_settings_check_env():
+    return jsonify({
+        "TELEGRAM_BOT_TOKEN": bool(os.getenv("TELEGRAM_BOT_TOKEN")),
+        "TELEGRAM_CHAT_ID": bool(os.getenv("TELEGRAM_CHAT_ID")),
+        "GROQ_API_KEY": bool(os.getenv("GROQ_API_KEY")),
+        "GEMINI_API_KEY": bool(os.getenv("GEMINI_API_KEY")),
+    })
+
+
+@app.route("/api/settings/test-telegram", methods=["POST"])
+def api_settings_test_telegram():
+    try:
+        from telegram_notifier import send_telegram_message
+        send_telegram_message("🧪 <b>Test Mesaji</b>\nBIST Terminal Telegram baglantisi basarili!")
+        return jsonify({"ok": True})
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+def _auto_start_bot():
+    """Render gibi ortamlarda botu otomatik baslatir."""
+    global _bot_running
+    if _bot_running:
+        return
+    telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    telegram_chat = os.getenv("TELEGRAM_CHAT_ID")
+    if telegram_token and telegram_chat:
+        _add_log('Telegram ayarlari bulundu, bot otomatik baslatiliyor...')
+        _save_logs()
+        _bot_stop_event.clear()
+        t = threading.Thread(target=_bot_worker, daemon=True)
+        t.start()
+    else:
+        _add_log('Telegram ayarlari bulunamadi! .env veya Render Environment Variables ayarlayin.')
+        _save_logs()
+
+
 if __name__ == "__main__":
     _load_logs()
     _start_price_cache_refresher()
+    _ensure_bot_started()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, threaded=True, debug=False)
