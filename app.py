@@ -2,6 +2,7 @@ import os
 import json
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -162,6 +163,22 @@ def api_price(symbol):
         return jsonify({"error": "Fiyat bulunamadı"}), 404
     except PriceFetchError as exc:
         return jsonify({"error": str(exc)}), 502
+
+
+@app.route("/api/prices/all")
+def api_prices_all():
+    all_syms = load_bist_symbols()
+    results = []
+    with ThreadPoolExecutor(max_workers=20) as ex:
+        fut = {ex.submit(get_bist_price, s["symbol"]): s["symbol"] for s in all_syms}
+        for f in as_completed(fut, timeout=10):
+            try:
+                p = f.result()
+                if p is not None:
+                    results.append({"symbol": fut[f], "price": p})
+            except Exception:
+                pass
+    return jsonify({"prices": results, "count": len(results)})
 
 
 @app.route("/api/chart/<symbol>")

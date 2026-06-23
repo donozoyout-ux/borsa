@@ -677,11 +677,8 @@ setTimeout(()=>{t.style.transform='translateX(-50%) translateY(-30px)';t.style.o
 async function loadPL(){
 const c=$('plContainer');
 c.innerHTML=Array(10).fill(0).map(()=>'<div class="px-5 py-3"><div class="skel" style="width:60%"></div></div>').join('');
-const bs=8;let html='',count=0;
-for(let i=0;i<SYMBOLS.length;i+=bs){
-const batch=SYMBOLS.slice(i,i+bs);
-const prices=await Promise.all(batch.map(s=>fetch('/api/price/'+s.symbol,{signal:AbortSignal.timeout(7000)}).then(r=>r.json()).catch(()=>({}))));
-prices.forEach((p,idx)=>{const s=batch[idx];if(p.price){plc[s.symbol]=p.price;count++}})}
+try{const r=await fetch('/api/prices/all',{signal:AbortSignal.timeout(15000)});const d=await r.json();
+(d.prices||[]).forEach(p=>{plc[p.symbol]=p.price});var count=d.count||0}catch(e){var count=0}
 
 const activeAlerts=new Set(alertsCache.filter(x=>x.active).map(x=>x.symbol));
 html=SYMBOLS.map((s,i)=>{
@@ -1115,7 +1112,7 @@ initSearch('aiSearch','aiDropdown','aianalysis');
 // ── INIT ──
 loadPL();loadAlerts();checkBot();
 setInterval(checkBot,5000);
-setInterval(()=>{if(document.querySelector('#tab-watchlist.active'))loadPL()},30000);
+setInterval(()=>{const a=document.querySelector('.tab-content.active');if(a&&a.id==='tab-watchlist')loadPL()},60000);
 </script>
 </body>
 </html>
