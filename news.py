@@ -317,34 +317,95 @@ def get_stock_news(symbol: str, max_items: int = 10) -> list[dict]:
     result = []
     for item in all_items[:max_items]:
         clean = {k: v for k, v in item.items() if k != "_dt"}
+        dt = item.get("_dt")
+        if dt:
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            clean["pub_timestamp"] = int(dt.timestamp())
         result.append(clean)
 
     return result
 
 
 def get_fundamentals(symbol: str) -> Optional[dict]:
-    """Yahoo Finance v10 API ile finansal verileri çeker."""
+    """Yahoo Finance ile finansal verileri ceker. v8 chart meta + historical veri hesaplamasi."""
     clean = symbol.strip().upper().replace(".IS", "")
-    url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{clean}.IS"
-    params = {"modules": "financialData,summaryDetail,balanceSheetHistory,incomeStatementHistory,defaultKeyStatistics"}
-    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0"}
 
     try:
-        resp = requests.get(url, params=params, headers=headers, timeout=10)
-        if resp.status_code == 401:
+        from bist_data import get_yahoo_v8_chart_meta, get_historical_prices
+        meta = get_yahoo_v8_chart_meta(clean)
+        if not meta:
             return None
-        resp.raise_for_status()
-        data = resp.json()
-        result = data.get("quoteSummary", {}).get("result", [])
-        if not result:
-            return None
-        return result[0]
+
+        hist = get_historical_prices(clean, range_str="1y", interval="1d")
+        sma_50 = sum(hist[-50:]) / len(hist[-50:]) if hist and len(hist) >= 50 else None
+        sma_200 = sum(hist[-200:]) / len(hist[-200:]) if hist and len(hist) >= 200 else None
+
+        price = meta.get("regularMarketPrice")
+        prev_close = meta.get("previousClose") or meta.get("chartPreviousClose")
+        change_pct = ((price - prev_close) / prev_close * 100) if price and prev_close else None
+
+        fin = {
+            "market_cap": None,
+            "pe_ratio": None,
+            "pb_ratio": None,
+            "eps": None,
+            "dividend_yield": None,
+            "beta": None,
+            "profit_margins": None,
+            "revenue": None,
+            "debt_to_equity": None,
+            "roe": None,
+            "52w_high": meta.get("fiftyTwoWeekHigh"),
+            "52w_low": meta.get("fiftyTwoWeekLow"),
+            "avg_volume": meta.get("regularMarketVolume"),
+            "50d_avg": round(sma_50, 2) if sma_50 else None,
+            "200d_avg": round(sma_200, 2) if sma_200 else None,
+            "short_ratio": None,
+            "day_high": meta.get("regularMarketDayHigh"),
+            "day_low": meta.get("regularMarketDayLow"),
+            "prev_close": prev_close,
+            "change_pct": round(change_pct, 2) if change_pct else None,
+        }
+
+        return {
+            "ratios": fin,
+            "balance_sheet": {},
+            "has_data": any(v is not None for v in fin.values()),
+        }
     except Exception:
         return None
 
 
 def parse_fundamentals(raw: dict) -> dict:
-    """Ham fundamentals verisini temiz formata dönüştür."""
+    """Ham fundamentals verisini temiz formata donustur. v10 ve v7 veri kaynaklarini destekler."""
+
+    if raw.get("_v7_source"):
+        q = raw.get("quote", {})
+        fin = {
+            "market_cap": q.get("marketCap"),
+            "pe_ratio": q.get("trailingPE"),
+            "pb_ratio": q.get("priceToBook"),
+            "eps": q.get("epsTrailingTwelveMonths"),
+            "dividend_yield": q.get("dividendYield"),
+            "beta": q.get("beta"),
+            "profit_margins": q.get("profitMargins"),
+            "revenue": q.get("totalRevenue"),
+            "debt_to_equity": q.get("debtToEquity"),
+            "roe": q.get("returnOnEquity"),
+            "52w_high": q.get("fiftyTwoWeekHigh"),
+            "52w_low": q.get("fiftyTwoWeekLow"),
+            "avg_volume": q.get("averageVolume"),
+            "50d_avg": q.get("fiftyDayAverage"),
+            "200d_avg": q.get("twoHundredDayAverage"),
+            "short_ratio": q.get("shortRatio"),
+        }
+        return {
+            "ratios": fin,
+            "balance_sheet": {},
+            "has_data": any(v is not None for v in fin.values()),
+        }
+
     fd = raw.get("financialData", {}) or {}
     sd = raw.get("summaryDetail", {}) or {}
     ks = raw.get("defaultKeyStatistics", {}) or {}
@@ -367,10 +428,11 @@ def parse_fundamentals(raw: dict) -> dict:
         "52w_high": _val(sd, "fiftyTwoWeekHigh"),
         "52w_low": _val(sd, "fiftyTwoWeekLow"),
         "avg_volume": _val(sd, "averageVolume"),
+        "50d_avg": _val(sd, "fiftyDayAverage"),
+        "200d_avg": _val(sd, "twoHundredDayAverage"),
         "short_ratio": _val(ks, "shortRatio"),
     }
 
-    # Bilanço
     bs = raw.get("balanceSheetHistory", {}).get("balanceSheetStatements", [])
     balance = {}
     if bs:

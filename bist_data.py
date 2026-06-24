@@ -135,6 +135,38 @@ def _fetch_yahoo_v7(symbol: str) -> Optional[float]:
     return None
 
 
+def get_yahoo_v7_quote(symbol: str) -> Optional[dict]:
+    clean = symbol.strip().upper().replace(".IS", "")
+    url = "https://query1.finance.yahoo.com/v7/finance/quote"
+    params = {"symbols": f"{clean}.IS"}
+    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0", "Accept": "application/json"}
+    data = _get_json(url, params, headers, timeout=10)
+    if not data:
+        return None
+    try:
+        quotes = data.get("quoteResponse", {}).get("result", [])
+        if quotes:
+            return quotes[0]
+    except Exception:
+        pass
+    return None
+
+
+def get_yahoo_v8_chart_meta(symbol: str) -> Optional[dict]:
+    clean = symbol.strip().upper().replace(".IS", "")
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean}.IS"
+    params = {"range": "1d", "interval": "1m"}
+    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0", "Accept": "application/json"}
+    data = _get_json(url, params, headers, timeout=10)
+    if not data:
+        return None
+    try:
+        result = data["chart"]["result"][0]
+        return result.get("meta", {})
+    except Exception:
+        return None
+
+
 def get_bist_price_nocache(symbol: str) -> Optional[float]:
     clean = symbol.strip().upper().replace(".IS", "")
     for fetcher in [_fetch_yahoo_v8, _fetch_yahoo_v7]:

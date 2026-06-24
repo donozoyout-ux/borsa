@@ -226,7 +226,10 @@ def api_analysis(symbol):
         current_price = indicators_result.get("current_price")
         news = get_stock_news(clean, 5)
         raw_fund = get_fundamentals(clean)
-        fund = parse_fundamentals(raw_fund) if raw_fund else {"has_data": False}
+        if raw_fund:
+            fund = raw_fund if "ratios" in raw_fund else parse_fundamentals(raw_fund)
+        else:
+            fund = {"has_data": False}
         ai_text = get_ai_analysis(clean, current_price, indicators_result, trend_result, fund, news)
         return jsonify({
             "symbol": clean,
@@ -267,6 +270,18 @@ def api_ai_analyze_image():
 def api_news(symbol):
     clean = symbol.upper().strip().replace(".IS", "")
     news = get_stock_news(clean, 10)
+    since = request.args.get("since")
+    if since:
+        try:
+            since_ts = int(since)
+            filtered = []
+            for n in news:
+                pub = n.get("pub_timestamp")
+                if pub and int(pub) >= since_ts:
+                    filtered.append(n)
+            news = filtered
+        except Exception:
+            pass
     return jsonify(news)
 
 
@@ -284,7 +299,10 @@ def api_analysis_multi(symbol):
         current_price = indicators_result.get("current_price")
         news = get_stock_news(clean, 5)
         raw_fund = get_fundamentals(clean)
-        fund = parse_fundamentals(raw_fund) if raw_fund else {"has_data": False}
+        if raw_fund:
+            fund = raw_fund if "ratios" in raw_fund else parse_fundamentals(raw_fund)
+        else:
+            fund = {"has_data": False}
         result = get_multi_ai_analysis(clean, current_price, indicators_result, trend_result, fund, news)
         return jsonify({
             "symbol": clean,

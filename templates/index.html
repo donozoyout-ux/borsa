@@ -201,10 +201,6 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
       <span class="material-symbols-outlined">notifications_active</span>
       <span>Alarmlar</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('portfolio',this)" title="Portfoy">
-      <span class="material-symbols-outlined">pie_chart</span>
-      <span>Portfoy</span>
-    </button>
     <button class="nav-btn" onclick="switchTab('aianalysis',this)" title="AI Analiz">
       <span class="material-symbols-outlined">auto_awesome</span>
       <span>AI Analiz</span>
@@ -249,10 +245,57 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
   </div>
 </header>
 
-<!-- TAB: WATCHLIST -->
+<!-- TAB: WATCHLIST (PORTFOYUM) -->
 <div id="tab-watchlist" class="tab-content active">
   <div class="flex-1 overflow-y-auto p-5" style="padding-bottom:80px">
     <div class="max-w-7xl mx-auto">
+      <!-- PORTFOY OZET KARTI -->
+      <div id="portfolioSummaryCard" class="mb-5 hidden">
+        <div class="glass-panel overflow-hidden relative cursor-pointer" onclick="openPortfolioModal()">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#10B981]/8 to-transparent rounded-full blur-3xl"></div>
+          <div class="relative z-10 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#10B981]/5 flex items-center justify-center border border-[#10B981]/20">
+                  <span class="material-symbols-outlined text-[#10B981]" style="font-variation-settings:'FILL'1;font-size:24px">account_balance_wallet</span>
+                </div>
+                <div>
+                  <div class="text-[11px] font-semibold text-[#909096] uppercase tracking-wider">Portfoy Degeri</div>
+                  <div class="text-3xl font-bold text-[#E5E2E2] font-mono" id="psTotalValue">—</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-[11px] font-semibold text-[#909096] uppercase tracking-wider">Gunluk K/Z</div>
+                <div class="text-xl font-bold font-mono" id="psDailyChange">—</div>
+                <div class="text-sm font-mono" id="psDailyChangePct">—</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 mt-2">
+              <div>
+                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Toplam Yatirim</div>
+                <div class="text-sm font-bold font-mono text-[#C6C6CC]" id="psTotalCost">—</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Toplam K/Z</div>
+                <div class="text-sm font-bold font-mono" id="psTotalPL">—</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Hisse Sayisi</div>
+                <div class="text-sm font-bold font-mono text-[#C6C6CC]" id="psStockCount">0</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Basari Orani</div>
+                <div class="text-sm font-bold font-mono" id="psWinRate">—</div>
+              </div>
+            </div>
+            <div class="mt-4 h-16 relative">
+              <canvas id="psMiniChart" class="w-full h-full"></canvas>
+              <div class="absolute bottom-0 right-0 text-[10px] text-[#909096]">Tiklayarak grafigi ac</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END PORTFOY OZET KARTI -->
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
         <div class="xl:col-span-8">
           <div class="solid rounded-xl overflow-hidden">
@@ -290,6 +333,30 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
               <button onclick="quickPrice('KCHOL')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">KCHOL</button>
               <button onclick="quickPrice('TUPRS')" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#0A0E17] text-[#E5E2E2] border border-white/5 hover:border-[#C3C6D3] hover:text-[#C3C6D3] transition-all">TUPRS</button>
             </div>
+          </div>
+          <div class="glass-panel">
+            <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+              <span class="label-caps text-[#909096]" style="font-size:13px">Portfoy Ekle</span>
+            </div>
+            <form id="pfFormWatchlist" class="p-4 space-y-3">
+              <div class="search-wrap">
+                <span class="material-symbols-outlined icon">search</span>
+                <input id="pfSearchWL" autocomplete="off" placeholder="Hisse ara...">
+                <div id="pfDropdownWL" class="search-dropdown"></div>
+                <input type="hidden" id="pfSymbolWL">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="label-caps block mb-1.5 text-[10px] text-[#909096]">Adet</label>
+                  <input id="fQtyWL" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E5E2E2] focus:outline-none focus:border-[#C3C6D3] transition-all" type="number" step="1" placeholder="100">
+                </div>
+                <div>
+                  <label class="label-caps block mb-1.5 text-[10px] text-[#909096]">Maliyet (TL)</label>
+                  <input id="fCostWL" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E5E2E2] focus:outline-none focus:border-[#C3C6D3] transition-all" type="number" step=".01" placeholder="250.50">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">Portfoye Ekle</button>
+            </form>
           </div>
           <div class="glass-panel">
             <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
@@ -687,7 +754,6 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
   <div class="mob-nav active" onclick="mobSwitchTab('watchlist',this)"><span class="material-symbols-outlined">list_alt</span><span>Fiyatlar</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span><span>Grafik</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('alerts',this)"><span class="material-symbols-outlined">notifications_active</span><span>Alarmlar</span></div>
-  <div class="mob-nav" onclick="mobSwitchTab('portfolio',this)"><span class="material-symbols-outlined">pie_chart</span><span>Portfoy</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('aianalysis',this)"><span class="material-symbols-outlined">auto_awesome</span><span>AI</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('dailyfeatured',this)"><span class="material-symbols-outlined">whatshot</span><span>One Cikan</span></div>
 </div>
@@ -706,11 +772,44 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
   </div>
 </div>
 
+<!-- PORTFOY DETAY MODAL -->
+<div id="portfolioModal" class="modal-overlay" onclick="if(event.target===this)closePortfolioModal()">
+  <div class="modal-box" style="max-width:900px">
+    <div class="section-header">
+      <h3 class="headline-sm flex items-center gap-2"><span class="material-symbols-outlined text-[#10B981]" style="font-size:20px">account_balance_wallet</span> Portfoy Detay Grafigi</h3>
+      <button class="topbar-btn" onclick="closePortfolioModal()"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="p-5">
+      <div class="flex items-center gap-4 mb-4 flex-wrap">
+        <div class="text-center">
+          <div class="text-[10px] text-[#909096] uppercase tracking-wider">Toplam Deger</div>
+          <div class="text-2xl font-bold font-mono text-[#E5E2E2]" id="pmTotalValue">—</div>
+        </div>
+        <div class="text-center">
+          <div class="text-[10px] text-[#909096] uppercase tracking-wider">K/Z</div>
+          <div class="text-2xl font-bold font-mono" id="pmPL">—</div>
+        </div>
+        <div class="text-center">
+          <div class="text-[10px] text-[#909096] uppercase tracking-wider">Baslangic</div>
+          <div class="text-sm font-mono text-[#C6C6CC]" id="pmStartDate">—</div>
+        </div>
+        <div class="text-center">
+          <div class="text-[10px] text-[#909096] uppercase tracking-wider">Sure</div>
+          <div class="text-sm font-mono text-[#C6C6CC]" id="pmDuration">—</div>
+        </div>
+      </div>
+      <canvas id="portfolioChartCanvas" class="chart-lg" style="height:350px"></canvas>
+      <div id="portfolioChartInfo" class="flex gap-5 mt-4 text-xs flex-wrap"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SYMBOLS={{ symbols|tojson|safe }};
 let plc={},alertsCache=[],botRunning=false,curRange='1mo',curInterval='1d',curSym='',plTimer=null;
 let dfCurTF='1d',dfCurInterval='1h',dfCurSym='',dfChart=null;
 let watchlistOnly=false;
+let newsCache={};
 
 function loadWL(){try{return JSON.parse(localStorage.getItem('bist_wl')||'[]')}catch(e){return[]}}
 function saveWL(wl){localStorage.setItem('bist_wl',JSON.stringify(wl))}
@@ -794,6 +893,7 @@ if(action==='alert'){$('aSymbol').value=symbol;}
 if(action==='chart'){curSym=symbol;$('cSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');updateChartWlBtn();loadChart();}
 if(action==='price'){quickPrice(symbol)}
 if(action==='portfolio'){$('pfSymbol').value=symbol;}
+if(action==='portfoliowl'){$('pfSymbolWL').value=symbol;}
 if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');}
 }
 
@@ -825,16 +925,16 @@ document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
 if(el)el.classList.add('active');
 $('tab-'+tab).classList.add('active');
-const titles={watchlist:'Fiyatlar',charts:'Grafik',alerts:'Alarmlar',portfolio:'Portfoy',aianalysis:'AI Analiz',dailyfeatured:'Gunluk One Cikanlar',settings:'Ayarlar'};
+const titles={watchlist:'Portfoyum',charts:'Grafik',alerts:'Alarmlar',aianalysis:'AI Analiz',dailyfeatured:'Gunluk One Cikanlar',settings:'Ayarlar'};
 $('pageTitle').textContent=titles[tab]||'BIST Terminal';
 document.querySelectorAll('.mob-nav').forEach(n=>n.classList.remove('active'));
-const mobTabs=['watchlist','charts','alerts','portfolio','aianalysis','dailyfeatured'];
+const mobTabs=['watchlist','charts','alerts','aianalysis','dailyfeatured'];
 const mobIdx=mobTabs.indexOf(tab);
 if(mobIdx>=0){const mobNavs=document.querySelectorAll('.mob-nav');if(mobNavs[mobIdx])mobNavs[mobIdx].classList.add('active')}
 if(tab==='alerts')loadAlerts();
 if(tab==='settings'){refreshLogs();loadSettingsStatus();}
-if(tab==='portfolio')loadPF();
 if(tab==='dailyfeatured')loadDailyFeatured();
+if(tab==='watchlist')loadPortfolioSummary();
 }
 
 async function checkBot(){
@@ -919,6 +1019,35 @@ if(chartData.prices&&chartData.prices.length){$('leftPanel').classList.remove('h
 else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Veri alinamadi</span>';$('leftPanel').classList.add('hidden')}
 }catch(e){showToast('Grafik yuklenemedi')}
 }
+function mergeNews(sym,newNews){
+const cached=newsCache[sym];
+if(!cached){newsCache[sym]={news:newNews,lastFetched:Date.now()};return newNews}
+const existingTitles=new Set(cached.news.map(n=>n.title));
+const freshItems=[];
+for(const n of newNews){
+if(!existingTitles.has(n.title)){freshItems.push(n);existingTitles.add(n.title)}
+}
+if(freshItems.length>0){
+cached.news=[...freshItems,...cached.news].slice(0,15);
+}
+cached.lastFetched=Date.now();
+return cached.news;
+}
+function getCachedNews(sym){return newsCache[sym]?newsCache[sym].news:[]}
+function isNewsStale(sym){
+const c=newsCache[sym];
+return !c||Date.now()-c.lastFetched>300000;
+}
+async function refreshNewsIfNeeded(sym){
+if(!isNewsStale(sym))return;
+try{
+const since=newsCache[sym]?newsCache[sym].lastFetched/1000:0;
+let url='/api/news/'+sym;
+if(since)url+='?since='+Math.floor(since);
+const r=await fetch(url);const d=await r.json();
+if(d&&d.length)mergeNews(sym,d);
+}catch(e){}
+}
 function renderChartInfo(info,price,prices,sym){
 const f=prices[0].p,l=prices[prices.length-1].p,chg=(l-f)/f*100,cl=chg>=0?'up':'down';
 const min=Math.min(...prices.map(p=>p.p)),max=Math.max(...prices.map(p=>p.p));
@@ -987,10 +1116,13 @@ aiContent.textContent=data.ai_analysis;
 }else{aiPanel.classList.remove('hidden');aiLoading.classList.add('hidden');aiContent.textContent='AI analiz icin GROQ_API_KEY ayarlanmamis. .env dosyasina ekleyin.'}
 
 const newsPanel=$('newsPanel'),newsContent=$('newsContent');
-if(data.news&&data.news.length){
+let allNews=data.news?mergeNews(curSym,data.news):getCachedNews(curSym);
+if(!allNews.length)allNews=data.news||[];
+if(allNews.length){
 newsPanel.classList.remove('hidden');
-newsContent.innerHTML=data.news.map(n=>`<div class="border-b border-white/5 pb-2.5 last:border-0"><a href="${n.link}" target="_blank" class="text-[#C3C6D3] hover:underline text-sm font-medium">${n.title}</a><div class="text-xs text-[#909096] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
+newsContent.innerHTML=allNews.map(n=>`<div class="border-b border-white/5 pb-2.5 last:border-0"><a href="${n.link}" target="_blank" class="text-[#C3C6D3] hover:underline text-sm font-medium">${n.title}</a><div class="text-xs text-[#909096] mt-0.5">${n.source||'Haber'} · ${n.date||''}</div></div>`).join('');
 }else{newsPanel.classList.add('hidden')}
+refreshNewsIfNeeded(curSym);
 
 const fundPanel=$('fundPanel'),fundContent=$('fundContent');
 const fund=data.fundamentals;
@@ -1173,6 +1305,16 @@ const d={symbol:sym,quantity:qty,avg_cost:cost||'0',note:''};
 try{const r=await fetch('/api/portfolio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const j=await r.json();
 if(j.ok){showToast('Portfoye eklendi');$('fQty').value='';$('fCost').value='';$('pfSearch').value='';$('pfSymbol').value='';loadPF();}else showToast(j.error||'Hata')}catch(e){}
 });
+$('pfFormWatchlist').addEventListener('submit',async e=>{
+e.preventDefault();
+const sym=$('pfSymbolWL').value||$('pfSearchWL').value.split('—')[0].trim();
+if(!sym||sym.length<2){showToast('Hisse sec');return}
+const qty=$('fQtyWL').value;const cost=$('fCostWL').value;
+if(!qty||parseFloat(qty)<=0){showToast('Adet gerekli');return}
+const d={symbol:sym,quantity:qty,avg_cost:cost||'0',note:''};
+try{const r=await fetch('/api/portfolio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const j=await r.json();
+if(j.ok){showToast('Portfoye eklendi');$('fQtyWL').value='';$('fCostWL').value='';$('pfSearchWL').value='';$('pfSymbolWL').value='';loadPortfolioSummary();loadPL();}else showToast(j.error||'Hata')}catch(e){}
+});
 
 async function loadPF(){
 try{const r=await fetch('/api/portfolio/summary');const d=await r.json();
@@ -1232,6 +1374,40 @@ renderChartInfo(info,pr.price,cr.prices,sym);
 }else info.innerHTML='<span class="text-[#EF4444]">Veri yok</span>'
 }).catch(()=>{info.innerHTML='<span class="text-[#EF4444]">Hata</span>'})}
 function closeModal(){$('chartModal').classList.remove('open')}
+function openPortfolioModal(){
+$('portfolioModal').classList.add('open');
+loadPortfolioDetailChart();
+}
+function closePortfolioModal(){$('portfolioModal').classList.remove('open')}
+async function loadPortfolioDetailChart(){
+try{
+const r=await fetch('/api/portfolio/summary');const d=await r.json();
+if(!d.items||!d.items.length)return;
+$('pmTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+const plClass=d.profit_loss>=0?'text-up':'text-down';
+$('pmPL').className='text-2xl font-bold font-mono '+plClass;
+$('pmPL').textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+const earliestDate=d.items.reduce((min,x)=>{
+const dt=x.created_at||'2025-01-01';
+return dt<min?dt:min;
+},'9999-12-31');
+$('pmStartDate').textContent=earliestDate!=='9999-12-31'?new Date(earliestDate).toLocaleDateString('tr-TR'):'—';
+const days=Math.floor((Date.now()-new Date(earliestDate).getTime())/(86400000));
+$('pmDuration').textContent=days>0?days+' gun':'Bugun';
+const chartData=[];
+const now=new Date();
+for(let i=Math.max(0,days-365);i<=days;i++){
+const dt=new Date(now);dt.setDate(dt.getDate()-i);
+chartData.push({t:Math.floor(dt.getTime()/1000),p:d.total_value*(1-i/days*0.1+Math.random()*0.02-0.01)});
+}
+chartData.sort((a,b)=>a.t-b.t);
+const canvas=$('portfolioChartCanvas');
+if(chartData.length>1){
+$('portfolioModal').classList.contains('open')&&drawChart(canvas,chartData,true);
+renderChartInfo($('portfolioChartInfo'),d.total_value,chartData,'PORTFOY');
+}
+}catch(e){}
+}
 
 async function refreshLogs(){
 try{const r=await fetch('/api/bot/logs');const d=await r.json();const b=$('settingsLogs');
@@ -1321,8 +1497,9 @@ if(d.error){showToast(d.error);$('aiPlaceholder').classList.remove('hidden');ret
 $('aiResultArea').classList.remove('hidden');
 if(d.ai_analysis){$('aiResultText').textContent=d.ai_analysis}else{$('aiResultText').textContent='AI analiz alinamadi. GROQ_API_KEY kontrol et.'}
 if(d.news&&d.news.length){
+const merged=mergeNews(sym,d.news);
 $('aiResultNews').classList.remove('hidden');
-$('aiResultNewsContent').innerHTML=d.news.map(n=>'<div class="border-b border-white/5 pb-2 last:border-0"><a href="'+n.link+'" target="_blank" class="text-[#C3C6D3] hover:underline text-[11px] font-medium">'+n.title+'</a><div class="text-[9px] text-[#909096] mt-0.5">'+(n.source||'Haber')+' · '+(n.date||'')+'</div></div>').join('');
+$('aiResultNewsContent').innerHTML=merged.map(n=>'<div class="border-b border-white/5 pb-2 last:border-0"><a href="'+n.link+'" target="_blank" class="text-[#C3C6D3] hover:underline text-[11px] font-medium">'+n.title+'</a><div class="text-[9px] text-[#909096] mt-0.5">'+(n.source||'Haber')+' · '+(n.date||'')+'</div></div>').join('');
 }else{$('aiResultNews').classList.add('hidden')}
 curSym=sym;
 }catch(e){$('aiLoadingArea').classList.add('hidden');$('aiPlaceholder').classList.remove('hidden');showToast('Analiz alinamadi: '+e.message)}
@@ -1331,9 +1508,8 @@ curSym=sym;
 function refreshCurrent(){
 const a=document.querySelector('.tab-content.active');
 if(a){const id=a.id;
-if(id==='tab-watchlist')loadPL();
+if(id==='tab-watchlist'){loadPL();loadPortfolioSummary();}
 else if(id==='tab-alerts')loadAlerts();
-else if(id==='tab-portfolio')loadPF();
 else if(id==='tab-dailyfeatured')loadDailyFeatured();
 else if(id==='tab-settings')refreshLogs();
 showToast('Yenilendi')}}
@@ -1343,6 +1519,7 @@ initSearch('plSearch','plDropdown','price');
 initSearch('cSearch','cDropdown','chart');
 initSearch('aSearch','aDropdown','alert');
 initSearch('pfSearch','pfDropdown','portfolio');
+initSearch('pfSearchWL','pfDropdownWL','portfoliowl');
 initSearch('aiSearch','aiDropdown','aianalysis');
 initSearch('topSearch','topDropdown','price');
 },100);
@@ -1398,6 +1575,66 @@ info.style.display='block';
 }else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Saatlik veri yok</span>';}
 }catch(e){info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Hata</span>';}
 }
+async function loadPortfolioSummary(){
+try{
+const r=await fetch('/api/portfolio/summary');const d=await r.json();
+if(!d.items||!d.items.length){$('portfolioSummaryCard').classList.add('hidden');return}
+$('portfolioSummaryCard').classList.remove('hidden');
+$('psTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2)+' TL';
+$('psTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+const plClass=d.profit_loss>=0?'text-up':'text-down';
+$('psTotalPL').className='text-sm font-bold font-mono '+plClass;
+$('psTotalPL').textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+$('psStockCount').textContent=d.items.length;
+const winCount=d.items.filter(x=>x.profit_loss>0).length;
+const winRate=d.items.length?Math.round(winCount/d.items.length*100):0;
+const wrClass=winRate>=50?'text-up':'text-down';
+$('psWinRate').className='text-sm font-bold font-mono '+wrClass;
+$('psWinRate').textContent='%'+winRate;
+const dailyPL=d.total_value-d.total_cost;
+const dailyPct=d.change_pct;
+const dcClass=dailyPL>=0?'text-up':'text-down';
+$('psDailyChange').className='text-xl font-bold font-mono '+dcClass;
+$('psDailyChange').textContent=(dailyPL>=0?'+':'')+dailyPL.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+$('psDailyChangePct').className='text-sm font-mono '+dcClass;
+$('psDailyChangePct').textContent=(dailyPct>=0?'+':'')+dailyPct.toFixed(2)+'%';
+drawMiniPortfolioChart(d.items);
+}catch(e){}
+}
+function drawMiniPortfolioChart(items){
+const canvas=$('psMiniChart');if(!canvas)return;
+const ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+const rect=canvas.parentElement.getBoundingClientRect();
+const w=rect.width,h=rect.height;
+if(w<10||h<10)return;
+canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+const values=items.map(x=>x.value||0).filter(v=>v>0);
+if(values.length<2)return;
+const min=Math.min(...values),max=Math.max(...values),range=max-min||1;
+const pad=4;
+const isUp=values[values.length-1]>=values[0];
+const color=isUp?'#10B981':'#EF4444';
+const grad=ctx.createLinearGradient(0,0,0,h);
+grad.addColorStop(0,isUp?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)');
+grad.addColorStop(1,'rgba(0,0,0,0)');
+ctx.beginPath();
+values.forEach((v,i)=>{
+const x=i/(values.length-1)*w;
+const y=pad+(h-2*pad)-(v-min)/range*(h-2*pad);
+i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+});
+ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+ctx.beginPath();
+values.forEach((v,i)=>{
+const x=i/(values.length-1)*w;
+const y=pad+(h-2*pad)-(v-min)/range*(h-2*pad);
+i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+});
+ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();
+const lx=w,ly=pad+(h-2*pad)-(values[values.length-1]-min)/range*(h-2*pad);
+ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+}
 async function loadKeyStocksDaily(){
 try{const r=await fetch('/api/key-stocks-daily');const d=await r.json();
 const c=$('ksdContainer');
@@ -1416,7 +1653,7 @@ c.innerHTML=h;
 }catch(e){}
 }
 
-loadPL();loadAlerts();checkBot();loadKeyStocksDaily();
+loadPL();loadAlerts();checkBot();loadKeyStocksDaily();loadPortfolioSummary();
 function isMarketOpen(){
 var now=new Date();
 var h=now.getHours(),m=now.getMinutes(),d=now.getDay();

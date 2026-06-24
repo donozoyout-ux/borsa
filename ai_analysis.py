@@ -49,27 +49,27 @@ def _build_analysis_prompt(
     news: Optional[list[dict]] = None,
 ) -> tuple[str, str]:
     """System prompt ve user prompt olustur."""
-    system_prompt = """Sen profesyonel bir BIST hisse senedi analistisin. Kapsamli teknik + temel analiz yap ve yatırımcıya net yönlendirme ver.
+    system_prompt = """Sen profesyonel bir BIST hisse senedi analistisin. Kapsamli teknik + temel analiz yap ve yatirimciya net yonlendirme ver.
 
-Analizini şu formatta yap (Türkçe, max 6 satır):
+Analizini su formatta yap Turkce max 8 satir:
 
 TEKNIK ANALIZ:
-- Trend: [yukselis/dusus/notr] · RSI: [deger] · MACD: [sinyal]
+- Trend: [yukselis/dusus/notr] RSI: [deger] MACD: [sinyal]
 - Destek/Direnc: [seviyeler]
 - Tahmin (5gun): [yon ve yuzde]
 
 TEMEL ANALIZ:
-- F/K: [deger] · PD/DD: [deger] · Beta: [deger]
-- Bilanço: [varsa yorum]
-- [varsa haber etkisi]
+- Sunulan temel verileri kullan: 52 hafta araligi, 50/200 gunluk ortalamalar, gunluk degisim, vb.
+- Eger F/K PD/DD gibi geleneksel oranlar verilmemisse onlara deginme, sadece mevcut verilerle analiz yap
+- Haber etkisi varsa ekle
 
 YONLENDIRME:
-- Kisa vade (1-5 gun): [AL/TUT/SAT] · [gerekce]
-- Orta vade (1-3 ay): [AL/TUT/SAT] · [gerekce]
+- Kisa vade (1-5 gun): [AL/TUT/SAT] [gerekce]
+- Orta vade (1-3 ay): [AL/TUT/SAT] [gerekce]
 - Risk seviyesi: [dusuk/orta/yuksek]
-- Stop-loss: [TL] · Hedef: [TL]
+- Stop-loss: [TL] Hedef: [TL]
 
-Onemli: Sadece verilen verilere gore yorum yap. Kesin AL/SAT tavsiyesi degil, yatirimciya yol gosterici analiz sun."""
+Onemli: Veri yetersizligi deme, sunulan verileri kullanarak analiz yap. Kesin AL/SAT tavsiyesi degil yatirimciya yol gosterici analiz sun."""
 
     ma = (indicators.get("moving_averages") or {}) if indicators else {}
     rsi_val = (indicators.get("rsi") or {}).get("value") if indicators else None
@@ -96,18 +96,30 @@ TEKNIK GOSTERGELER:
 - Skor: {trend.get('score', 'N/A')}/100""")
 
     if fundamentals and fundamentals.get("has_data"):
-        prompt_parts.append(f"""
-TEMEL ANALIZ:
-- Piyasa Degeri: {fin.get('market_cap', 'N/A')}
-- F/K (PE): {fin.get('pe_ratio', 'N/A')} / PD/DD: {fin.get('pb_ratio', 'N/A')}
-- EPS: {fin.get('eps', 'N/A')} / Beta: {fin.get('beta', 'N/A')}
-- Temettu: %{fin.get('dividend_yield', 'N/A')}
-- Kar Marji: %{fin.get('profit_margins', 'N/A')}
-- Borc/Oz Kaynak: {fin.get('debt_to_equity', 'N/A')}
-- ROE: %{fin.get('roe', 'N/A')}
-- 52 Hafta: Yuksek {fin.get('52w_high', 'N/A')} / Dusuk {fin.get('52w_low', 'N/A')}
-- Ciros: {fin.get('revenue', 'N/A')}
-- Nakit: {bs.get('cash', 'N/A')} / Toplam Borc: {bs.get('total_debt', 'N/A')} / Toplam Varlik: {bs.get('total_assets', 'N/A')}""")
+        fund_lines = []
+        if fin.get('market_cap'): fund_lines.append(f"Piyasa Degeri: {fin['market_cap']}")
+        if fin.get('pe_ratio'): fund_lines.append(f"F/K (PE): {fin['pe_ratio']}")
+        if fin.get('pb_ratio'): fund_lines.append(f"PD/DD: {fin['pb_ratio']}")
+        if fin.get('eps'): fund_lines.append(f"EPS: {fin['eps']}")
+        if fin.get('beta'): fund_lines.append(f"Beta: {fin['beta']}")
+        if fin.get('dividend_yield'): fund_lines.append(f"Temettu: %{fin['dividend_yield']}")
+        if fin.get('profit_margins'): fund_lines.append(f"Kar Marji: %{fin['profit_margins']}")
+        if fin.get('debt_to_equity'): fund_lines.append(f"Borc/Oz Kaynak: {fin['debt_to_equity']}")
+        if fin.get('roe'): fund_lines.append(f"ROE: %{fin['roe']}")
+        if fin.get('revenue'): fund_lines.append(f"Ciros: {fin['revenue']}")
+        if bs.get('cash'): fund_lines.append(f"Nakit: {bs['cash']}")
+        if bs.get('total_debt'): fund_lines.append(f"Toplam Borc: {bs['total_debt']}")
+        if bs.get('total_assets'): fund_lines.append(f"Toplam Varlik: {bs['total_assets']}")
+        if fin.get('52w_high') or fin.get('52w_low'):
+            fund_lines.append(f"52 Hafta: Yuksek {fin.get('52w_high', 'N/A')} / Dusuk {fin.get('52w_low', 'N/A')}")
+        if fin.get('50d_avg'): fund_lines.append(f"50 Gunluk Ort: {fin['50d_avg']}")
+        if fin.get('200d_avg'): fund_lines.append(f"200 Gunluk Ort: {fin['200d_avg']}")
+        if fin.get('day_high'): fund_lines.append(f"Gunluk: Yuksek {fin['day_high']} / Dusuk {fin['day_low']}")
+        if fin.get('prev_close'): fund_lines.append(f"Onceki Kapanis: {fin['prev_close']}")
+        if fin.get('change_pct') is not None: fund_lines.append(f"Degisim: %{fin['change_pct']}")
+        if fin.get('avg_volume'): fund_lines.append(f"Ort Hacim: {fin['avg_volume']}")
+        if fund_lines:
+            prompt_parts.append(f"\nTEMEL ANALIZ:\n" + "\n".join(f"- {l}" for l in fund_lines))
 
     if news:
         news_text = "\n".join([f"- {n['title']}" for n in news[:5]])
