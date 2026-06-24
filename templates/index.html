@@ -1580,7 +1580,7 @@ try{
 const r=await fetch('/api/portfolio/summary');const d=await r.json();
 if(!d.items||!d.items.length){$('portfolioSummaryCard').classList.add('hidden');return}
 $('portfolioSummaryCard').classList.remove('hidden');
-$('psTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2)+' TL';
+$('psTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
 $('psTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
 const plClass=d.profit_loss>=0?'text-up':'text-down';
 $('psTotalPL').className='text-sm font-bold font-mono '+plClass;
