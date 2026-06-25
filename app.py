@@ -701,6 +701,108 @@ def _auto_start_bot():
         _save_logs()
 
 
+@app.route("/api/trading/scan", methods=["POST"])
+def api_trading_scan():
+    try:
+        from trading_engine import scan_all_stocks
+        from bist_data import get_all_cached_prices, get_historical_prices
+        prices, _ = get_all_cached_prices()
+        if not prices:
+            return jsonify({"error": "Fiyat verisi yok"}), 400
+        signals = scan_all_stocks(prices, get_historical_prices)
+        return jsonify({"signals": signals, "count": len(signals)})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/trading/signals")
+def api_trading_signals():
+    from trading_engine import get_signals
+    status = request.args.get("status")
+    signals = get_signals(status)
+    return jsonify(signals)
+
+
+@app.route("/api/trading/signal/<signal_id>")
+def api_trading_signal_detail(signal_id):
+    from trading_engine import get_signal
+    sig = get_signal(signal_id)
+    if not sig:
+        return jsonify({"error": "Sinyal bulunamadı"}), 404
+    return jsonify(sig)
+
+
+@app.route("/api/trading/approve/<signal_id>", methods=["POST"])
+def api_trading_approve(signal_id):
+    from order_manager import approve_signal
+    data = request.get_json(silent=True) or {}
+    note = data.get("note", "")
+    result = approve_signal(signal_id, note)
+    if not result["ok"]:
+        return jsonify(result), 400
+    try:
+        from telegram_notifier import send_signal_notification
+        from risk_manager import format_signal_message
+        signal = result.get("order", {})
+        if signal:
+            msg = format_signal_message(signal)
+            send_signal_notification(msg, signal_id)
+    except Exception:
+        pass
+    return jsonify(result)
+
+
+@app.route("/api/trading/reject/<signal_id>", methods=["POST"])
+def api_trading_reject(signal_id):
+    from order_manager import reject_signal
+    data = request.get_json(silent=True) or {}
+    reason = data.get("reason", "")
+    result = reject_signal(signal_id, reason)
+    return jsonify(result)
+
+
+@app.route("/api/trading/orders")
+def api_trading_orders():
+    from order_manager import get_orders
+    status = request.args.get("status")
+    orders = get_orders(status)
+    return jsonify(orders)
+
+
+@app.route("/api/trading/active")
+def api_trading_active():
+    from order_manager import get_active_orders
+    return jsonify(get_active_orders())
+
+
+@app.route("/api/trading/summary")
+def api_trading_summary():
+    from order_manager import get_trading_summary
+    return jsonify(get_trading_summary())
+
+
+@app.route("/api/trading/settings", methods=["GET"])
+def api_trading_settings_get():
+    from risk_manager import load_settings
+    return jsonify(load_settings())
+
+
+@app.route("/api/trading/settings", methods=["POST"])
+def api_trading_settings_save():
+    from risk_manager import load_settings, save_settings
+    data = request.get_json(silent=True) or {}
+    current = load_settings()
+    updated = {**current, **data}
+    save_settings(updated)
+    return jsonify({"ok": True, "settings": updated})
+
+
+@app.route("/api/trading/daily")
+def api_trading_daily():
+    from risk_manager import load_daily_stats
+    return jsonify(load_daily_stats())
+
+
 if __name__ == "__main__":
     _load_logs()
     _start_price_cache_refresher()
