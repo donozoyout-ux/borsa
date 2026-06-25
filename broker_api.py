@@ -59,8 +59,6 @@ def get_positions() -> list[dict]:
 
 
 def get_stock_price(symbol: str) -> Optional[float]:
-    if symbol.upper() in ("BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD", "BTC", "ETH", "SOL", "DOGE"):
-        return get_crypto_price(symbol)
     try:
         r = requests.get(
             f"{ALPACA_DATA_URL}/v2/stocks/{symbol}/trades/latest",
@@ -72,90 +70,6 @@ def get_stock_price(symbol: str) -> Optional[float]:
         return float(data["trade"]["p"])
     except Exception:
         return None
-
-
-def get_crypto_price(symbol: str) -> Optional[float]:
-    sym = symbol.upper().replace("/", "")
-    if len(sym) == 3:
-        sym = sym + "USD"
-    for url in [
-        f"https://data.alpaca.markets/v1beta3/crypto/us/trades/latest?symbols={sym}",
-        f"https://data.alpaca.markets/v1beta2/crypto/trades/latest?symbols={sym}",
-        f"https://data.alpaca.markets/v1/crypto/latest/trades?symbols={sym}",
-    ]:
-        try:
-            r = requests.get(url, headers=_get_headers(), timeout=10)
-            if r.status_code == 200:
-                data = r.json()
-                if sym in data and "trades" in data[sym] and data[sym]["trades"]:
-                    return float(data[sym]["trades"][0]["p"])
-                elif "trades" in data and data["trades"]:
-                    return float(data["trades"][sym][0]["p"]) if sym in data["trades"] else None
-        except Exception:
-            continue
-    return None
-
-
-def get_crypto_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> list[dict]:
-    sym = symbol.upper().replace("/", "")
-    if len(sym) == 3:
-        sym = sym + "USD"
-    try:
-        r = requests.get(
-            f"{ALPACA_DATA_URL}/v1beta3/crypto/us/bars",
-            headers=_get_headers(),
-            params={"symbols": sym, "timeframe": timeframe, "limit": limit},
-            timeout=10,
-        )
-        r.raise_for_status()
-        data = r.json()
-        return data.get(sym, {}).get("bars", [])
-    except Exception:
-        return []
-
-
-CRYPTO_SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD"]
-
-
-def get_all_crypto_pairs() -> list[dict]:
-    cache_file = os.path.join(DATA_DIR, "crypto_pairs.json")
-    if os.path.exists(cache_file):
-        age = time.time() - os.path.getmtime(cache_file)
-        if age < 3600:
-            try:
-                with open(cache_file, "r") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-    try:
-        r = requests.get(
-            f"{ALPACA_BASE_URL}/v2/assets",
-            headers=_get_headers(),
-            params={"asset_class": "crypto", "status": "active"},
-            timeout=15,
-        )
-        r.raise_for_status()
-        assets = r.json()
-        pairs = []
-        for a in assets:
-            sym = a.get("symbol", "")
-            if "/USD" in sym or sym.endswith("USD"):
-                if "/" not in sym:
-                    sym = sym[:-3] + "/" + sym[-3:]
-                pairs.append({
-                    "symbol": sym,
-                    "name": a.get("name", sym),
-                    "easy_to_borrow": a.get("easy_to_borrow", False),
-                })
-        pairs.sort(key=lambda x: x["symbol"])
-        try:
-            with open(cache_file, "w") as f:
-                json.dump(pairs, f)
-        except Exception:
-            pass
-        return pairs
-    except Exception:
-        return [{"symbol": s, "name": s} for s in CRYPTO_SYMBOLS]
 
 
 def get_stock_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> list[dict]:
