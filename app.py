@@ -898,6 +898,19 @@ def api_crypto_prices():
     return jsonify({"prices": results, "count": len([r for r in results if r["ok"]])})
 
 
+@app.route("/api/crypto/all")
+def api_crypto_all():
+    from broker_api import get_all_crypto_pairs, get_crypto_price
+    pairs = get_all_crypto_pairs()
+    prices = []
+    for p in pairs[:50]:
+        sym = p["symbol"]
+        price = get_crypto_price(sym)
+        if price:
+            prices.append({"symbol": sym, "price": price, "name": p.get("name", sym)})
+    return jsonify({"pairs": pairs, "prices": prices, "count": len(prices)})
+
+
 @app.route("/api/crypto/scan", methods=["POST"])
 def api_crypto_scan():
     try:
@@ -922,6 +935,59 @@ def api_crypto_scan():
         return jsonify({"signals": signals[:7], "count": len(signals), "errors": errors})
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/crypto/price/<symbol>")
+def api_crypto_price_detail(symbol):
+    from broker_api import get_crypto_price
+    sym = symbol.upper()
+    if len(sym) == 3:
+        sym = sym + "USD"
+    if "/" not in sym:
+        sym = sym[:3] + "/" + sym[3:]
+    price = get_crypto_price(sym)
+    if price:
+        return jsonify({"symbol": sym, "price": price})
+    return jsonify({"error": "Fiyat alinamadi"}), 404
+
+
+@app.route("/api/crypto/chart/<symbol>")
+def api_crypto_chart(symbol):
+    from broker_api import get_crypto_bars
+    range_str = request.args.get("range", "1mo")
+    interval = request.args.get("interval", "1d")
+    sym = symbol.upper()
+    if len(sym) == 3:
+        sym = sym + "USD"
+    if "/" not in sym:
+        sym = sym[:3] + "/" + sym[3:]
+    limit_map = {"1d": 100, "5d": 100, "1mo": 30, "3mo": 90, "6mo": 180, "1y": 365}
+    limit = limit_map.get(range_str, 60)
+    tf_map = {"5m": "5Min", "15m": "15Min", "1h": "1Hour", "1d": "1Day", "1w": "1Week"}
+    tf = tf_map.get(interval, "1Day")
+    bars = get_crypto_bars(sym, tf, limit)
+    if not bars:
+        return jsonify({"prices": []})
+    prices = [{"time": b["t"], "open": b["o"], "high": b["h"], "low": b["l"], "close": b["c"], "volume": b.get("v", 0)} for b in bars]
+    return jsonify({"prices": prices, "count": len(prices)})
+
+
+@app.route("/api/crypto/analysis/<symbol>")
+def api_crypto_analysis(symbol):
+    from broker_api import get_crypto_price, get_crypto_bars
+    sym = symbol.upper()
+    if len(sym) == 3:
+        sym = sym + "USD"
+    if "/" not in sym:
+        sym = sym[:3] + "/" + sym[3:]
+    price = get_crypto_price(sym)
+    bars = get_crypto_bars(sym, "1Day", 60)
+    if not bars or not price:
+        return jsonify({})
+    closes = [b["c"] for b in bars]
+    from indicators import calculate_all_indicators
+    indicators = calculate_all_indicators(closes)
+    return jsonify({"indicators": indicators, "price": price, "symbol": sym})
 
 
 if __name__ == "__main__":

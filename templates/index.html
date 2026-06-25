@@ -11,6 +11,16 @@
 tailwind.config={darkMode:"class",theme:{extend:{colors:{bg:"#0A0E17",surface:"#131314","surface-cl":"#1C2127","surface-c":"#201F20","surface-ch":"#2A2A2B","surface-chx":"#353435","on-surface":"#E5E2E2","on-surface-v":"#C6C6CC",outline:"#909096","outline-v":"#45464B",primary:"#C3C6D3","primary-ct":"#0A0E17",up:"#10B981",down:"#EF4444",err:"#FFB4AB"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem"},fontFamily:{sans:["Inter","sans-serif"],mono:["JetBrains Mono","monospace"]}}}}
 </script>
 <style>
+:root{--accent:#8B5CF6;--accent2:#3B82F6;--accent-bg:rgba(139,92,246,.12);--accent-border:rgba(139,92,246,.25);--accent-glow:rgba(139,92,246,.4)}
+[data-theme="btc"]{--accent:#F7931A;--accent2:#FCD34D;--accent-bg:rgba(247,147,26,.12);--accent-border:rgba(247,147,26,.25);--accent-glow:rgba(247,147,26,.4)}
+
+.market-switcher{display:flex;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;gap:2px}
+.market-btn{padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .25s ease;border:none;background:transparent;color:#909096;letter-spacing:.03em;display:flex;align-items:center;gap:5px}
+.market-btn:hover{color:#C3C6D3}
+.market-btn.active{background:var(--accent);color:#fff;box-shadow:0 0 12px var(--accent-glow)}
+.market-btn .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5}
+.market-btn.active .dot{opacity:1;animation:pulse 2s infinite}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0A0E17;color:#E5E2E2;font-family:'Inter',sans-serif;overflow:hidden;height:100vh;font-weight:400;letter-spacing:-0.01em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::-webkit-scrollbar{width:4px;height:4px}
@@ -34,7 +44,7 @@ body{background:#0A0E17;color:#E5E2E2;font-family:'Inter',sans-serif;overflow:hi
 
 .live-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse 2s infinite;display:inline-block}
 
-.gradient-text{background:linear-gradient(135deg,#3B82F6,#8B5CF6,#06B6D4);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite}
+.gradient-text{background:linear-gradient(135deg,var(--accent2),var(--accent),var(--accent2));background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s ease infinite}
 
 /* Glass panels */
 .glass-panel{background:rgba(28,33,39,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.05);border-radius:14px}
@@ -48,7 +58,7 @@ body{background:#0A0E17;color:#E5E2E2;font-family:'Inter',sans-serif;overflow:hi
 /* Sidebar nav */
 .nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0;cursor:pointer;border-radius:10px;transition:all .2s ease;color:#909096;font-size:10px;font-weight:600;letter-spacing:.03em;width:100%}
 .nav-btn:hover{background:rgba(255,255,255,.04);color:#E5E2E2}
-.nav-btn.active{background:rgba(195,198,211,.08);color:#C3C6D3}
+.nav-btn.active{background:var(--accent-bg);color:var(--accent)}
 .nav-btn .material-symbols-outlined{font-size:20px;font-variation-settings:'FILL'0,'wght'300}
 
 /* Topbar buttons */
@@ -294,6 +304,10 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <header class="h-14 md:h-16 bg-[#131314]/80 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-3 md:px-6 shrink-0 sticky top-0 z-30">
   <div class="flex items-center gap-2 md:gap-4">
     <button class="md:hidden topbar-btn" onclick="toggleSidebar()"><span class="material-symbols-outlined">menu</span></button>
+    <div class="market-switcher">
+      <button class="market-btn active" id="btnBIST" onclick="switchMarket('BIST')"><span class="material-symbols-outlined" style="font-size:14px">show_chart</span> BIST</button>
+      <button class="market-btn" id="btnBTC" onclick="switchMarket('BTC')"><span class="material-symbols-outlined" style="font-size:14px">currency_bitcoin</span> BTC</button>
+    </div>
     <h1 class="text-xs md:text-sm font-bold text-[#C3C6D3]" id="pageTitle">Fiyatlar</h1>
     <span class="hidden sm:inline data-md text-[11px] text-[#45464B]" id="clockDisplay">--:--:--</span>
   </div>
@@ -1012,6 +1026,10 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 <!-- MOBILE BOTTOM NAV -->
 <div class="mobile-bottom-nav">
+  <div class="mob-nav" onclick="switchMarket(currentMarket==='BTC'?'BIST':'BTC')" style="min-width:50px">
+    <span class="material-symbols-outlined" id="mobMarketIcon" style="font-size:18px;color:var(--accent)">${currentMarket==='BTC'?'currency_bitcoin':'show_chart'}</span>
+    <span id="mobMarketLabel" style="font-size:9px;color:var(--accent)">${currentMarket==='BTC'?'BTC':'BIST'}</span>
+  </div>
   <div class="mob-nav active" onclick="mobSwitchTab('watchlist',this)"><span class="material-symbols-outlined">list_alt</span><span>Fiyatlar</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('charts',this)"><span class="material-symbols-outlined">show_chart</span><span>Grafik</span></div>
   <div class="mob-nav" onclick="mobSwitchTab('alerts',this)"><span class="material-symbols-outlined">notifications_active</span><span>Alarmlar</span></div>
@@ -1112,7 +1130,7 @@ const history=loadSearchHistory();
 if(!history.length){dd.classList.remove('show');return}
 dd.innerHTML='<div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)"><span style="font-size:10px;font-weight:700;color:#909096;text-transform:uppercase;letter-spacing:.05em">Onceki Aramalar</span><span onclick="event.stopPropagation();clearSearchHistory();dd.classList.remove(\'show\')" style="font-size:10px;color:#EF4444;cursor:pointer;font-weight:600">Temizle</span></div>'+
 history.map((sym,i)=>{
-const s=SYMBOLS.find(x=>x.symbol===sym);
+const s=currentMarket==='BTC'?cryptoAllPairs.find(x=>x.symbol===sym):SYMBOLS.find(x=>x.symbol===sym);
 const p=plc[sym];
 const priceStr=p!==undefined?`<span class="price up">${p.toFixed(2)}</span>`:'<span class="price" style="color:#909096">—</span>';
 return `<div class="search-item" style="animation-delay:${i*0.02}s;border-left:2px solid #45464B" onclick="selectSearch('${inputId}','${dropdownId}','${sym}','${onSelect}')">
@@ -1126,13 +1144,19 @@ dd.classList.add('show');
 input.addEventListener('input',function(){
 const q=this.value.toUpperCase().trim();
 if(!q){showHistory();return}
-const prefixMatches=SYMBOLS.filter(s=>s.symbol.startsWith(q));
-const containsMatches=SYMBOLS.filter(s=>!s.symbol.startsWith(q)&&(s.symbol.includes(q)||s.name.toUpperCase().includes(q)));
+let sourceList;
+if(currentMarket==='BTC'){
+sourceList=cryptoAllPairs.map(p=>({symbol:p.symbol,name:p.name}));
+}else{
+sourceList=SYMBOLS;
+}
+const prefixMatches=sourceList.filter(s=>s.symbol.toUpperCase().startsWith(q));
+const containsMatches=sourceList.filter(s=>!s.symbol.toUpperCase().startsWith(q)&&(s.symbol.toUpperCase().includes(q)||s.name.toUpperCase().includes(q)));
 const matches=[...prefixMatches,...containsMatches].slice(0,20);
 if(!matches.length){dd.innerHTML='<div class="search-empty">Eslesm bulunamadi</div>';dd.classList.add('show');return}
 dd.innerHTML=matches.map((m,mi)=>{
 const p=plc[m.symbol];
-const isPrefix=m.symbol.startsWith(q);
+const isPrefix=m.symbol.toUpperCase().startsWith(q);
 const priceStr=p!==undefined?`<span class="price ${p>=plc[matches[0]?.symbol]||!plc[matches[0]?.symbol]?'up':'down'}">${p.toFixed(2)}</span>`:'<span class="price" style="color:#909096">—</span>';
 return `<div class="search-item" style="animation-delay:${mi*0.02}s;${isPrefix?'border-left:2px solid #C3C6D3':''}" onclick="selectSearch('${inputId}','${dropdownId}','${m.symbol}','${onSelect}')">
 <span class="sym">${m.symbol}</span>
@@ -1147,15 +1171,16 @@ input.addEventListener('blur',function(){hideTimer=setTimeout(()=>dd.classList.r
 }
 
 function selectSearch(inputId,dropdownId,symbol,action){
-$(inputId).value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');
+const symData=currentMarket==='BTC'?cryptoAllPairs.find(s=>s.symbol===symbol):SYMBOLS.find(s=>s.symbol===symbol);
+$(inputId).value=symbol+' — '+(symData?.name||'');
 $(dropdownId).classList.remove('show');
 saveSearchHistory(symbol);
 if(action==='alert'){$('aSymbol').value=symbol;}
-if(action==='chart'){curSym=symbol;$('cSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');updateChartWlBtn();loadChart();}
+if(action==='chart'){curSym=symbol;const sd=currentMarket==='BTC'?cryptoAllPairs.find(s=>s.symbol===symbol):SYMBOLS.find(s=>s.symbol===symbol);$('cSearch').value=symbol+' — '+(sd?.name||'');updateChartWlBtn();loadChart();}
 if(action==='price'){quickPrice(symbol)}
 if(action==='portfolio'){$('pfSymbol').value=symbol;}
 if(action==='portfoliowl'){$('pfSymbolWL').value=symbol;}
-if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(SYMBOLS.find(s=>s.symbol===symbol)?.name||'');}
+if(action==='aianalysis'){$('aiSearch').value=symbol+' — '+(symData?.name||'');}
 }
 
 function toggleSidebar(){
@@ -1181,13 +1206,83 @@ if(el)el.classList.add('active');
 switchTab(tab,null);
 }
 
+let currentMarket=localStorage.getItem('market')||'BIST';
+let cryptoPricesCache={};
+let cryptoAllPairs=[];
+
+function switchMarket(market){
+currentMarket=market;
+localStorage.setItem('market',market);
+const root=document.documentElement;
+if(market==='BTC'){
+root.setAttribute('data-theme','btc');
+$('btnBIST').classList.remove('active');
+$('btnBTC').classList.add('active');
+document.title='TERMINAL.OS — CRYPTO';
+const mobIcon=$('mobMarketIcon');if(mobIcon)mobIcon.textContent='currency_bitcoin';
+const mobLabel=$('mobMarketLabel');if(mobLabel){mobLabel.textContent='BTC';mobLabel.style.color='var(--accent)'}
+}else{
+root.removeAttribute('data-theme');
+$('btnBTC').classList.remove('active');
+$('btnBIST').classList.add('active');
+document.title='TERMINAL.OS — BIST';
+const mobIcon=$('mobMarketIcon');if(mobIcon)mobIcon.textContent='show_chart';
+const mobLabel=$('mobMarketLabel');if(mobLabel){mobLabel.textContent='BIST';mobLabel.style.color='var(--accent)'}
+}
+if(market==='BTC')loadCryptoPrices();
+else loadPL();
+}
+
+function getCurrency(){return currentMarket==='BTC'?'USD':'TL'}
+function getMarketParam(){return currentMarket}
+
+async function loadCryptoPrices(){
+try{
+const r=await fetch('/api/crypto/all');
+const j=await r.json();
+cryptoAllPairs=j.pairs||[];
+cryptoPricesCache={};
+(j.prices||[]).forEach(p=>{cryptoPricesCache[p.symbol]=p.price});
+renderCryptoPrices();
+}catch(e){console.error('Crypto prices error',e)}
+}
+
+function renderCryptoPrices(){
+const c=$('plContainer');
+if(!c)return;
+if(currentMarket!=='BTC')return;
+const pairs=cryptoAllPairs;
+const prices=cryptoPricesCache;
+if(!pairs.length){c.innerHTML='<div class="text-center text-[#909096] text-sm py-4">Yukleniyor...</div>';return}
+let html='<div class="grid grid-cols-1 gap-2">';
+pairs.forEach(p=>{
+const sym=p.symbol||p;
+const price=prices[sym]||prices[sym.replace('/','')]||null;
+const change24=p.change24h||null;
+const isUp=change24&&change24>0;
+html+=`<div class="bg-[#0A0E17] rounded-xl p-3 border border-white/5 hover:border-[#F7931A]/20 cursor-pointer transition-all" onclick="quickPrice('${sym}')">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold font-mono text-[#F7931A]">${sym}</span>
+</div>
+<div class="text-right">
+<div class="text-sm font-mono font-bold text-[#E5E2E2]">${price?'$'+formatNumber(price):'--'}</div>
+${change24!==null?`<div class="text-[10px] font-mono ${isUp?'text-[#10B981]':'text-[#EF4444]'}">${isUp?'+':''}${change24.toFixed(2)}%</div>`:''}
+</div>
+</div></div>`;
+});
+html+='</div>';
+c.innerHTML=html;
+}
+
 function switchTab(tab,el){
 document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
 if(el)el.classList.add('active');
 $('tab-'+tab).classList.add('active');
+const marketLabel=currentMarket==='BTC'?'Crypto':'BIST';
 const titles={watchlist:'Portfoyum',charts:'Grafik',alerts:'Alarmlar',aianalysis:'AI Analiz',dailyfeatured:'Gunluk One Cikanlar',trading:'Trading Bot',settings:'Ayarlar'};
-$('pageTitle').textContent=titles[tab]||'BIST Terminal';
+$('pageTitle').textContent=(titles[tab]||'Terminal')+' — '+marketLabel;
 document.querySelectorAll('.mob-nav').forEach(n=>n.classList.remove('active'));
 const mobTabs=['watchlist','charts','alerts','aianalysis','dailyfeatured'];
 const mobIdx=mobTabs.indexOf(tab);
@@ -1195,7 +1290,14 @@ if(mobIdx>=0){const mobNavs=document.querySelectorAll('.mob-nav');if(mobNavs[mob
 if(tab==='alerts')loadAlerts();
 if(tab==='settings'){refreshLogs();loadSettingsStatus();loadAlpacaStatus();}
 if(tab==='dailyfeatured')loadDailyFeatured();
-if(tab==='watchlist')loadPortfolioSummary();
+if(tab==='watchlist'){
+if(currentMarket==='BTC')loadCryptoPrices();
+else loadPortfolioSummary();
+}
+if(tab==='charts'&&currentMarket==='BTC'){
+const sel=$('chartSymbolInput');
+if(sel)sel.placeholder='Crypto sembolu orn: BTC/USD';
+}
 if(tab==='trading'){loadTradingSummary();loadTradingSettings();}
 }
 
@@ -1227,6 +1329,7 @@ setTimeout(()=>{t.style.transform='translateX(-50%) translateY(-30px)';t.style.o
 }
 
 async function loadPL(){
+if(currentMarket==='BTC'){loadCryptoPrices();return}
 const c=$('plContainer');
 c.innerHTML=Array(10).fill(0).map(()=>'<div class="px-5 py-3"><div class="skel" style="width:60%"></div></div>').join('');
 try{const r=await fetch('/api/prices/all',{signal:AbortSignal.timeout(15000)});const d=await r.json();
@@ -1262,21 +1365,33 @@ if(el)el.className='tf-btn '+(id===btnId?'active':'');});
 if(curSym)loadChart();
 }
 async function loadChart(){
-if(!curSym){curSym=$('cSearch').value.split('—')[0].trim();if(!curSym||curSym.length<2){showToast('Once hisse sec');return}}
+if(!curSym){curSym=$('cSearch').value.split('—')[0].trim();if(!curSym||curSym.length<2){showToast('Once sembol sec');return}}
 $('chartPlaceholder').style.display='none';const c=$('chartCanvas');c.style.display='block';c.style.height='100%';const info=$('chartInfo');info.style.display='none';
 try{
 const params='?range='+curRange+'&interval='+curInterval;
+let priceUrl,chartUrl,analysisUrl;
+if(currentMarket==='BTC'){
+const bSym=curSym.replace('/','');
+priceUrl='/api/crypto/price/'+bSym;
+chartUrl='/api/crypto/chart/'+bSym+params;
+analysisUrl='/api/crypto/analysis/'+bSym;
+}else{
+priceUrl='/api/price/'+curSym;
+chartUrl='/api/chart/'+curSym+params;
+analysisUrl='/api/analysis/'+curSym;
+}
 const [pr,cr]=await Promise.all([
-fetch('/api/price/'+curSym).then(r=>r.json()),
-fetch('/api/chart/'+curSym+params).then(r=>r.json()),
+fetch(priceUrl).then(r=>r.json()),
+fetch(chartUrl).then(r=>r.json()),
 ]);
 let chartData=cr;
 if((!cr.prices||!cr.prices.length)&&curRange==='1d'&&curInterval==='5m'){
-const fb=await fetch('/api/chart/'+curSym+'?range=5d&interval=1d').then(r=>r.json());
+const fbUrl=currentMarket==='BTC'?'/api/crypto/chart/'+bSym+'?range=5d&interval=1d':'/api/chart/'+curSym+'?range=5d&interval=1d';
+const fb=await fetch(fbUrl).then(r=>r.json());
 if(fb.prices&&fb.prices.length)chartData=fb;
 }
 let an={};
-try{an=await fetch('/api/analysis/'+curSym).then(r=>r.json())}catch(e){}
+try{an=await fetch(analysisUrl).then(r=>r.json())}catch(e){}
 if(chartData.prices&&chartData.prices.length){$('leftPanel').classList.remove('hidden');drawChart(c,chartData.prices,true);renderChartInfo(info,pr.price,chartData.prices,curSym);renderAnalysis(an);}
 else{info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Veri alinamadi</span>';$('leftPanel').classList.add('hidden')}
 }catch(e){showToast('Grafik yuklenemedi')}
@@ -1678,7 +1793,16 @@ if(j.ok)showToast('Portfoy Telegrama gonderildi');else showToast(j.error||'Hata'
 }catch(e){showToast('Telegram gonderilemedi')}
 }
 
-function quickPrice(s){curSym=s;switchTab('charts',document.querySelectorAll('.nav-btn')[1]);$('cSearch').value=s+' — '+(SYMBOLS.find(x=>x.symbol===s)?.name||'');$('analysisPanel').classList.remove('hidden');$('leftPanel').classList.remove('hidden');updateChartWlBtn();loadChart();}
+function quickPrice(s){
+curSym=s;
+switchTab('charts',document.querySelectorAll('.nav-btn')[1]);
+const symName=SYMBOLS.find(x=>x.symbol===s)?.name||cryptoAllPairs.find(x=>x.symbol===s)?.name||s;
+$('cSearch').value=s+' — '+symName;
+$('analysisPanel').classList.remove('hidden');
+$('leftPanel').classList.remove('hidden');
+updateChartWlBtn();
+loadChart();
+}
 function updateChartWlBtn(){
 if(!curSym){$('chartWlBtn').classList.add('hidden');return}
 $('chartWlBtn').classList.remove('hidden');
@@ -1803,6 +1927,7 @@ $('alpacaSecretStatus').innerHTML='<span class="text-down">Ayarlanmamis</span>';
 
 let currentSignalFilter='pending';
 async function scanForSignals(){
+if(currentMarket==='BTC'){scanCrypto();return}
 const btn=$('scanBtn');btn.disabled=true;btn.innerHTML='<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Taranıyor...';
 try{const r=await fetch('/api/trading/scan',{method:'POST'});const j=await r.json();
 if(j.error){showToast(j.error);btn.disabled=false;btn.innerHTML='<span class="material-symbols-outlined text-sm">radar</span> Tarama Baslat';return}
@@ -2121,6 +2246,7 @@ info.style.display='block';
 }catch(e){info.style.display='block';info.innerHTML='<span class="text-[#EF4444]">Hata</span>';}
 }
 async function loadPortfolioSummary(){
+if(currentMarket==='BTC'){$('portfolioSummaryCard').classList.add('hidden');return}
 try{
 const r=await fetch('/api/portfolio/summary');const d=await r.json();
 if(!d.items||!d.items.length){$('portfolioSummaryCard').classList.add('hidden');return}
@@ -2212,6 +2338,7 @@ c.innerHTML=h;
 }catch(e){}
 }
 
+if(currentMarket==='BTC'){document.documentElement.setAttribute('data-theme','btc');$('btnBIST').classList.remove('active');$('btnBTC').classList.add('active');document.title='TERMINAL.OS — CRYPTO'}
 loadPL();loadAlerts();checkBot();loadKeyStocksDaily();loadPortfolioSummary();
 function isMarketOpen(){
 var now=new Date();

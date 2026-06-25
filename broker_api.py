@@ -117,6 +117,47 @@ def get_crypto_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> l
 CRYPTO_SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD"]
 
 
+def get_all_crypto_pairs() -> list[dict]:
+    cache_file = os.path.join(DATA_DIR, "crypto_pairs.json")
+    if os.path.exists(cache_file):
+        age = time.time() - os.path.getmtime(cache_file)
+        if age < 3600:
+            try:
+                with open(cache_file, "r") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+    try:
+        r = requests.get(
+            f"{ALPACA_BASE_URL}/v2/assets",
+            headers=_get_headers(),
+            params={"asset_class": "crypto", "status": "active"},
+            timeout=15,
+        )
+        r.raise_for_status()
+        assets = r.json()
+        pairs = []
+        for a in assets:
+            sym = a.get("symbol", "")
+            if "/USD" in sym or sym.endswith("USD"):
+                if "/" not in sym:
+                    sym = sym[:-3] + "/" + sym[-3:]
+                pairs.append({
+                    "symbol": sym,
+                    "name": a.get("name", sym),
+                    "easy_to_borrow": a.get("easy_to_borrow", False),
+                })
+        pairs.sort(key=lambda x: x["symbol"])
+        try:
+            with open(cache_file, "w") as f:
+                json.dump(pairs, f)
+        except Exception:
+            pass
+        return pairs
+    except Exception:
+        return [{"symbol": s, "name": s} for s in CRYPTO_SYMBOLS]
+
+
 def get_stock_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> list[dict]:
     try:
         r = requests.get(
