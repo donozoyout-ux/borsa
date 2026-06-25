@@ -49,18 +49,24 @@ def get_all_cached_prices() -> tuple[dict[str, float], float]:
 
 
 def refresh_all_prices():
-    from concurrent.futures import ThreadPoolExecutor, as_completed
     all_syms = load_bist_symbols()
-    results = {}
-    with ThreadPoolExecutor(max_workers=10) as ex:
-        fut = {ex.submit(get_bist_price_nocache, s["symbol"]): s["symbol"] for s in all_syms}
-        for f in as_completed(fut, timeout=30):
-            try:
-                p = f.result()
-                if p is not None:
-                    results[fut[f]] = p
-            except Exception:
-                pass
+    sym_list = [s["symbol"] for s in all_syms]
+    
+    results = _fetch_bigpara_all()
+    if not results and sym_list:
+        results = _fetch_yahoo_v8_batch(sym_list)
+    if not results:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        results = {}
+        with ThreadPoolExecutor(max_workers=10) as ex:
+            fut = {ex.submit(get_bist_price_nocache, s): s for s in sym_list}
+            for f in as_completed(fut, timeout=30):
+                try:
+                    p = f.result()
+                    if p is not None:
+                        results[fut[f]] = p
+                except Exception:
+                    pass
     with _file_cache_lock:
         _file_price_cache.update(results)
     _save_file_cache()
@@ -93,11 +99,53 @@ def _get_json(url: str, params: dict, headers: dict, timeout: int = 7) -> Option
         return None
 
 
+def _fetch_bigpara(symbol: str) -> Optional[float]:
+    """Bigpara (Hurriyet) API'den BIST fiyati al."""
+    clean = symbol.strip().upper().replace(".IS", "")
+    url = f"https://bigpara.hurriyet.com.tr/api/v1/hisse/{clean}/fiyat"
+    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0", "Accept": "application/json"}
+    try:
+        resp = requests.get(url, headers=headers, timeout=8)
+        resp.raise_for_status()
+        data = resp.json()
+        price = data.get("data", {}).get("son")
+        if price is not None:
+            return float(str(price).replace(",", "."))
+    except Exception:
+        pass
+    return None
+
+
+def _fetch_bigpara_all() -> Optional[dict]:
+    """Tum BIST hisselerini Bigpara'dan al."""
+    url = "https://bigpara.hurriyet.com.tr/api/v1/borsa/canli-borsa"
+    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0", "Accept": "application/json"}
+    try:
+        resp = requests.get(url, headers=headers, timeout=12)
+        resp.raise_for_status()
+        data = resp.json()
+        items = data.get("data", [])
+        if not items:
+            return None
+        result = {}
+        for item in items:
+            sym = (item.get("kod") or "").strip().upper()
+            p = item.get("son")
+            if sym and p is not None:
+                try:
+                    result[sym] = float(str(p).replace(",", "."))
+                except (ValueError, TypeError):
+                    pass
+        return result if result else None
+    except Exception:
+        return None
+
+
 def _fetch_yahoo_v8(symbol: str) -> Optional[float]:
     clean = symbol.strip().upper().replace(".IS", "")
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean}.IS"
-    params = {"range": "1d", "interval": "1m"}
-    headers = {"User-Agent": "Mozilla/5.0 BISTAlarmBot/2.0", "Accept": "application/json"}
+    params = {"range": "1d", "interval": "1d"}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
     data = _get_json(url, params, headers)
     if not data:
         return None
@@ -114,6 +162,22 @@ def _fetch_yahoo_v8(symbol: str) -> Optional[float]:
     except Exception:
         pass
     return None
+
+
+def _fetch_yahoo_v8_batch(symbols: list[str]) -> dict[str, float]:
+    """Yahoo v8 ile toplu fiyat al — her sembol icin ayri istek paralel gonder."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    results = {}
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        fut = {ex.submit(_fetch_yahoo_v8, s): s for s in symbols}
+        for f in as_completed(fut, timeout=20):
+            try:
+                price = f.result()
+                if price is not None and price > 0:
+                    results[fut[f]] = price
+            except Exception:
+                pass
+    return results
 
 
 def _fetch_yahoo_v7(symbol: str) -> Optional[float]:
@@ -169,7 +233,7 @@ def get_yahoo_v8_chart_meta(symbol: str) -> Optional[dict]:
 
 def get_bist_price_nocache(symbol: str) -> Optional[float]:
     clean = symbol.strip().upper().replace(".IS", "")
-    for fetcher in [_fetch_yahoo_v8, _fetch_yahoo_v7]:
+    for fetcher in [_fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
         try:
             price = fetcher(clean)
             if price is not None and price > 0:
@@ -187,7 +251,7 @@ def get_bist_price(symbol: str) -> Optional[float]:
         if time.time() - cached_time < _CACHE_TTL:
             return cached_price
 
-    for fetcher in [_fetch_yahoo_v8, _fetch_yahoo_v7]:
+    for fetcher in [_fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
         try:
             price = fetcher(clean)
             if price is not None and price > 0:

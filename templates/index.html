@@ -251,47 +251,39 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
     <div class="max-w-7xl mx-auto">
       <!-- PORTFOY OZET KARTI -->
       <div id="portfolioSummaryCard" class="mb-5 hidden">
-        <div class="glass-panel overflow-hidden relative cursor-pointer" onclick="openPortfolioModal()">
-          <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#10B981]/8 to-transparent rounded-full blur-3xl"></div>
-          <div class="relative z-10 p-6">
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#10B981]/5 flex items-center justify-center border border-[#10B981]/20">
-                  <span class="material-symbols-outlined text-[#10B981]" style="font-variation-settings:'FILL'1;font-size:24px">account_balance_wallet</span>
+        <div class="glass-panel overflow-hidden relative">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#10B981]/8 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+          <div class="relative z-10">
+            <!-- ust kisim: toplam deger -->
+            <div class="p-6 pb-4">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#10B981]/5 flex items-center justify-center border border-[#10B981]/20">
+                    <span class="material-symbols-outlined text-[#10B981]" style="font-variation-settings:'FILL'1;font-size:22px">account_balance_wallet</span>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Toplam Portfoy</div>
+                    <div class="text-3xl font-bold text-[#E5E2E2] font-mono leading-tight" id="psTotalValue">—</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="text-[11px] font-semibold text-[#909096] uppercase tracking-wider">Portfoy Degeri</div>
-                  <div class="text-3xl font-bold text-[#E5E2E2] font-mono" id="psTotalValue">—</div>
+                <div class="text-right">
+                  <div id="psPLWrap" class="flex items-center gap-2">
+                    <div>
+                      <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Toplam K/Z</div>
+                      <div class="text-xl font-bold font-mono" id="psTotalPL">—</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="text-right">
-                <div class="text-[11px] font-semibold text-[#909096] uppercase tracking-wider">Gunluk K/Z</div>
-                <div class="text-xl font-bold font-mono" id="psDailyChange">—</div>
-                <div class="text-sm font-mono" id="psDailyChangePct">—</div>
+              <div class="flex items-center gap-5 mt-3 text-xs">
+                <div class="flex items-center gap-1.5"><span class="text-[#909096]">Yatirim</span><span class="font-mono font-semibold text-[#C6C6CC]" id="psTotalCost">—</span></div>
+                <div class="flex items-center gap-1.5"><span class="text-[#909096]">Hisse</span><span class="font-mono font-semibold text-[#C6C6CC]" id="psStockCount">0</span></div>
+                <div class="flex items-center gap-1.5"><span class="text-[#909096]">Basari</span><span class="font-mono font-semibold" id="psWinRate">—</span></div>
+                <div class="ml-auto"><div class="h-16 w-28 relative" style="margin-top:-20px"><canvas id="psMiniChart" class="w-full h-full"></canvas></div></div>
               </div>
             </div>
-            <div class="grid grid-cols-4 gap-4 mt-2">
-              <div>
-                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Toplam Yatirim</div>
-                <div class="text-sm font-bold font-mono text-[#C6C6CC]" id="psTotalCost">—</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Toplam K/Z</div>
-                <div class="text-sm font-bold font-mono" id="psTotalPL">—</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Hisse Sayisi</div>
-                <div class="text-sm font-bold font-mono text-[#C6C6CC]" id="psStockCount">0</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-[#909096] uppercase tracking-wider mb-0.5">Basari Orani</div>
-                <div class="text-sm font-bold font-mono" id="psWinRate">—</div>
-              </div>
-            </div>
-            <div class="mt-4 h-16 relative">
-              <canvas id="psMiniChart" class="w-full h-full"></canvas>
-              <div class="absolute bottom-0 right-0 text-[10px] text-[#909096]">Tiklayarak grafigi ac</div>
-            </div>
+            <!-- alt kisim: hisse listesi -->
+            <div id="psHoldingsList" class="border-t border-white/5"></div>
           </div>
         </div>
       </div>
@@ -1586,22 +1578,36 @@ $('portfolioSummaryCard').classList.remove('hidden');
 $('psTotalValue').textContent=d.total_value.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
 $('psTotalCost').textContent=d.total_cost.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
 const plClass=d.profit_loss>=0?'text-up':'text-down';
-$('psTotalPL').className='text-sm font-bold font-mono '+plClass;
+$('psTotalPL').className='text-xl font-bold font-mono '+plClass;
 $('psTotalPL').textContent=(d.profit_loss>=0?'+':'')+d.profit_loss.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
 $('psStockCount').textContent=d.items.length;
 const winCount=d.items.filter(x=>x.profit_loss>0).length;
 const winRate=d.items.length?Math.round(winCount/d.items.length*100):0;
 const wrClass=winRate>=50?'text-up':'text-down';
-$('psWinRate').className='text-sm font-bold font-mono '+wrClass;
+$('psWinRate').className='font-mono font-semibold '+wrClass;
 $('psWinRate').textContent='%'+winRate;
-const dailyPL=d.total_value-d.total_cost;
-const dailyPct=d.change_pct;
-const dcClass=dailyPL>=0?'text-up':'text-down';
-$('psDailyChange').className='text-xl font-bold font-mono '+dcClass;
-$('psDailyChange').textContent=(dailyPL>=0?'+':'')+dailyPL.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
-$('psDailyChangePct').className='text-sm font-mono '+dcClass;
-$('psDailyChangePct').textContent=(dailyPct>=0?'+':'')+dailyPct.toFixed(2)+'%';
 drawMiniPortfolioChart(d.items);
+const c=$('psHoldingsList');
+c.innerHTML=d.items.map(x=>{
+const cls=x.profit_loss>=0?'text-up':'text-down';
+const arrow=x.profit_loss>=0?'▲':'▼';
+const pctStr=x.avg_cost?(x.profit_loss>=0?'+':'')+x.profit_loss_pct.toFixed(1)+'%':'—';
+const valStr=x.current_price?(x.current_price*x.quantity).toFixed(0)+' TL':'—';
+const costStr=x.avg_cost?(x.avg_cost*x.quantity).toFixed(0)+' TL':'—';
+return '<div class="flex items-center gap-3 px-5 py-3 border-b border-white/3 hover:bg-white/[.02] cursor-pointer transition-colors" onclick="quickPrice(\''+x.symbol+'\')">' +
+'<div class="w-9 h-9 rounded-lg bg-[#0A0E17] border border-white/5 flex items-center justify-center flex-shrink-0">' +
+'<span class="text-xs font-bold font-mono text-[#C3C6D3]">'+x.symbol.slice(0,4)+'</span></div>' +
+'<div class="flex-1 min-w-0">' +
+'<div class="text-sm font-semibold text-[#E5E2E2]">'+x.symbol+'</div>' +
+'<div class="text-[11px] text-[#909096]">'+x.quantity+' adet · Maliyet '+costStr+'</div>' +
+'</div>' +
+'<div class="text-right">' +
+'<div class="text-sm font-bold font-mono text-[#E5E2E2]">'+valStr+'</div>' +
+'<div class="text-[11px] font-mono '+cls+'">'+arrow+' '+pctStr+'</div>' +
+'</div>' +
+'<button onclick="event.stopPropagation();deleteKSDPF(\''+x.id+'\',\''+x.symbol+'\')" class="p-1.5 text-[#909096] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors" title="Sil">' +
+'<span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
+'</div>'}).join('');
 }catch(e){}
 }
 function drawMiniPortfolioChart(items){
