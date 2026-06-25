@@ -436,16 +436,16 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 <!-- TAB: CHARTS -->
 <div id="tab-charts" class="tab-content">
-  <div class="flex-1 flex flex-col p-5" style="padding-bottom:80px">
-    <div class="flex items-center gap-3 mb-4 flex-wrap">
+  <div class="flex-1 flex flex-col p-3 md:p-5" style="padding-bottom:80px">
+    <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4 flex-wrap">
       <div class="search-wrap flex-1 max-w-xs">
-        <span class="material-symbols-outlined icon">search</span>
-        <input id="cSearch" autocomplete="off" placeholder="Hisse ara...">
+        <span class="material-symbols-outlined icon" style="font-size:16px">search</span>
+        <input id="cSearch" autocomplete="off" placeholder="Hisse ara..." style="padding:8px 10px 8px 32px;font-size:12px">
         <div id="cDropdown" class="search-dropdown"></div>
       </div>
-      <button onclick="loadChart()" class="btn btn-primary">Grafik Yukle</button>
+      <button onclick="loadChart()" class="btn btn-primary btn-sm">Grafik Yukle</button>
       <span id="chartWlBtn" class="hidden">
-        <span class="wl-star" style="font-size:24px;cursor:pointer" onclick="if(curSym){toggleWL(curSym);updateChartWlBtn()}">&#9733;</span>
+        <span class="wl-star" style="font-size:22px;cursor:pointer" onclick="if(curSym){toggleWL(curSym);updateChartWlBtn()}">&#9733;</span>
       </span>
       <div class="glass-panel-sm p-0.5 flex gap-0.5">
         <button class="tf-btn" id="tf1d" onclick="setTF('1d','5m','tf1d')">1G</button>
@@ -455,38 +455,82 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
         <button class="tf-btn" id="tf6mo" onclick="setTF('1y','1d','tf6mo')">6A</button>
         <button class="tf-btn" id="tf1y" onclick="setTF('2y','1wk','tf1y')">1Y</button>
       </div>
+      <button onclick="toggleChartFullscreen()" class="topbar-btn" title="Tam Ekran" id="fsBtn">
+        <span class="material-symbols-outlined" style="font-size:18px">fullscreen</span>
+      </button>
     </div>
-    <div class="flex gap-4 flex-1 min-h-0">
-      <div id="leftPanel" class="w-80 shrink-0 hidden flex-col gap-3 overflow-y-auto">
-        <div id="aiPanel" class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#C3C6D3]" style="font-variation-settings:'FILL'1">auto_awesome</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">AI Yapay Zeka Analizi</h4></div>
-          <div id="aiContent" class="text-sm leading-relaxed text-[#C6C6CC] whitespace-pre-line"></div>
-          <div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#C3C6D3] border-t-transparent rounded-full animate-spin"></div><div class="label-caps text-[10px] text-[#909096] mt-2">AI analiz hazirlaniyor...</div></div>
+
+    <!-- INDIKATOR BAR -->
+    <div id="indicatorBar" class="flex gap-2 md:gap-4 mb-3 overflow-x-auto pb-2 hidden" style="min-height:50px">
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[120px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">RSI(14)</div>
+        <div class="font-mono text-sm font-bold" id="indRSI">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[140px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">MACD</div>
+        <div class="font-mono text-xs" id="indMACD">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[120px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">Bollinger</div>
+        <div class="font-mono text-xs" id="indBB">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[110px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">Stochastic</div>
+        <div class="font-mono text-xs" id="indSTOCH">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[100px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">ADX</div>
+        <div class="font-mono text-xs" id="indADX">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[100px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">CCI</div>
+        <div class="font-mono text-xs" id="indCCI">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[110px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">Williams %R</div>
+        <div class="font-mono text-xs" id="indWR">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[90px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">ATR</div>
+        <div class="font-mono text-xs" id="indATR">—</div>
+      </div>
+      <div class="glass-panel-sm px-3 py-2 flex-shrink-0 min-w-[100px]">
+        <div class="text-[9px] text-[#909096] uppercase tracking-wider mb-0.5">OBV</div>
+        <div class="font-mono text-xs" id="indOBV">—</div>
+      </div>
+    </div>
+
+    <div class="flex gap-3 md:gap-4 flex-1 min-h-0">
+      <div id="leftPanel" class="w-72 md:w-80 shrink-0 hidden flex-col gap-2 md:gap-3 overflow-y-auto">
+        <div id="aiPanel" class="glass-panel p-3 md:p-4">
+          <div class="flex items-center gap-2 mb-2 md:mb-3"><span class="material-symbols-outlined text-sm text-[#C3C6D3]" style="font-variation-settings:'FILL'1">auto_awesome</span><h4 class="label-caps" style="color:#C6C6CC;font-size:11px md:12px">AI Analiz</h4></div>
+          <div id="aiContent" class="text-xs md:text-sm leading-relaxed text-[#C6C6CC] whitespace-pre-line"></div>
+          <div id="aiLoading" class="hidden text-center py-4"><div class="inline-block w-4 h-4 border-2 border-[#C3C6D3] border-t-transparent rounded-full animate-spin"></div><div class="label-caps text-[9px] md:text-[10px] text-[#909096] mt-2">AI analiz hazirlaniyor...</div></div>
         </div>
-        <div id="newsPanel" class="glass-panel p-4 hidden">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">newspaper</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Haberler</h4></div>
-          <div id="newsContent" class="text-sm space-y-2.5"></div>
+        <div id="newsPanel" class="glass-panel p-3 md:p-4 hidden">
+          <div class="flex items-center gap-2 mb-2 md:mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">newspaper</span><h4 class="label-caps" style="color:#C6C6CC;font-size:11px md:12px">Haberler</h4></div>
+          <div id="newsContent" class="text-xs md:text-sm space-y-2"></div>
         </div>
-        <div id="fundPanel" class="glass-panel p-4 hidden">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">account_balance</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Temel Analiz</h4></div>
-          <div id="fundContent" class="text-sm space-y-2"></div>
+        <div id="fundPanel" class="glass-panel p-3 md:p-4 hidden">
+          <div class="flex items-center gap-2 mb-2 md:mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">account_balance</span><h4 class="label-caps" style="color:#C6C6CC;font-size:11px md:12px">Temel Analiz</h4></div>
+          <div id="fundContent" class="text-xs md:text-sm space-y-1.5"></div>
         </div>
       </div>
-      <div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea" style="min-height:400px">
+      <div class="flex-1 bg-[#1C2127] rounded-xl border border-white/5 overflow-hidden relative" id="chartArea" style="min-height:300px">
         <div class="absolute inset-0 flex items-center justify-center text-[#45464B] text-sm" id="chartPlaceholder">
-          <div class="text-center"><span class="material-symbols-outlined text-5xl block mb-3 opacity-30" style="font-variation-settings:'FILL'1">monitoring</span><div class="headline-sm" style="font-size:16px;color:#45464B">Hisse secip "Grafik Yukle" butonuna tikla</div></div>
+          <div class="text-center"><span class="material-symbols-outlined text-4xl md:text-5xl block mb-2 md:mb-3 opacity-30" style="font-variation-settings:'FILL'1">monitoring</span><div class="text-xs md:headline-sm" style="font-size:14px;color:#45464B">Hisse secip "Grafik Yukle" butonuna tikla</div></div>
         </div>
         <canvas id="chartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
-        <div id="chartInfo" class="absolute top-4 left-4 glass-panel-sm px-4 py-3 text-sm space-y-1.5 z-10" style="display:none"></div>
+        <div id="chartInfo" class="absolute top-3 md:top-4 left-3 md:left-4 glass-panel-sm px-3 md:px-4 py-2 md:py-3 text-[10px] md:text-sm space-y-1 z-10" style="display:none"></div>
       </div>
-      <div id="analysisPanel" class="w-72 shrink-0 hidden flex-col gap-3 overflow-y-auto">
-        <div class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">insights</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Trend</h4></div>
-          <div id="trendContent" class="text-sm space-y-2"></div>
+      <div id="analysisPanel" class="w-64 md:w-72 shrink-0 hidden flex-col gap-2 md:gap-3 overflow-y-auto">
+        <div class="glass-panel p-3 md:p-4">
+          <div class="flex items-center gap-2 mb-2 md:mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">insights</span><h4 class="label-caps" style="color:#C6C6CC;font-size:11px md:12px">Trend</h4></div>
+          <div id="trendContent" class="text-xs md:text-sm space-y-1.5 md:space-y-2"></div>
         </div>
-        <div class="glass-panel p-4">
-          <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">analytics</span><h4 class="label-caps" style="color:#C6C6CC;font-size:12px">Sinyaller</h4></div>
-          <div id="signalContent" class="text-sm space-y-1.5"></div>
+        <div class="glass-panel p-3 md:p-4">
+          <div class="flex items-center gap-2 mb-2 md:mb-3"><span class="material-symbols-outlined text-sm text-[#909096]">analytics</span><h4 class="label-caps" style="color:#C6C6CC;font-size:11px md:12px">Sinyaller</h4></div>
+          <div id="signalContent" class="text-xs md:text-sm space-y-1 md:space-y-1.5"></div>
         </div>
       </div>
     </div>
@@ -1338,6 +1382,71 @@ if(tr.bollinger){
 const bbPos={upper:'Ust bant',middle:'Orta bant',lower:'Alt bant'};
 tc.innerHTML+=`<div class="mt-2 pt-2 border-t border-white/5"><div class="flex justify-between text-[10px]"><span class="text-[#909096]">Bollinger</span><span class="font-mono">${bbPos[tr.bollinger.position]||tr.bollinger.position}</span></div><div class="flex justify-between text-[10px]"><span class="text-[#909096]">Bant genisligi</span><span class="font-mono">%${tr.bollinger.width}</span></div></div>`;
 }
+
+updateIndicatorBar(data.indicators);
+}
+
+function updateIndicatorBar(ind){
+if(!ind){$('indicatorBar').classList.add('hidden');return}
+$('indicatorBar').classList.remove('hidden');
+if(ind.rsi){
+const v=ind.rsi.value;
+const c=v>70?'text-[#EF4444]':v<30?'text-[#10B981]':'text-[#E5E2E2]';
+$('indRSI').innerHTML=`<span class="${c}">${v}</span><span class="text-[9px] text-[#909096] block">${v>70?'Asiri alim':v<30?'Asiri satim':'Notr'}</span>`;
+}
+if(ind.macd){
+const c=ind.macd.crossover==='bullish'?'text-[#10B981]':ind.macd.crossover==='bearish'?'text-[#EF4444]':'text-[#E5E2E2]';
+$('indMACD').innerHTML=`<span class="${c}">${ind.macd.macd.toFixed(2)}</span><span class="text-[9px] text-[#909096] block">Sig: ${ind.macd.signal.toFixed(2)}</span>`;
+}
+if(ind.moving_averages){
+const sma20=ind.moving_averages.sma_20||'—';
+$('indBB').innerHTML=`<span class="text-[#E5E2E2]">SMA20: ${sma20}</span>`;
+}
+if(ind.stochastic){
+const c=ind.stochastic.signal==='asiri_alim'?'text-[#EF4444]':ind.stochastic.signal==='asiri_satim'?'text-[#10B981]':'text-[#E5E2E2]';
+$('indSTOCH').innerHTML=`<span class="${c}">K:${ind.stochastic.k} D:${ind.stochastic.d}</span>`;
+}
+if(ind.adx){
+const c=ind.adx.strength==='guclu_trend'?'text-[#10B981]':ind.adx.strength==='zayif_trend'?'text-[#EAB308]':'text-[#909096]';
+$('indADX').innerHTML=`<span class="${c}">${ind.adx.value}</span><span class="text-[9px] text-[#909096] block">${ind.adx.strength}</span>`;
+}
+if(ind.cci){
+const c=ind.cci.signal==='asiri_alim'?'text-[#EF4444]':ind.cci.signal==='asiri_satim'?'text-[#10B981]':'text-[#E5E2E2]';
+$('indCCI').innerHTML=`<span class="${c}">${ind.cci.value}</span>`;
+}
+if(ind.williams_r){
+const c=ind.williams_r.signal==='asiri_alim'?'text-[#EF4444]':ind.williams_r.signal==='asiri_satim'?'text-[#10B981]':'text-[#E5E2E2]';
+$('indWR').innerHTML=`<span class="${c}">${ind.williams_r.value}</span>`;
+}
+if(ind.atr){
+const c=ind.atr.level==='yuksek'?'text-[#EF4444]':ind.atr.level==='orta'?'text-[#EAB308]':'text-[#10B981]';
+$('indATR').innerHTML=`<span class="${c}">${ind.atr.value}</span><span class="text-[9px] text-[#909096] block">%${ind.atr.percent}</span>`;
+}
+if(ind.obv_signal){
+const c=ind.obv_signal.signal.includes('alis')?'text-[#10B981]':ind.obv_signal.signal.includes('satis')?'text-[#EF4444]':'text-[#909096]';
+$('indOBV').innerHTML=`<span class="${c}">${ind.obv_signal.trend}</span>`;
+}
+}
+
+let chartFullscreen=false;
+function toggleChartFullscreen(){
+chartFullscreen=!chartFullscreen;
+const btn=$('fsBtn');
+const area=$('chartArea');
+const left=$('leftPanel');
+const right=$('analysisPanel');
+if(chartFullscreen){
+area.style.minHeight='80vh';
+btn.innerHTML='<span class="material-symbols-outlined" style="font-size:18px">fullscreen_exit</span>';
+if(left)left.classList.add('hidden');
+if(right)right.classList.add('hidden');
+}else{
+area.style.minHeight='300px';
+btn.innerHTML='<span class="material-symbols-outlined" style="font-size:18px">fullscreen</span>';
+if(left&&curSym)left.classList.remove('hidden');
+if(right&&curSym)right.classList.remove('hidden');
+}
+setTimeout(()=>{if(curSym)loadChart()},100);
 }
 
 
