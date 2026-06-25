@@ -812,6 +812,82 @@ def api_trading_daily():
     return jsonify(load_daily_stats())
 
 
+@app.route("/api/alpaca/status")
+def api_alpaca_status():
+    from broker_api import is_configured, test_connection
+    if not is_configured():
+        return jsonify({"configured": False, "error": "ALPACA_API_KEY ve ALPICA_API_SECRET ayarlanmamis"})
+    result = test_connection()
+    return jsonify({"configured": True, **result})
+
+
+@app.route("/api/alpaca/account")
+def api_alpaca_account():
+    from broker_api import get_account
+    return jsonify(get_account())
+
+
+@app.route("/api/alpaca/portfolio")
+def api_alpaca_portfolio():
+    from broker_api import get_portfolio_summary
+    return jsonify(get_portfolio_summary())
+
+
+@app.route("/api/alpaca/positions")
+def api_alpaca_positions():
+    from broker_api import get_positions
+    return jsonify(get_positions())
+
+
+@app.route("/api/alpaca/order", methods=["POST"])
+def api_alpaca_order():
+    from broker_api import place_order
+    data = request.get_json(silent=True) or {}
+    symbol = (data.get("symbol") or "").strip().upper()
+    qty = data.get("qty")
+    side = data.get("side", "buy")
+    order_type = data.get("type", "market")
+    limit_price = data.get("limit_price")
+    stop_price = data.get("stop_price")
+
+    if not symbol or not qty:
+        return jsonify({"error": "Symbol ve qty gerekli"}), 400
+
+    result = place_order(
+        symbol=symbol,
+        qty=int(qty),
+        side=side,
+        order_type=order_type,
+        limit_price=limit_price,
+        stop_price=stop_price,
+    )
+    if "error" in result:
+        return jsonify(result), 400
+    return jsonify({"ok": True, "order": result})
+
+
+@app.route("/api/alpaca/orders")
+def api_alpaca_orders():
+    from broker_api import get_orders
+    status = request.args.get("status", "open")
+    return jsonify(get_orders(status))
+
+
+@app.route("/api/alpaca/cancel/<order_id>", methods=["POST"])
+def api_alpaca_cancel(order_id):
+    from broker_api import cancel_order
+    return jsonify(cancel_order(order_id))
+
+
+@app.route("/api/alpaca/quote/<symbol>")
+def api_alpaca_quote(symbol):
+    from broker_api import get_stock_price
+    price = get_stock_price(symbol.upper())
+    if price:
+        return jsonify({"symbol": symbol.upper(), "price": price})
+    return jsonify({"error": "Fiyat alinamadi"}), 404
+
+
 if __name__ == "__main__":
     _load_logs()
     _start_price_cache_refresher()
