@@ -182,6 +182,12 @@ def api_price(symbol):
 
 @app.route("/api/prices/all")
 def api_prices_all():
+    force = request.args.get("force") == "1"
+    if force:
+        try:
+            refresh_all_prices()
+        except Exception:
+            pass
     prices, cache_time = get_all_cached_prices()
     age = int(time.time() - cache_time) if cache_time else -1
     results = [{"symbol": s, "price": p} for s, p in prices.items() if p is not None]
@@ -705,10 +711,13 @@ def _auto_start_bot():
 def api_trading_scan():
     try:
         from trading_engine import scan_all_stocks
-        from bist_data import get_all_cached_prices, get_historical_prices
-        prices, _ = get_all_cached_prices()
+        from bist_data import get_all_cached_prices, get_historical_prices, refresh_all_prices
+        prices, cache_age = get_all_cached_prices()
+        if not prices or len(prices) < 10:
+            refresh_all_prices()
+            prices, _ = get_all_cached_prices()
         if not prices:
-            return jsonify({"error": "Fiyat verisi yok"}), 400
+            return jsonify({"error": "Fiyat verisi alinamadi"}), 400
         signals = scan_all_stocks(prices, get_historical_prices)
         return jsonify({"signals": signals, "count": len(signals)})
     except Exception as exc:
