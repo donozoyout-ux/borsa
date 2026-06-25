@@ -704,19 +704,19 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 
 <!-- TAB: TRADING -->
 <div id="tab-trading" class="tab-content">
-  <div class="flex-1 overflow-y-auto p-5" style="padding-bottom:80px">
+  <div class="flex-1 overflow-y-auto p-3 md:p-5" style="padding-bottom:80px">
     <div class="max-w-7xl mx-auto">
       <!-- TRADING HEADER -->
-      <div class="flex items-center justify-between mb-5">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h2 class="text-xl font-bold text-[#E5E2E2] flex items-center gap-2">
+          <h2 class="text-lg md:text-xl font-bold text-[#E5E2E2] flex items-center gap-2">
             <span class="material-symbols-outlined text-[#C3C6D3]" style="font-variation-settings:'FILL'1">currency_exchange</span>
             Trading Bot
           </h2>
-          <p class="text-xs text-[#909096] mt-1">Yari otomatik islem sinyalleri ve yonetimi</p>
+          <p class="text-[10px] md:text-xs text-[#909096] mt-1">Yari otomatik islem sinyalleri ve yonetimi</p>
         </div>
-        <div class="flex gap-2">
-          <button onclick="scanForSignals()" class="btn btn-primary btn-sm" id="scanBtn">
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button onclick="scanForSignals()" class="btn btn-primary btn-sm flex-1 sm:flex-none" id="scanBtn">
             <span class="material-symbols-outlined text-sm">radar</span> Tarama Baslat
           </button>
           <button onclick="loadTradingSummary()" class="btn btn-ghost btn-sm">Yenile</button>
@@ -724,39 +724,39 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
       </div>
 
       <!-- TRADING SUMMARY CARDS -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-        <div class="glass-panel-sm p-3">
-          <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Bekleyen Sinyal</div>
-          <div class="text-2xl font-bold font-mono text-[#E5E2E2]" id="trPending">0</div>
+      <div class="grid grid-cols-2 gap-2 md:gap-3 mb-4">
+        <div class="glass-panel-sm p-2 md:p-3">
+          <div class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Bekleyen Sinyal</div>
+          <div class="text-xl md:text-2xl font-bold font-mono text-[#E5E2E2]" id="trPending">0</div>
         </div>
-        <div class="glass-panel-sm p-3">
-          <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Acik Pozisyon</div>
-          <div class="text-2xl font-bold font-mono text-[#C3C6D3]" id="trOpen">0</div>
+        <div class="glass-panel-sm p-2 md:p-3">
+          <div class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Acik Pozisyon</div>
+          <div class="text-xl md:text-2xl font-bold font-mono text-[#C3C6D3]" id="trOpen">0</div>
         </div>
-        <div class="glass-panel-sm p-3">
-          <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Kazanma Orani</div>
-          <div class="text-2xl font-bold font-mono text-[#10B981]" id="trWinRate">0%</div>
+        <div class="glass-panel-sm p-2 md:p-3">
+          <div class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Kazanma Orani</div>
+          <div class="text-xl md:text-2xl font-bold font-mono text-[#10B981]" id="trWinRate">0%</div>
         </div>
-        <div class="glass-panel-sm p-3">
-          <div class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Toplam K/Z</div>
-          <div class="text-2xl font-bold font-mono" id="trTotalPnl">0 TL</div>
+        <div class="glass-panel-sm p-2 md:p-3">
+          <div class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider">Toplam K/Z</div>
+          <div class="text-xl md:text-2xl font-bold font-mono" id="trTotalPnl">0 TL</div>
         </div>
       </div>
 
       <!-- SIGNALS TABLE -->
-      <div class="glass-panel overflow-hidden mb-5">
-        <div class="section-header">
+      <div class="glass-panel overflow-hidden mb-4">
+        <div class="section-header flex-col sm:flex-row gap-2 sm:gap-0">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-[#C3C6D3]" style="font-size:18px">notification_important</span>
             <span class="font-semibold text-sm text-[#E5E2E2]">Sinyaller</span>
           </div>
-          <div class="flex gap-2">
-            <button onclick="filterSignals('pending')" class="btn btn-ghost btn-sm signal-filter active" data-filter="pending">Bekleyen</button>
-            <button onclick="filterSignals('approved')" class="btn btn-ghost btn-sm signal-filter" data-filter="approved">Onaylanan</button>
-            <button onclick="filterSignals('all')" class="btn btn-ghost btn-sm signal-filter" data-filter="all">Tumu</button>
+          <div class="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
+            <button onclick="filterSignals('pending')" class="btn btn-ghost btn-sm signal-filter active text-[11px] px-3 py-1.5 whitespace-nowrap" data-filter="pending">Bekleyen</button>
+            <button onclick="filterSignals('approved')" class="btn btn-ghost btn-sm signal-filter text-[11px] px-3 py-1.5 whitespace-nowrap" data-filter="approved">Onaylanan</button>
+            <button onclick="filterSignals('all')" class="btn btn-ghost btn-sm signal-filter text-[11px] px-3 py-1.5 whitespace-nowrap" data-filter="all">Tumu</button>
           </div>
         </div>
-        <div id="signalsContainer" class="p-4">
+        <div id="signalsContainer" class="p-3 md:p-4">
           <div class="text-center text-[#909096] text-sm py-8">
             <span class="material-symbols-outlined text-3xl mb-2 block" style="color:#45464B">radar</span>
             Sinyal icin "Tarama Baslat" butonuna basin
@@ -765,14 +765,14 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
       </div>
 
       <!-- ACTIVE ORDERS -->
-      <div class="glass-panel overflow-hidden mb-5">
+      <div class="glass-panel overflow-hidden mb-4">
         <div class="section-header">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-[#C3C6D3]" style="font-size:18px">receipt_long</span>
             <span class="font-semibold text-sm text-[#E5E2E2]">Acik Emirler</span>
           </div>
         </div>
-        <div id="activeOrdersContainer" class="p-4">
+        <div id="activeOrdersContainer" class="p-3 md:p-4">
           <div class="text-center text-[#909096] text-sm py-6">Aktif emir yok</div>
         </div>
       </div>
@@ -782,45 +782,45 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
         <div class="section-header">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-[#C3C6D3]" style="font-size:18px">tune</span>
-            <span class="font-semibold text-sm text-[#E5E2E2]">Risk Yonetimi Ayarlari</span>
+            <span class="font-semibold text-sm text-[#E5E2E2]">Risk Yonetimi</span>
           </div>
           <button onclick="saveTradingSettings()" class="btn btn-ghost btn-sm" style="color:#10B981">Kaydet</button>
         </div>
-        <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div class="p-3 md:p-4 grid grid-cols-2 gap-3 md:gap-4 text-sm">
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Portfoy (TL)</label>
-            <input type="number" id="tsPortfolio" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="100000">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Portfoy (TL)</label>
+            <input type="number" id="tsPortfolio" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="100000">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Max Pozisyon (%)</label>
-            <input type="number" id="tsMaxPos" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="10">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Max Pozisyon (%)</label>
+            <input type="number" id="tsMaxPos" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="10">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Günlük Zarar Limiti (%)</label>
-            <input type="number" id="tsDailyLoss" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="3">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Gunluk Zarar (%)</label>
+            <input type="number" id="tsDailyLoss" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="3">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Min Sinyal Gücü (%)</label>
-            <input type="number" id="tsMinStrength" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="70">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Min Sinyal (%)</label>
+            <input type="number" id="tsMinStrength" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="70">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">SL Yontemi</label>
-            <select id="tsSlMethod" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] text-sm">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">SL Yontemi</label>
+            <select id="tsSlMethod" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] text-xs md:text-sm">
               <option value="atr">ATR Bazli</option>
-              <option value="percent">Sabit Yüzde</option>
+              <option value="percent">Sabit Yuzde</option>
             </select>
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">SL Carpani (ATR)</label>
-            <input type="number" id="tsAtrMult" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="1.5" step="0.1">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">SL Carpani</label>
+            <input type="number" id="tsAtrMult" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="1.5" step="0.1">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Risk/Odul Orani</label>
-            <input type="number" id="tsRrRatio" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="2" step="0.5">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">R/R Orani</label>
+            <input type="number" id="tsRrRatio" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="2" step="0.5">
           </div>
           <div>
-            <label class="text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Max Acik Pozisyon</label>
-            <input type="number" id="tsMaxOpen" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-3 py-2 text-[#E5E2E2] font-mono text-sm" value="5">
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Max Pozisyon</label>
+            <input type="number" id="tsMaxOpen" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="5">
           </div>
         </div>
       </div>
@@ -1578,33 +1578,33 @@ c.innerHTML=signals.map(s=>{
 const isBuy=s.direction==='BUY';
 const statusColor=s.status==='pending'?'text-yellow-400':s.status==='approved'?'text-[#10B981]':'text-[#909096]';
 const statusText=s.status==='pending'?'Bekliyor':s.status==='approved'?'Onayli':s.status==='executed'?'Gerceklesmis':'Reddedilmis';
-return `<div class="bg-[#0A0E17] rounded-xl p-4 mb-3 border border-white/5 hover:border-white/10 transition-all">
-<div class="flex items-center justify-between mb-3">
-<div class="flex items-center gap-3">
-<span class="text-lg font-bold font-mono ${isBuy?'text-[#10B981]':'text-[#EF4444]'}">${s.symbol}</span>
-<span class="px-2 py-0.5 rounded text-xs font-bold ${isBuy?'bg-[#10B981]/15 text-[#10B981]':'bg-[#EF4444]/15 text-[#EF4444]'}">${isBuy?'AL':'SAT'}</span>
-<span class="text-xs ${statusColor}">${statusText}</span>
+return `<div class="bg-[#0A0E17] rounded-xl p-3 md:p-4 mb-3 border border-white/5 hover:border-white/10 transition-all">
+<div class="flex items-center justify-between mb-2 md:mb-3">
+<div class="flex items-center gap-2 md:gap-3">
+<span class="text-base md:text-lg font-bold font-mono ${isBuy?'text-[#10B981]':'text-[#EF4444]'}">${s.symbol}</span>
+<span class="px-1.5 md:px-2 py-0.5 rounded text-[10px] md:text-xs font-bold ${isBuy?'bg-[#10B981]/15 text-[#10B981]':'bg-[#EF4444]/15 text-[#EF4444]'}">${isBuy?'AL':'SAT'}</span>
+<span class="text-[10px] md:text-xs ${statusColor}">${statusText}</span>
 </div>
 <div class="text-right">
-<div class="text-xs text-[#909096]">${s.timestamp}</div>
-<div class="text-sm font-mono font-bold text-[#E5E2E2]">${s.entry_price} TL</div>
+<div class="text-[10px] md:text-xs text-[#909096]">${s.timestamp}</div>
+<div class="text-xs md:text-sm font-mono font-bold text-[#E5E2E2]">${s.entry_price} TL</div>
 </div>
 </div>
-<div class="grid grid-cols-4 gap-2 text-center text-xs mb-3">
-<div class="bg-[#1C2127] rounded-lg p-2"><div class="text-[#909096] mb-1">SL</div><div class="font-mono text-[#EF4444]">${s.stop_loss}</div><div class="text-[10px] text-[#909096]">%${s.sl_pct}</div></div>
-<div class="bg-[#1C2127] rounded-lg p-2"><div class="text-[#909096] mb-1">TP</div><div class="font-mono text-[#10B981]">${s.take_profit}</div><div class="text-[10px] text-[#909096]">%${s.tp_pct}</div></div>
-<div class="bg-[#1C2127] rounded-lg p-2"><div class="text-[#909096] mb-1">R/R</div><div class="font-mono text-[#C3C6D3]">1:${s.rr_ratio}</div></div>
-<div class="bg-[#1C2127] rounded-lg p-2"><div class="text-[#909096] mb-1">Guc</div><div class="font-mono text-[#C3C6D3]">%${s.strength}</div></div>
+<div class="grid grid-cols-4 gap-1.5 md:gap-2 text-center text-[10px] md:text-xs mb-2 md:mb-3">
+<div class="bg-[#1C2127] rounded-lg p-1.5 md:p-2"><div class="text-[#909096] mb-0.5 md:mb-1">SL</div><div class="font-mono text-[#EF4444]">${s.stop_loss}</div><div class="text-[8px] md:text-[10px] text-[#909096]">%${s.sl_pct}</div></div>
+<div class="bg-[#1C2127] rounded-lg p-1.5 md:p-2"><div class="text-[#909096] mb-0.5 md:mb-1">TP</div><div class="font-mono text-[#10B981]">${s.take_profit}</div><div class="text-[8px] md:text-[10px] text-[#909096]">%${s.tp_pct}</div></div>
+<div class="bg-[#1C2127] rounded-lg p-1.5 md:p-2"><div class="text-[#909096] mb-0.5 md:mb-1">R/R</div><div class="font-mono text-[#C3C6D3]">1:${s.rr_ratio}</div></div>
+<div class="bg-[#1C2127] rounded-lg p-1.5 md:p-2"><div class="text-[#909096] mb-0.5 md:mb-1">Guc</div><div class="font-mono text-[#C3C6D3]">%${s.strength}</div></div>
 </div>
-<div class="text-xs text-[#909096] mb-3"><span class="font-semibold">Strateji:</span> ${s.strategy} | <span class="font-semibold">Lots:</span> ${s.position_size} (${s.position_amount} TL)</div>
-${s.ai_confirmation?'<div class="text-xs text-[#8B5CF6] mb-3"><span class="material-symbols-outlined text-sm align-middle">auto_awesome</span> '+s.ai_confirmation+'</div>':''}
-${s.ai_prediction?`<div class="bg-[#0A0E17] rounded-xl p-3 mb-3 border border-[#8B5CF6]/20">
-<div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[#8B5CF6]" style="font-size:16px">psychology</span><span class="text-xs font-bold text-[#8B5CF6] uppercase tracking-wider">AI Tahmini</span></div>
-<div class="text-xs text-[#C6C6CC] leading-relaxed whitespace-pre-line">${s.ai_prediction}</div>
+<div class="text-[10px] md:text-xs text-[#909096] mb-2 md:mb-3"><span class="font-semibold">Strateji:</span> ${s.strategy} | <span class="font-semibold">Lots:</span> ${s.position_size} (${s.position_amount} TL)</div>
+${s.ai_confirmation?'<div class="text-[10px] md:text-xs text-[#8B5CF6] mb-2 md:mb-3"><span class="material-symbols-outlined align-middle" style="font-size:14px">auto_awesome</span> '+s.ai_confirmation+'</div>':''}
+${s.ai_prediction?`<div class="bg-[#0A0E17] rounded-xl p-2.5 md:p-3 mb-2 md:mb-3 border border-[#8B5CF6]/20">
+<div class="flex items-center gap-2 mb-1.5 md:mb-2"><span class="material-symbols-outlined text-[#8B5CF6]" style="font-size:14px">psychology</span><span class="text-[10px] md:text-xs font-bold text-[#8B5CF6] uppercase tracking-wider">AI Tahmini</span></div>
+<div class="text-[10px] md:text-xs text-[#C6C6CC] leading-relaxed whitespace-pre-line max-h-40 md:max-h-60 overflow-y-auto">${s.ai_prediction}</div>
 </div>`:''}
 ${s.status==='pending'?`<div class="flex gap-2">
-<button onclick="approveSignal('${s.id}')" class="btn btn-sm flex-1" style="background:#10B981;color:#fff"><span class="material-symbols-outlined text-sm">check</span> Onayla</button>
-<button onclick="rejectSignal('${s.id}')" class="btn btn-ghost btn-sm flex-1" style="color:#EF4444"><span class="material-symbols-outlined text-sm">close</span> Reddet</button>
+<button onclick="approveSignal('${s.id}')" class="btn btn-sm flex-1 text-[11px] md:text-xs py-2" style="background:#10B981;color:#fff"><span class="material-symbols-outlined text-sm">check</span> Onayla</button>
+<button onclick="rejectSignal('${s.id}')" class="btn btn-ghost btn-sm flex-1 text-[11px] md:text-xs py-2" style="color:#EF4444"><span class="material-symbols-outlined text-sm">close</span> Reddet</button>
 </div>`:''}
 </div>`;
 }).join('');
@@ -1642,15 +1642,17 @@ const c=$('activeOrdersContainer');
 if(!orders.length){c.innerHTML='<div class="text-center text-[#909096] text-sm py-6">Aktif emir yok</div>';return}
 c.innerHTML=orders.map(o=>{
 const isBuy=o.direction==='BUY';
-return `<div class="bg-[#0A0E17] rounded-xl p-3 mb-2 border border-white/5 flex items-center justify-between">
-<div class="flex items-center gap-3">
-<span class="font-bold font-mono ${isBuy?'text-[#10B981]':'text-[#EF4444]'}">${o.symbol}</span>
-<span class="px-2 py-0.5 rounded text-xs font-bold ${isBuy?'bg-[#10B981]/15 text-[#10B981]':'bg-[#EF4444]/15 text-[#EF4444]'}">${isBuy?'AL':'SAT'}</span>
-<span class="text-xs text-[#909096]">${o.lots} lot @ ${o.entry_price} TL</span>
+return `<div class="bg-[#0A0E17] rounded-xl p-2.5 md:p-3 mb-2 border border-white/5">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center gap-2">
+<span class="text-sm md:text-base font-bold font-mono ${isBuy?'text-[#10B981]':'text-[#EF4444]'}">${o.symbol}</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${isBuy?'bg-[#10B981]/15 text-[#10B981]':'bg-[#EF4444]/15 text-[#EF4444]'}">${isBuy?'AL':'SAT'}</span>
 </div>
-<div class="text-right text-xs">
-<span class="text-[#909096]">SL:</span> <span class="font-mono text-[#EF4444]">${o.stop_loss}</span>
-<span class="text-[#909096] ml-2">TP:</span> <span class="font-mono text-[#10B981]">${o.take_profit}</span>
+<span class="text-[10px] md:text-xs text-[#909096]">${o.lots} lot @ ${o.entry_price} TL</span>
+</div>
+<div class="flex gap-3 text-[10px] md:text-xs">
+<span class="text-[#909096]">SL: <span class="font-mono text-[#EF4444]">${o.stop_loss}</span></span>
+<span class="text-[#909096]">TP: <span class="font-mono text-[#10B981]">${o.take_profit}</span></span>
 </div>
 </div>`;
 }).join('');
