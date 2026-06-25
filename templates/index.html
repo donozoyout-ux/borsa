@@ -1817,7 +1817,8 @@ $('cryptoSection').style.display='block';
 const c=$('cryptoSignals');c.innerHTML='<p class="text-xs text-[#909096] animate-pulse">Kripto taraniyor...</p>';
 try{const r=await fetch('/api/crypto/scan',{method:'POST'});const j=await r.json();
 if(j.error){showToast(j.error);c.innerHTML='<p class="text-xs text-[#EF4444]">'+j.error+'</p>';return}
-if(!j.signals||!j.signals.length){c.innerHTML='<p class="text-xs text-[#909096]">Kripto sinyali bulunamadi</p>';return}
+if(j.errors&&j.errors.length){console.log('Crypto errors:',j.errors)}
+if(!j.signals||!j.signals.length){c.innerHTML='<p class="text-xs text-[#909096]">Kripto sinyali bulunamadi</p>'+(j.errors?'<div class="text-[10px] text-[#EF4444] mt-2">'+j.errors.join('<br>')+'</div>':'');return}
 c.innerHTML=j.signals.map(s=>{
 const isBuy=s.direction==='BUY';
 return `<div class="bg-[#0A0E17] rounded-xl p-3 mb-2 border border-[#F7931A]/10 hover:border-[#F7931A]/30 transition-all">

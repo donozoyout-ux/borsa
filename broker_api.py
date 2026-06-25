@@ -78,20 +78,21 @@ def get_crypto_price(symbol: str) -> Optional[float]:
     sym = symbol.upper().replace("/", "")
     if len(sym) == 3:
         sym = sym + "USD"
-    try:
-        r = requests.get(
-            f"{ALPACA_DATA_URL}/v1beta3/crypto/us/trades/latest",
-            headers=_get_headers(),
-            params={"symbols": sym},
-            timeout=10,
-        )
-        r.raise_for_status()
-        data = r.json()
-        trades = data.get(sym, {}).get("trades", [])
-        if trades:
-            return float(trades[0]["p"])
-    except Exception:
-        pass
+    for url in [
+        f"https://data.alpaca.markets/v1beta3/crypto/us/trades/latest?symbols={sym}",
+        f"https://data.alpaca.markets/v1beta2/crypto/trades/latest?symbols={sym}",
+        f"https://data.alpaca.markets/v1/crypto/latest/trades?symbols={sym}",
+    ]:
+        try:
+            r = requests.get(url, headers=_get_headers(), timeout=10)
+            if r.status_code == 200:
+                data = r.json()
+                if sym in data and "trades" in data[sym] and data[sym]["trades"]:
+                    return float(data[sym]["trades"][0]["p"])
+                elif "trades" in data and data["trades"]:
+                    return float(data["trades"][sym][0]["p"]) if sym in data["trades"] else None
+        except Exception:
+            continue
     return None
 
 

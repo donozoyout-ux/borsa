@@ -894,9 +894,8 @@ def api_crypto_prices():
     results = []
     for sym in CRYPTO_SYMBOLS:
         price = get_crypto_price(sym)
-        if price:
-            results.append({"symbol": sym, "price": price})
-    return jsonify({"prices": results, "count": len(results)})
+        results.append({"symbol": sym, "price": price, "ok": price is not None})
+    return jsonify({"prices": results, "count": len([r for r in results if r["ok"]])})
 
 
 @app.route("/api/crypto/scan", methods=["POST"])
@@ -905,19 +904,22 @@ def api_crypto_scan():
         from broker_api import get_crypto_price, get_crypto_bars, CRYPTO_SYMBOLS
         from trading_engine import generate_signal
         signals = []
+        errors = []
         for sym in CRYPTO_SYMBOLS:
             price = get_crypto_price(sym)
             if not price:
+                errors.append(f"{sym}: fiyat alinamadi")
                 continue
             bars = get_crypto_bars(sym, "1Day", 60)
             if not bars or len(bars) < 20:
+                errors.append(f"{sym}: yeterli veri yok ({len(bars) if bars else 0} bar)")
                 continue
             prices = [b["c"] for b in bars]
             sig = generate_signal(sym.replace("/", ""), prices, price)
             if sig:
                 signals.append(sig)
         signals.sort(key=lambda x: x["strength"], reverse=True)
-        return jsonify({"signals": signals[:7], "count": len(signals)})
+        return jsonify({"signals": signals[:7], "count": len(signals), "errors": errors})
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
