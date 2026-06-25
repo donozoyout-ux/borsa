@@ -59,6 +59,8 @@ def get_positions() -> list[dict]:
 
 
 def get_stock_price(symbol: str) -> Optional[float]:
+    if symbol.upper() in ("BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD", "BTC", "ETH", "SOL", "DOGE"):
+        return get_crypto_price(symbol)
     try:
         r = requests.get(
             f"{ALPACA_DATA_URL}/v2/stocks/{symbol}/trades/latest",
@@ -70,6 +72,48 @@ def get_stock_price(symbol: str) -> Optional[float]:
         return float(data["trade"]["p"])
     except Exception:
         return None
+
+
+def get_crypto_price(symbol: str) -> Optional[float]:
+    sym = symbol.upper().replace("/", "")
+    if len(sym) == 3:
+        sym = sym + "USD"
+    try:
+        r = requests.get(
+            f"{ALPACA_DATA_URL}/v1beta3/crypto/us/trades/latest",
+            headers=_get_headers(),
+            params={"symbols": sym},
+            timeout=10,
+        )
+        r.raise_for_status()
+        data = r.json()
+        trades = data.get(sym, {}).get("trades", [])
+        if trades:
+            return float(trades[0]["p"])
+    except Exception:
+        pass
+    return None
+
+
+def get_crypto_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> list[dict]:
+    sym = symbol.upper().replace("/", "")
+    if len(sym) == 3:
+        sym = sym + "USD"
+    try:
+        r = requests.get(
+            f"{ALPACA_DATA_URL}/v1beta3/crypto/us/bars",
+            headers=_get_headers(),
+            params={"symbols": sym, "timeframe": timeframe, "limit": limit},
+            timeout=10,
+        )
+        r.raise_for_status()
+        data = r.json()
+        return data.get(sym, {}).get("bars", [])
+    except Exception:
+        return []
+
+
+CRYPTO_SYMBOLS = ["BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD"]
 
 
 def get_stock_bars(symbol: str, timeframe: str = "1Day", limit: int = 100) -> list[dict]:

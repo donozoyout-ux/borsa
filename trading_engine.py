@@ -246,21 +246,31 @@ def generate_signal(symbol: str, prices: list[float], current_price: float, ai_a
 
 
 def scan_all_stocks(prices_cache: dict, get_history_func) -> list[dict]:
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     signals = []
     settings = load_settings()
 
-    for symbol, price in prices_cache.items():
-        if price is None or price <= 0:
-            continue
+    top_stocks = [(s, p) for s, p in prices_cache.items() if p and p > 0][:50]
+
+    def _scan_one(item):
+        symbol, price = item
         try:
-            hist = get_history_func(symbol, range_str="3mo", interval="1d")
-            if not hist or len(hist) < 30:
-                continue
-            sig = generate_signal(symbol, hist, price)
-            if sig:
-                signals.append(sig)
+            hist = get_history_func(symbol, range_str="1mo", interval="1d")
+            if not hist or len(hist) < 20:
+                return None
+            return generate_signal(symbol, hist, price)
         except Exception:
-            continue
+            return None
+
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        futures = {ex.submit(_scan_one, item): item for item in top_stocks}
+        for f in as_completed(futures, timeout=30):
+            try:
+                sig = f.result()
+                if sig:
+                    signals.append(sig)
+            except Exception:
+                pass
 
     signals.sort(key=lambda x: x["strength"], reverse=True)
     return signals[:7]

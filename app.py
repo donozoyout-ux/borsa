@@ -888,6 +888,40 @@ def api_alpaca_quote(symbol):
     return jsonify({"error": "Fiyat alinamadi"}), 404
 
 
+@app.route("/api/crypto/prices")
+def api_crypto_prices():
+    from broker_api import get_crypto_price, CRYPTO_SYMBOLS
+    results = []
+    for sym in CRYPTO_SYMBOLS:
+        price = get_crypto_price(sym)
+        if price:
+            results.append({"symbol": sym, "price": price})
+    return jsonify({"prices": results, "count": len(results)})
+
+
+@app.route("/api/crypto/scan", methods=["POST"])
+def api_crypto_scan():
+    try:
+        from broker_api import get_crypto_price, get_crypto_bars, CRYPTO_SYMBOLS
+        from trading_engine import generate_signal
+        signals = []
+        for sym in CRYPTO_SYMBOLS:
+            price = get_crypto_price(sym)
+            if not price:
+                continue
+            bars = get_crypto_bars(sym, "1Day", 60)
+            if not bars or len(bars) < 20:
+                continue
+            prices = [b["c"] for b in bars]
+            sig = generate_signal(sym.replace("/", ""), prices, price)
+            if sig:
+                signals.append(sig)
+        signals.sort(key=lambda x: x["strength"], reverse=True)
+        return jsonify({"signals": signals[:7], "count": len(signals)})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 if __name__ == "__main__":
     _load_logs()
     _start_price_cache_refresher()

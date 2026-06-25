@@ -828,7 +828,22 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           <button onclick="scanForSignals()" class="btn btn-primary btn-sm flex-1 sm:flex-none" id="scanBtn">
             <span class="material-symbols-outlined text-sm">radar</span> Tarama Baslat
           </button>
+          <button onclick="scanCrypto()" class="btn btn-sm flex-1 sm:flex-none" style="background:#F7931A;color:#fff" id="cryptoScanBtn">
+            <span class="material-symbols-outlined text-sm">currency_bitcoin</span> BTC Tarama
+          </button>
           <button onclick="loadTradingSummary()" class="btn btn-ghost btn-sm">Yenile</button>
+        </div>
+      </div>
+
+      <!-- CRYPTO SECTION -->
+      <div id="cryptoSection" class="glass-panel p-3 md:p-4 mb-4" style="display:none">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-[#F7931A]">currency_bitcoin</span>
+          <h3 class="text-sm font-bold text-[#E5E2E2]">Kripto Sinyalleri</h3>
+          <span class="ml-auto text-[10px] text-[#909096]">Alpaca Crypto</span>
+        </div>
+        <div id="cryptoSignals" class="space-y-2">
+          <p class="text-xs text-[#909096]">Tarama icin "BTC Tarama" butonuna basin</p>
         </div>
       </div>
 
@@ -1794,6 +1809,44 @@ if(j.error){showToast(j.error);btn.disabled=false;btn.innerHTML='<span class="ma
 showToast(j.count+' sinyal bulundu!');loadSignals();
 }catch(e){showToast('Tarama hatasi')}
 btn.disabled=false;btn.innerHTML='<span class="material-symbols-outlined text-sm">radar</span> Tarama Baslat';
+}
+
+async function scanCrypto(){
+const btn=$('cryptoScanBtn');btn.disabled=true;btn.innerHTML='<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Taranıyor...';
+$('cryptoSection').style.display='block';
+const c=$('cryptoSignals');c.innerHTML='<p class="text-xs text-[#909096] animate-pulse">Kripto taraniyor...</p>';
+try{const r=await fetch('/api/crypto/scan',{method:'POST'});const j=await r.json();
+if(j.error){showToast(j.error);c.innerHTML='<p class="text-xs text-[#EF4444]">'+j.error+'</p>';return}
+if(!j.signals||!j.signals.length){c.innerHTML='<p class="text-xs text-[#909096]">Kripto sinyali bulunamadi</p>';return}
+c.innerHTML=j.signals.map(s=>{
+const isBuy=s.direction==='BUY';
+return `<div class="bg-[#0A0E17] rounded-xl p-3 mb-2 border border-[#F7931A]/10 hover:border-[#F7931A]/30 transition-all">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold font-mono text-[#F7931A]">${s.symbol}</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isBuy?'bg-[#10B981]/15 text-[#10B981]':'bg-[#EF4444]/15 text-[#EF4444]'}">${isBuy?'AL':'SAT'}</span>
+<span class="text-[10px] text-[#C3C6D3]">%${s.strength} guc</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-mono font-bold text-[#E5E2E2]">${s.entry_price} USD</div>
+<div class="text-[10px] text-[#909096]">${s.timestamp}</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-1.5 text-center text-[10px] mb-2">
+<div class="bg-[#1C2127] rounded-lg p-1.5"><div class="text-[#909096] mb-0.5">SL</div><div class="font-mono text-[#EF4444]">${s.stop_loss}</div></div>
+<div class="bg-[#1C2127] rounded-lg p-1.5"><div class="text-[#909096] mb-0.5">TP</div><div class="font-mono text-[#10B981]">${s.take_profit}</div></div>
+<div class="bg-[#1C2127] rounded-lg p-1.5"><div class="text-[#909096] mb-0.5">R/R</div><div class="font-mono text-[#C3C6D3]">1:${s.rr_ratio}</div></div>
+</div>
+<div class="text-[10px] text-[#909096] mb-2"><span class="font-semibold">Strateji:</span> ${s.strategy}</div>
+${s.ai_prediction?'<div class="text-[10px] text-[#8B5CF6] mb-2"><span class="material-symbols-outlined align-middle" style="font-size:12px">psychology</span> '+s.ai_prediction.split("\\n")[0]+'</div>':''}
+<div class="flex gap-2">
+<button onclick="approveSignal('${s.id}')" class="btn btn-sm flex-1" style="background:#10B981;color:#fff;font-size:11px;padding:5px 8px">Onayla</button>
+<button onclick="rejectSignal('${s.id}')" class="btn btn-sm flex-1" style="background:#EF4444;color:#fff;font-size:11px;padding:5px 8px">Reddet</button>
+</div></div>`;
+}).join('');
+showToast(j.signals.length+' kripto sinyali bulundu!');
+}catch(e){showToast('Kripto tarama hatasi')}
+btn.disabled=false;btn.innerHTML='<span class="material-symbols-outlined text-sm">currency_bitcoin</span> BTC Tarama';
 }
 
 async function loadSignals(){
