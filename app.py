@@ -631,13 +631,15 @@ def api_key_stocks_daily():
                 
                 in_pf = any(i["symbol"] == sym for i in portfolio)
                 in_alert = any(a["symbol"] == sym for a in alerts if a.get("active", True))
+                pf_id = next((i["id"] for i in portfolio if i["symbol"] == sym), None)
                 
                 results.append({
                     "symbol": sym,
                     "price": round(close_price, 2),
                     "change_pct": round(change_pct, 2),
                     "in_portfolio": in_pf,
-                    "in_alerts": in_alert
+                    "in_alerts": in_alert,
+                    "portfolio_id": pf_id
                 })
             except Exception:
                 continue

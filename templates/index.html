@@ -1342,6 +1342,9 @@ ${x.current_price?`<td class="pr text-up">${(x.current_price*x.quantity).toFixed
 async function deletePF(id){
 try{await fetch('/api/portfolio/'+id,{method:'DELETE'});showToast('Silindi');loadPF();}catch(e){}
 }
+async function deleteKSDPF(id,sym){
+try{await fetch('/api/portfolio/'+id,{method:'DELETE'});showToast(sym+' portfoyden silindi');loadKeyStocksDaily();loadPortfolioSummary();}catch(e){}
+}
 async function sendPFTelegram(){
 try{const r=await fetch('/api/portfolio/telegram',{method:'POST'});const j=await r.json();
 if(j.ok)showToast('Portfoy Telegrama gonderildi');else showToast(j.error||'Hata');
@@ -1647,7 +1650,7 @@ var dirSym=s.change_pct>=0?'↑':'↓';
 var priceCls=s.change_pct>=0?'text-up':'text-down';
 var pf=s.in_portfolio?'[PF] ':'';
 var al=s.in_alerts?'[ALM] ':'';
-h+='<div class="alert-card" onclick="quickPrice(\''+s.symbol+'\')"><div class="dir-icon '+dirCls+'">'+dirSym+'</div><div class="flex-1 min-w-0"><div class="text-base font-bold text-[#E5E2E2]">'+s.symbol+'</div><div class="text-xs text-[#909096] mt-0.5">'+pf+al+'</div></div><div class="text-right"><div class="data-lg '+priceCls+'">'+s.price.toFixed(2)+'</div><div class="data-md '+priceCls+'">'+(s.change_pct>=0?'+':'')+s.change_pct+'%</div></div></div>';
+h+='<div class="alert-card" onclick="quickPrice(\''+s.symbol+'\')"><div class="dir-icon '+dirCls+'">'+dirSym+'</div><div class="flex-1 min-w-0"><div class="text-base font-bold text-[#E5E2E2]">'+s.symbol+'</div><div class="text-xs text-[#909096] mt-0.5">'+pf+al+'</div></div><div class="text-right"><div class="data-lg '+priceCls+'">'+s.price.toFixed(2)+'</div><div class="data-md '+priceCls+'">'+(s.change_pct>=0?'+':'')+s.change_pct+'%</div></div>'+(s.portfolio_id?'<button onclick="event.stopPropagation();deleteKSDPF(\''+s.portfolio_id+'\',\''+s.symbol+'\')" class="p-1 text-[#909096] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors ml-2" title="Portfoyden sil"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>':'')+'</div>';
 }
 c.innerHTML=h;
 }catch(e){}
