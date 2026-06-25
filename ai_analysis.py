@@ -260,3 +260,95 @@ YONLENDIRME:
         return None
     except Exception:
         return None
+
+
+def get_signal_prediction(
+    symbol: str,
+    price: float,
+    direction: str,
+    indicators: dict,
+    trend: dict,
+    entry_price: float,
+    stop_loss: float,
+    take_profit: float,
+    fundamentals: Optional[dict] = None,
+    news: Optional[list[dict]] = None,
+) -> Optional[str]:
+    """Trading sinyali icin detayli AI tahmini: neden, ne zaman, ne olacak."""
+    if not GROQ_API_KEY:
+        return None
+
+    action = "ALIS" if direction == "BUY" else "SATIS"
+
+    system_prompt = f"""Sen profesyonel bir BIST hisse senedi trading analistisin. Bir {action} sinyali icin detayli tahmin yapiyorsun.
+
+COK ONEMLI: Turkce yaz, max 10 satir, su formatta cevap ver:
+
+NEDEN BU SINYAL? (2-3 satir)
+- Hangi gostergeler ne soyluyor? (RSI, MACD, Bollinger, MA)
+- Neden bu yonde karar verildi?
+
+FIYAT TAHMINI (2-3 satir)
+- Kisa vade (1-3 gun): Hedef fiyat ve yuzde degisim
+- Orta vade (1-2 hafta): Hedef fiyat ve yuzde degisim
+- Olasilik: Yuksek/Orta/Dusuk
+
+RISK ANALIZI (1-2 satir)
+- Karsilasabilecek riskler
+- Dikkat edilecek seviyeler
+
+ZAMANLAMA (1-2 satir)
+- Simdi mi girilmeli yoksa beklenmeli mi?
+- En uygun giris zamanı ne zaman?
+
+Kesinlikle "YATIRIM TAVSIYESI DEGIL" gibi uyarilar yazma. Dogrudan analiz yap."""
+
+    ma = (indicators.get("moving_averages") or {}) if indicators else {}
+    rsi_val = (indicators.get("rsi") or {}).get("value") if indicators else None
+    macd_data = (indicators.get("macd") or {}) if indicators else {}
+    bb = (trend.get("bollinger") or {}) if trend else {}
+    forecast = (trend.get("forecast") or {}) if trend else {}
+    signals_list = (trend.get("signals") or []) if trend else {}
+    fin = (fundamentals or {}).get("ratios", {}) if fundamentals else {}
+    bs = (fundamentals or {}).get("balance_sheet", {}) if fundamentals else {}
+
+    user_prompt = f"""HISSE: {symbol.upper()}
+GUNCEL FIYAT: {price} TL
+SINYAL: {action}
+GIRIS: {entry_price} TL
+STOP-LOSS: {stop_loss} TL
+TAKE-PROFIT: {take_profit} TL
+
+TEKNIK GOSTERGELER:
+- RSI(14): {rsi_val or 'N/A'}
+- MACD: {macd_data.get('macd', 'N/A')} / Sinyal: {macd_data.get('signal', 'N/A')} / Histogram: {macd_data.get('histogram', 'N/A')} / Kesim: {macd_data.get('crossover', 'N/A')}
+- SMA 20: {ma.get('sma_20', 'N/A')} / SMA 50: {ma.get('sma_50', 'N/A')} / SMA 200: {ma.get('sma_200', 'N/A')}
+- Bollinger: Ust {bb.get('upper', 'N/A')} / Alt {bb.get('lower', 'N/A')} / Fiyat: {bb.get('position', 'N/A')}
+- Destek: {trend.get('support', 'N/A')} / Direnc: {trend.get('resistance', 'N/A')}
+- Sinyaller: {', '.join(signals_list) if signals_list else 'Yok'}
+- Trend: {trend.get('trend', 'N/A')} / Skor: {trend.get('score', 'N/A')}/100
+- Tahmin 5gun: {forecast.get('predictions', 'N/A')}
+
+TEMEL VERILER:"""
+
+    if fundamentals and fundamentals.get("has_data"):
+        if fin.get('pe_ratio'): user_prompt += f"\n- F/K: {fin['pe_ratio']}"
+        if fin.get('52w_high'): user_prompt += f"\n- 52H Yuksek: {fin['52w_high']}"
+        if fin.get('52w_low'): user_prompt += f"\n- 52H Dusuk: {fin['52w_low']}"
+        if fin.get('50d_avg'): user_prompt += f"\n- 50G Ort: {fin['50d_avg']}"
+        if fin.get('200d_avg'): user_prompt += f"\n- 200G Ort: {fin['200d_avg']}"
+
+    if news:
+        news_text = "\n".join([f"- {n['title'][:80]}" for n in news[:3]])
+        user_prompt += f"\n\nGUNCEL HABERLER:\n{news_text}"
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    for model in GROQ_MODELS:
+        result = _call_groq(messages, model, max_tokens=600, temperature=0.3)
+        if result:
+            return result
+    return None

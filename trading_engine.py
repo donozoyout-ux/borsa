@@ -13,6 +13,7 @@ from risk_manager import (
     can_open_trade,
     load_settings,
 )
+from ai_analysis import get_signal_prediction
 
 SIGNALS_FILE = Path(__file__).resolve().parent / "data" / "signals.json"
 
@@ -156,25 +157,28 @@ def generate_signal(symbol: str, prices: list[float], current_price: float, ai_a
 
     ai_bonus = 0
     ai_confirmation = None
+    ai_prediction = None
     if ai_analysis:
         lower = ai_analysis.lower()
         if "al" in lower or "buy" in lower:
-            ai_bonus = 15
-            ai_confirmation = "AI Onaylı Yükseliş"
+            ai_bonus = 20
+            ai_confirmation = "AI Onayli Yukselis"
         elif "sat" in lower or "sell" in lower:
-            ai_bonus = -15
-            ai_confirmation = "AI Onaylı Düşüş"
+            ai_bonus = -20
+            ai_confirmation = "AI Onayli Dusus"
+        ai_prediction = ai_analysis[:500]
 
     net_score = buy_score - sell_score + ai_bonus
     total_strength = min(100, max(0, 50 + net_score))
 
     settings = load_settings()
+    settings["min_signal_strength"] = 82
     if total_strength < settings["min_signal_strength"]:
         return None
 
-    if buy_score > sell_score and buy_count >= 2:
+    if buy_score > sell_score and buy_count >= 3:
         direction = "BUY"
-    elif sell_score > buy_score and sell_count >= 2:
+    elif sell_score > buy_score and sell_count >= 3:
         direction = "SELL"
     else:
         return None
@@ -194,6 +198,22 @@ def generate_signal(symbol: str, prices: list[float], current_price: float, ai_a
         if s["signal"] != "neutral":
             strategy_parts.append(s["name"])
 
+    ai_prediction = None
+    try:
+        trend_result = analyze_trend(prices)
+        ai_prediction = get_signal_prediction(
+            symbol=symbol,
+            price=current_price,
+            direction=direction,
+            indicators=calculate_all(prices),
+            trend=trend_result,
+            entry_price=current_price,
+            stop_loss=sl["stop_loss"],
+            take_profit=tp["take_profit"],
+        )
+    except Exception:
+        pass
+
     signal = {
         "id": f"sig_{uuid.uuid4().hex[:8]}",
         "symbol": symbol.upper(),
@@ -209,8 +229,9 @@ def generate_signal(symbol: str, prices: list[float], current_price: float, ai_a
         "position_amount": pos["recommended_amount"],
         "strategy": " + ".join(strategy_parts) if strategy_parts else "Karma",
         "signals": all_signals,
-        "ai_analysis": ai_analysis[:200] if ai_analysis else None,
+        "ai_analysis": ai_analysis[:500] if ai_analysis else None,
         "ai_confirmation": ai_confirmation,
+        "ai_prediction": ai_prediction,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "status": "pending",
     }
@@ -242,7 +263,7 @@ def scan_all_stocks(prices_cache: dict, get_history_func) -> list[dict]:
             continue
 
     signals.sort(key=lambda x: x["strength"], reverse=True)
-    return signals[:20]
+    return signals[:7]
 
 
 def get_signals(status: str | None = None) -> list[dict]:

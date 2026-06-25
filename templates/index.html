@@ -1598,6 +1598,10 @@ return `<div class="bg-[#0A0E17] rounded-xl p-4 mb-3 border border-white/5 hover
 </div>
 <div class="text-xs text-[#909096] mb-3"><span class="font-semibold">Strateji:</span> ${s.strategy} | <span class="font-semibold">Lots:</span> ${s.position_size} (${s.position_amount} TL)</div>
 ${s.ai_confirmation?'<div class="text-xs text-[#8B5CF6] mb-3"><span class="material-symbols-outlined text-sm align-middle">auto_awesome</span> '+s.ai_confirmation+'</div>':''}
+${s.ai_prediction?`<div class="bg-[#0A0E17] rounded-xl p-3 mb-3 border border-[#8B5CF6]/20">
+<div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[#8B5CF6]" style="font-size:16px">psychology</span><span class="text-xs font-bold text-[#8B5CF6] uppercase tracking-wider">AI Tahmini</span></div>
+<div class="text-xs text-[#C6C6CC] leading-relaxed whitespace-pre-line">${s.ai_prediction}</div>
+</div>`:''}
 ${s.status==='pending'?`<div class="flex gap-2">
 <button onclick="approveSignal('${s.id}')" class="btn btn-sm flex-1" style="background:#10B981;color:#fff"><span class="material-symbols-outlined text-sm">check</span> Onayla</button>
 <button onclick="rejectSignal('${s.id}')" class="btn btn-ghost btn-sm flex-1" style="color:#EF4444"><span class="material-symbols-outlined text-sm">close</span> Reddet</button>
