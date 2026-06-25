@@ -177,6 +177,71 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 @media(max-width:767px){.tab-content.active{padding-bottom:72px}}
 
 @media(max-width:767px){.sidebar{display:none!important}.sidebar.mobile-open{display:flex!important;position:fixed;top:0;left:0;bottom:0;width:80px;z-index:100;animation:fadeSlide .2s ease}.main{margin-left:0!important}.modal-box{margin:10px;max-height:85vh}.mobile-bottom-nav{display:flex!important}.top-search-mobile{display:flex!important}}
+
+/* ===== FULL MOBILE RESPONSIVE ===== */
+@media(max-width:767px){
+  /* Watchlist tab */
+  .section-header{padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .section-header .search-wrap{width:100%!important;order:10}
+  .search-wrap{width:100%!important}
+  .price-table th{padding:8px 10px;font-size:9px;letter-spacing:.04em}
+  .price-table td{padding:8px 10px;font-size:12px}
+  .price-table .sym{font-size:12px}
+  .price-table .name{font-size:10px;max-width:100px}
+  .price-table .pr{font-size:12px}
+  .price-table .chg{font-size:11px}
+  .pf-stat .val{font-size:16px}
+  .pf-stat .lbl{font-size:9px}
+  .glass-panel{border-radius:10px}
+  .glass-panel-sm{border-radius:8px}
+  .solid-panel{border-radius:10px}
+
+  /* Portfolio card */
+  #tab-watchlist .p-5{padding:12px!important}
+  #portfolioSummaryCard .p-6{padding:14px!important}
+  #psTotalValue{font-size:22px!important}
+  #psTotalPL{font-size:16px!important}
+
+  /* Charts tab */
+  #tab-charts .p-5{padding:10px!important}
+  #tab-charts .glass-panel{margin-bottom:10px}
+  .tf-btn{padding:4px 8px;font-size:10px}
+  canvas.chart-lg{height:200px!important}
+
+  /* Alerts tab */
+  #tab-alerts .p-5{padding:12px!important}
+  .alert-card{padding:10px 14px}
+  .alert-card .dir-icon{width:28px;height:28px;font-size:12px}
+
+  /* AI Analysis tab */
+  #tab-aianalysis .p-5{padding:12px!important}
+  #tab-aianalysis .glass-panel{margin-bottom:10px}
+  #tab-aianalysis input[type=text]{font-size:13px;padding:8px 10px}
+  #tab-aianalysis textarea{font-size:12px;min-height:80px}
+
+  /* Settings tab */
+  #tab-settings .p-5{padding:12px!important}
+  #tab-settings .grid{gap:10px!important}
+  #tab-settings .glass-panel{padding:12px!important}
+
+  /* Buttons */
+  .btn{padding:8px 14px;font-size:12px}
+  .btn-sm{padding:6px 10px;font-size:11px}
+  .topbar-btn{width:30px;height:30px}
+
+  /* Modals */
+  .modal-overlay{padding:10px}
+  .modal-box{border-radius:12px}
+
+  /* Header */
+  header{padding:8px 12px!important}
+  #pageTitle{font-size:14px!important}
+
+  /* General spacing */
+  .max-w-7xl{max-width:100%!important;padding:0 4px}
+  .max-w-4xl{max-width:100%!important;padding:0 4px}
+  .space-y-4>*+*,.space-y-3>*+*{margin-top:8px}
+}
 </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#0A0E17]">
@@ -226,25 +291,25 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
 <div class="main flex-1 flex flex-col h-screen overflow-hidden ml-20">
 
 <!-- TOP BAR -->
-<header class="h-16 bg-[#131314]/80 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-6 shrink-0 sticky top-0 z-30">
-  <div class="flex items-center gap-4">
+<header class="h-14 md:h-16 bg-[#131314]/80 backdrop-blur-2xl border-b border-white/5 flex items-center justify-between px-3 md:px-6 shrink-0 sticky top-0 z-30">
+  <div class="flex items-center gap-2 md:gap-4">
     <button class="md:hidden topbar-btn" onclick="toggleSidebar()"><span class="material-symbols-outlined">menu</span></button>
-    <h1 class="text-sm font-bold text-[#C3C6D3]" id="pageTitle">Fiyatlar</h1>
-    <span class="data-md text-[11px] text-[#45464B]" id="clockDisplay">--:--:--</span>
+    <h1 class="text-xs md:text-sm font-bold text-[#C3C6D3]" id="pageTitle">Fiyatlar</h1>
+    <span class="hidden sm:inline data-md text-[11px] text-[#45464B]" id="clockDisplay">--:--:--</span>
   </div>
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-2 md:gap-3">
     <div class="search-wrap hidden md:block w-56">
       <span class="material-symbols-outlined icon" style="font-size:16px">search</span>
       <input id="topSearch" autocomplete="off" placeholder="Hisse ara..." style="padding:7px 12px 7px 30px;font-size:12px;border-radius:8px">
       <div id="topDropdown" class="search-dropdown"></div>
     </div>
-    <div id="botStatusMini" class="flex items-center gap-2 mr-1">
+    <div id="botStatusMini" class="hidden sm:flex items-center gap-2 mr-1">
       <span id="botDotMini" class="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_6px_#EF4444]"></span>
       <span id="botLabelMini" class="label-caps text-[10px] text-[#45464B]">Durduruldu</span>
     </div>
     <div class="topbar-btn tooltip" data-tip="Bildirimler" onclick="switchTab('alerts',document.querySelectorAll('.nav-btn')[2])"><span class="material-symbols-outlined">notifications</span></div>
-    <div class="topbar-btn tooltip" data-tip="Yardim"><span class="material-symbols-outlined">help</span></div>
-    <div class="topbar-btn tooltip" data-tip="Tam Ekran" onclick="document.documentElement.requestFullscreen?.()"><span class="material-symbols-outlined">fullscreen</span></div>
+    <div class="topbar-btn tooltip hidden sm:flex" data-tip="Yardim"><span class="material-symbols-outlined">help</span></div>
+    <div class="topbar-btn tooltip hidden sm:flex" data-tip="Tam Ekran" onclick="document.documentElement.requestFullscreen?.()"><span class="material-symbols-outlined">fullscreen</span></div>
     <button onclick="refreshCurrent()" class="topbar-btn tooltip" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
   </div>
 </header>
