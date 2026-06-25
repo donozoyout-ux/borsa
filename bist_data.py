@@ -52,9 +52,15 @@ def refresh_all_prices():
     all_syms = load_bist_symbols()
     sym_list = [s["symbol"] for s in all_syms]
     
+    results = _fetch_tv_batch(sym_list)
+    if results:
+        price_map = {k: v["last"] for k, v in results.items() if v.get("last")}
+        with _file_cache_lock:
+            _file_price_cache.update(price_map)
+        _save_file_cache()
+        return
+
     results = _fetch_bigpara_all()
-    if not results and sym_list:
-        results = _fetch_yahoo_v8_batch(sym_list)
     if not results:
         from concurrent.futures import ThreadPoolExecutor, as_completed
         results = {}
@@ -97,6 +103,79 @@ def _get_json(url: str, params: dict, headers: dict, timeout: int = 7) -> Option
         return resp.json()
     except Exception:
         return None
+
+
+_TV_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Content-Type": "text/plain",
+}
+
+
+def _fetch_tv_single(symbol: str) -> Optional[float]:
+    """TradingView Scanner API ile tek hisse fiyati al."""
+    clean = symbol.strip().upper().replace(".IS", "")
+    body = json.dumps({
+        "columns": ["name", "close", "change", "high", "low", "open", "volume"],
+        "symbols": {"tickers": [f"BIST:{clean}"]},
+        "markets": ["turkey"],
+    })
+    try:
+        r = requests.post(
+            "https://scanner.tradingview.com/turkey/scan",
+            data=body, headers=_TV_HEADERS, timeout=10,
+        )
+        if r.status_code != 200:
+            return None
+        data = r.json()
+        for item in data.get("data", []):
+            vals = item.get("d", [])
+            if len(vals) >= 2 and vals[1] is not None:
+                return float(vals[1])
+    except Exception:
+        pass
+    return None
+
+
+def _fetch_tv_batch(symbols: list[str]) -> dict[str, dict]:
+    """TradingView Scanner API ile toplu fiyat + detay al."""
+    clean_list = [s.strip().upper().replace(".IS", "") for s in symbols]
+    body = json.dumps({
+        "columns": ["name", "close", "change", "change_abs", "high", "low", "open", "volume",
+                     "market_cap_basic", "price_52_week_high", "price_52_week_low",
+                     "average_volume_10d_calc", "description"],
+        "symbols": {"tickers": [f"BIST:{s}" for s in clean_list]},
+        "markets": ["turkey"],
+    })
+    try:
+        r = requests.post(
+            "https://scanner.tradingview.com/turkey/scan",
+            data=body, headers=_TV_HEADERS, timeout=12,
+        )
+        if r.status_code != 200:
+            return {}
+        data = r.json()
+        results = {}
+        for item in data.get("data", []):
+            sym = item.get("s", "").replace("BIST:", "")
+            d = item.get("d", [])
+            if sym and len(d) >= 8 and d[1] is not None:
+                results[sym] = {
+                    "last": d[1],
+                    "change_pct": d[2],
+                    "change_abs": d[3],
+                    "high": d[4],
+                    "low": d[5],
+                    "open": d[6],
+                    "volume": d[7],
+                    "market_cap": d[8] if len(d) > 8 else None,
+                    "52w_high": d[9] if len(d) > 9 else None,
+                    "52w_low": d[10] if len(d) > 10 else None,
+                    "avg_volume": d[11] if len(d) > 11 else None,
+                    "name": d[12] if len(d) > 12 else "",
+                }
+        return results
+    except Exception:
+        return {}
 
 
 def _fetch_bigpara(symbol: str) -> Optional[float]:
@@ -233,7 +312,7 @@ def get_yahoo_v8_chart_meta(symbol: str) -> Optional[dict]:
 
 def get_bist_price_nocache(symbol: str) -> Optional[float]:
     clean = symbol.strip().upper().replace(".IS", "")
-    for fetcher in [_fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
+    for fetcher in [_fetch_tv_single, _fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
         try:
             price = fetcher(clean)
             if price is not None and price > 0:
@@ -251,7 +330,7 @@ def get_bist_price(symbol: str) -> Optional[float]:
         if time.time() - cached_time < _CACHE_TTL:
             return cached_price
 
-    for fetcher in [_fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
+    for fetcher in [_fetch_tv_single, _fetch_bigpara, _fetch_yahoo_v8, _fetch_yahoo_v7]:
         try:
             price = fetcher(clean)
             if price is not None and price > 0:
