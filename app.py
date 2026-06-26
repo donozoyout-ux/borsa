@@ -144,11 +144,22 @@ _auto_scan_thread = None
 def _auto_scan_worker():
     global _auto_scan_running, _auto_scan_last_run
     _auto_scan_running = True
-    _add_log('Otomatik tarama baslatildi.')
+    _add_log('Otomatik tarama baslatildi (piyasa saatlerinde calisir).')
     _save_logs()
 
     while not _auto_scan_stop_event.is_set():
         try:
+            now = datetime.now()
+            hour = now.hour
+            minute = now.minute
+            weekday = now.weekday()
+            market_open = (9 <= hour < 18) or (hour == 18 and minute < 15)
+            is_weekday = weekday < 5
+
+            if not (market_open and is_weekday):
+                _auto_scan_stop_event.wait(timeout=300)
+                continue
+
             from risk_manager import load_settings
             settings = load_settings()
             interval = settings.get("auto_scan_interval", 30) * 60
@@ -171,22 +182,22 @@ def _auto_scan_worker():
 
                 if strong_signals:
                     from telegram_notifier import send_telegram_message
-                    msg = f"🔍 <b>OTOMATIK TARAMA SONUCU</b>\n"
+                    msg = f"🔍 <b>OTOMATIK TARAMA</b>\n"
                     msg += f"📅 {_auto_scan_last_run}\n"
-                    msg += f"📊 {len(strong_signals)} guclu sinyal bulundu (min %{min_strength})\n\n"
+                    msg += f"📊 {len(strong_signals)} sinyal (min %{min_strength})\n\n"
                     for sig in strong_signals[:5]:
                         direction = "🟢 AL" if sig["direction"] == "BUY" else "🔴 SAT"
                         msg += f"{direction} <b>{sig['symbol']}</b>\n"
-                        msg += f"  Fiyat: {sig['entry_price']} TL | Guç: %{sig['strength']}\n"
+                        msg += f"  {sig['entry_price']} TL | Güç: %{sig['strength']}\n"
                         msg += f"  SL: {sig['stop_loss']} | TP: {sig['take_profit']}\n"
-                        msg += f"  Strateji: {sig['strategy']}\n\n"
+                        msg += f"  {sig['strategy']}\n\n"
                     try:
                         send_telegram_message(msg)
                         _add_log(f'Telegrama {len(strong_signals)} sinyal gonderildi.')
                     except Exception as e:
                         _add_log(f'Telegram hatasi: {e}')
                 else:
-                    _add_log(f'Tarama tamamlandi, guclu sinyal yok (min %{min_strength}).')
+                    _add_log(f'Tarama tamam, guclu sinyal yok (min %{min_strength}).')
             else:
                 _add_log('Fiyat verisi alinamadi.')
 
@@ -568,29 +579,6 @@ def api_auto_scan_status():
     })
 
 
-@app.route("/api/trading/auto-scan/toggle", methods=["POST"])
-def api_auto_scan_toggle():
-    global _auto_scan_thread
-    data = request.get_json(silent=True) or {}
-    enable = data.get("enable")
-
-    if enable is None:
-        enable = not _auto_scan_running
-
-    if enable:
-        if _auto_scan_running:
-            return jsonify({"running": True, "message": "Zaten calisiyor"})
-        _auto_scan_stop_event.clear()
-        _auto_scan_thread = threading.Thread(target=_auto_scan_worker, daemon=True)
-        _auto_scan_thread.start()
-        return jsonify({"running": True, "message": "Otomatik tarama baslatildi"})
-    else:
-        if not _auto_scan_running:
-            return jsonify({"running": False, "message": "Zaten durmus"})
-        _auto_scan_stop_event.set()
-        return jsonify({"running": False, "message": "Otomatik tarama durduruldu"})
-
-
 @app.route("/api/trading/auto-scan/run-now", methods=["POST"])
 def api_auto_scan_run_now():
     try:
@@ -856,17 +844,12 @@ def _auto_start_bot():
         t = threading.Thread(target=_bot_worker, daemon=True)
         t.start()
 
-        try:
-            from risk_manager import load_settings
-            settings = load_settings()
-            if settings.get("auto_scan_enabled", False):
-                _add_log('Otomatik tarama aktif, baslatiliyor...')
-                _save_logs()
-                _auto_scan_stop_event.clear()
-                _auto_scan_thread = threading.Thread(target=_auto_scan_worker, daemon=True)
-                _auto_scan_thread.start()
-        except Exception:
-            pass
+        if not _auto_scan_running:
+            _add_log('Otomatik tarama baslatiliyor...')
+            _save_logs()
+            _auto_scan_stop_event.clear()
+            _auto_scan_thread = threading.Thread(target=_auto_scan_worker, daemon=True)
+            _auto_scan_thread.start()
     else:
         _add_log('Telegram ayarlari bulunamadi! .env veya Render Environment Variables ayarlayin.')
         _save_logs()
