@@ -19,6 +19,9 @@ DEFAULT_SETTINGS = {
     "tp_method": "rr",             # "rr" veya "percent"
     "fixed_tp_pct": 5.0,           # Sabit TP yüzdesi
     "portfolio_total_tl": 100000,  # Toplam portföy büyüklüğü (TL)
+    "auto_scan_enabled": False,    # Otomatik tarama aktif mi
+    "auto_scan_interval": 30,      # Tarama aralığı (dakika)
+    "auto_scan_min_strength": 82,  # Otomatik tarama min sinyal gücü
     "enabled": True,
 }
 

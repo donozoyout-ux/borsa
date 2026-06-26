@@ -270,10 +270,6 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
       <span class="material-symbols-outlined">auto_awesome</span>
       <span>AI Analiz</span>
     </button>
-    <button class="nav-btn" onclick="switchTab('dailyfeatured',this)" title="One Cikanlar">
-      <span class="material-symbols-outlined">whatshot</span>
-      <span>One Cikan</span>
-    </button>
     <button class="nav-btn" onclick="switchTab('trading',this)" title="Trading">
       <span class="material-symbols-outlined">currency_exchange</span>
       <span>Trading</span>
@@ -421,11 +417,22 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           </div>
           <div class="glass-panel">
             <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-              <span class="label-caps text-[#909096]" style="font-size:13px">Portfoy + Onemli Hisseler</span>
-              <button onclick="loadKeyStocksDaily()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#10B981]" style="font-size:16px;font-variation-settings:'FILL'1">trending_up</span>
+                <span class="label-caps text-[#909096]" style="font-size:13px">One Cikanlar</span>
+              </div>
+              <button onclick="loadDailyFeatured()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined" style="font-size:16px">refresh</span></button>
             </div>
-            <div id="ksdContainer" class="p-2 max-h-80 overflow-y-auto">
-              <div class="p-6 text-center text-[#909096] text-xs">Yukleniyor...</div>
+            <div id="dfRisersContainer" class="p-2 max-h-60 overflow-y-auto">
+              <div class="p-4 text-center text-[#909096] text-xs">Yukleniyor...</div>
+            </div>
+            <div class="px-4 py-2 border-t border-white/5 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#EF4444]" style="font-size:16px;font-variation-settings:'FILL'1">trending_down</span>
+              <span class="label-caps text-[#909096]" style="font-size:11px">Dusenler</span>
+              <span class="label-caps text-[10px] text-[#909096]" id="dfFallersCount2"></span>
+            </div>
+            <div id="dfFallersContainer2" class="p-2 max-h-60 overflow-y-auto">
+              <div class="p-4 text-center text-[#909096] text-xs">Yukleniyor...</div>
             </div>
           </div>
         </div>
@@ -741,69 +748,7 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
             <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981]/10 to-[#10B981]/5 mb-3">
               <span class="material-symbols-outlined text-xl">insights</span>
             </div>
-            <div class="text-xs text-[#909096]">Grafik gorseli yuklediginde<br>AI otomatik yorumlayacak</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TAB: DAILY FEATURED -->
-<div id="tab-dailyfeatured" class="tab-content">
-  <div class="flex-1 overflow-y-auto p-5">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-5">
-      <div class="xl:col-span-9 space-y-5">
-        <div class="glass-panel overflow-hidden">
-          <div class="section-header" style="border-bottom-color:rgba(16,185,129,.1)">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#10B981]" style="font-variation-settings:'FILL'1">trending_up</span>
-              <h3 class="label-caps" style="color:#10B981">Yukselenler</h3>
-              <span class="label-caps text-[10px] text-[#909096]" id="dfRisersCount"></span>
-            </div>
-            <button onclick="loadDailyFeatured()" class="topbar-btn" data-tip="Yenile"><span class="material-symbols-outlined">refresh</span></button>
-          </div>
-          <div id="dfRisersContainer">
-            <div class="p-6 text-center text-[#909096] text-xs">Yukleniyor...</div>
-          </div>
-        </div>
-        <div class="glass-panel overflow-hidden">
-          <div class="section-header" style="border-bottom-color:rgba(239,68,68,.1)">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#EF4444]" style="font-variation-settings:'FILL'1">trending_down</span>
-              <h3 class="label-caps" style="color:#EF4444">Dusenler</h3>
-              <span class="label-caps text-[10px] text-[#909096]" id="dfFallersCount"></span>
-            </div>
-          </div>
-          <div id="dfFallersContainer">
-            <div class="p-6 text-center text-[#909096] text-xs">Yukleniyor...</div>
-          </div>
-        </div>
-      </div>
-      <div class="xl:col-span-3 space-y-4">
-        <div class="glass-panel">
-          <div class="px-4 py-3 border-b border-white/5">
-            <span class="label-caps text-[#909096]">Secim Kriterleri</span>
-          </div>
-          <div class="p-4 text-xs text-[#909096] space-y-2">
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#10B981]"></span>Gunluk degisim</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C3C6D3]"></span>Hacim orani</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C3C6D3]"></span>Momentum</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C3C6D3]"></span>Skor: 0-100</div>
-          </div>
-        </div>
-        <div class="glass-panel">
-          <div class="px-4 py-3 border-b border-white/5">
-            <span class="label-caps text-[#909096]">Saatlik Grafik</span>
-          </div>
-          <div class="p-4">
-            <div id="dfChartArea" class="bg-[#0A0E17] rounded-lg border border-white/5 h-64 relative">
-              <canvas id="dfChartCanvas" class="chart absolute inset-0" style="display:none"></canvas>
-              <div class="absolute inset-0 flex items-center justify-center text-[#909096] text-sm" id="dfChartPlaceholder">
-                <div class="text-center"><span class="material-symbols-outlined text-3xl block mb-2 opacity-30">show_chart</span>Hisse tikla grafigi gor</div>
-              </div>
-              <div id="dfChartInfo" class="absolute top-3 left-3 glass-panel-sm px-3 py-2 text-[10px] space-y-1 z-10" style="display:none"></div>
-            </div>
+            <div class="text-xs text-[#909096]">Grafik gorseli yuklediginde<br>AI otomatik yorumlayacak            </div>
           </div>
         </div>
       </div>
@@ -873,6 +818,46 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
         </div>
       </div>
 
+      <!-- AUTO SCAN -->
+      <div class="glass-panel overflow-hidden mb-4">
+        <div class="section-header">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#8B5CF6]" style="font-size:18px; font-variation-settings:'FILL'1">radar</span>
+            <span class="font-semibold text-sm text-[#E5E2E2]">Otomatik Tarama</span>
+            <span id="autoScanBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#909096]/20 text-[#909096]">Pasif</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="runAutoScanNow()" class="btn btn-ghost btn-sm" style="color:#8B5CF6" id="scanNowBtn">
+              <span class="material-symbols-outlined text-sm">play_arrow</span> Hemen Tara
+            </button>
+            <button onclick="toggleAutoScan()" class="btn btn-sm" id="autoScanToggleBtn" style="background:#909096;color:#fff">
+              <span class="material-symbols-outlined text-sm" id="autoScanIcon">play_arrow</span>
+              <span id="autoScanBtnLabel">Baslat</span>
+            </button>
+          </div>
+        </div>
+        <div class="p-3 md:p-4">
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="bg-[#0A0E17] rounded-lg p-3">
+              <div class="text-[9px] font-semibold text-[#909096] uppercase tracking-wider mb-1">Durum</div>
+              <div class="text-sm font-bold font-mono" id="autoScanStatusText" style="color:#909096">Pasif</div>
+            </div>
+            <div class="bg-[#0A0E17] rounded-lg p-3">
+              <div class="text-[9px] font-semibold text-[#909096] uppercase tracking-wider mb-1">Son Tarama</div>
+              <div class="text-xs font-mono text-[#C3C6D3]" id="autoScanLastRun">—</div>
+            </div>
+            <div class="bg-[#0A0E17] rounded-lg p-3">
+              <div class="text-[9px] font-semibold text-[#909096] uppercase tracking-wider mb-1">Aralik</div>
+              <div class="text-sm font-bold font-mono text-[#C3C6D3]" id="autoScanIntervalText">30 dk</div>
+            </div>
+          </div>
+          <div class="mt-3 text-[10px] text-[#909096] flex items-center gap-1.5">
+            <span class="material-symbols-outlined" style="font-size:12px">info</span>
+            Her taramada guclu sinyaller (min %82) otomatik olarak Telegram'a gonderilir
+          </div>
+        </div>
+      </div>
+
       <!-- ACTIVE ORDERS -->
       <div class="glass-panel overflow-hidden mb-4">
         <div class="section-header">
@@ -930,6 +915,14 @@ canvas.chart-lg{width:100%;height:300px;border-radius:8px;display:block}
           <div>
             <label class="text-[9px] md:text-[10px] font-semibold text-[#909096] uppercase tracking-wider block mb-1">Max Pozisyon</label>
             <input type="number" id="tsMaxOpen" class="w-full bg-[#0A0E17] border border-white/10 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="5">
+          </div>
+          <div>
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#8B5CF6] uppercase tracking-wider block mb-1">Tarama Suresi (dk)</label>
+            <input type="number" id="tsScanInterval" class="w-full bg-[#0A0E17] border border-[#8B5CF6]/20 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="30" min="5" max="480">
+          </div>
+          <div>
+            <label class="text-[9px] md:text-[10px] font-semibold text-[#8B5CF6] uppercase tracking-wider block mb-1">Tarama Min Gücü (%)</label>
+            <input type="number" id="tsAutoScanStrength" class="w-full bg-[#0A0E17] border border-[#8B5CF6]/20 rounded-lg px-2 md:px-3 py-2 text-[#E5E2E2] font-mono text-xs md:text-sm" value="82" min="50" max="100">
           </div>
         </div>
       </div>
@@ -1171,17 +1164,16 @@ document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
 if(el)el.classList.add('active');
 $('tab-'+tab).classList.add('active');
-const titles={watchlist:'Portfoyum',charts:'Grafik',alerts:'Alarmlar',aianalysis:'AI Analiz',dailyfeatured:'Gunluk One Cikanlar',trading:'Trading Bot',settings:'Ayarlar'};
+const titles={watchlist:'Portfoyum',charts:'Grafik',alerts:'Alarmlar',aianalysis:'AI Analiz',trading:'Trading Bot',settings:'Ayarlar'};
 $('pageTitle').textContent=titles[tab]||'BIST Terminal';
 document.querySelectorAll('.mob-nav').forEach(n=>n.classList.remove('active'));
-const mobTabs=['watchlist','charts','alerts','aianalysis','dailyfeatured'];
+const mobTabs=['watchlist','charts','alerts','aianalysis'];
 const mobIdx=mobTabs.indexOf(tab);
 if(mobIdx>=0){const mobNavs=document.querySelectorAll('.mob-nav');if(mobNavs[mobIdx])mobNavs[mobIdx].classList.add('active')}
 if(tab==='alerts')loadAlerts();
 if(tab==='settings'){refreshLogs();loadSettingsStatus();loadAlpacaStatus();}
-if(tab==='dailyfeatured')loadDailyFeatured();
-if(tab==='watchlist')loadPortfolioSummary();
-if(tab==='trading'){loadTradingSummary();loadTradingSettings();}
+if(tab==='watchlist'){loadPortfolioSummary();loadDailyFeatured();}
+if(tab==='trading'){loadTradingSummary();loadTradingSettings();loadAutoScanStatus();}
 }
 
 async function checkBot(){
@@ -1905,6 +1897,9 @@ $('tsSlMethod').value=s.sl_method||'atr';
 $('tsAtrMult').value=s.atr_sl_multiplier||1.5;
 $('tsRrRatio').value=s.tp_rr_ratio||2;
 $('tsMaxOpen').value=s.max_open_positions||5;
+$('tsScanInterval').value=s.auto_scan_interval||30;
+$('tsAutoScanStrength').value=s.auto_scan_min_strength||82;
+loadAutoScanStatus();
 }catch(e){}
 }
 
@@ -1918,11 +1913,57 @@ sl_method:$('tsSlMethod').value,
 atr_sl_multiplier:parseFloat($('tsAtrMult').value)||1.5,
 tp_rr_ratio:parseFloat($('tsRrRatio').value)||2,
 max_open_positions:parseInt($('tsMaxOpen').value)||5,
+auto_scan_interval:parseInt($('tsScanInterval').value)||30,
+auto_scan_min_strength:parseInt($('tsAutoScanStrength').value)||82,
 };
 try{const r=await fetch('/api/trading/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(settings)});
 const j=await r.json();
-if(j.ok)showToast('Ayarlari kaydedildi!');else showToast('Kaydetme hatasi');
+if(j.ok){showToast('Ayarlari kaydedildi!');$('autoScanIntervalText').textContent=settings.auto_scan_interval+' dk'}
+else showToast('Kaydetme hatasi');
 }catch(e){showToast('Baglanti hatasi')}
+}
+
+async function loadAutoScanStatus(){
+try{const r=await fetch('/api/trading/auto-scan/status');const d=await r.json();
+const badge=$('autoScanBadge');
+const statusText=$('autoScanStatusText');
+const icon=$('autoScanIcon');
+const label=$('autoScanBtnLabel');
+const toggleBtn=$('autoScanToggleBtn');
+if(d.running){
+badge.textContent='Aktif';badge.style.background='rgba(16,185,129,.2)';badge.style.color='#10B981';
+statusText.textContent='Aktif';statusText.style.color='#10B981';
+icon.textContent='stop';label.textContent='Durdur';
+toggleBtn.style.background='#EF4444';
+}else{
+badge.textContent='Pasif';badge.style.background='rgba(144,144,150,.2)';badge.style.color='#909096';
+statusText.textContent='Pasif';statusText.style.color='#909096';
+icon.textContent='play_arrow';label.textContent='Baslat';
+toggleBtn.style.background='#909096';
+}
+if(d.last_run)$('autoScanLastRun').textContent=d.last_run.split(' ')[1]||d.last_run;
+}catch(e){}
+}
+
+async function toggleAutoScan(){
+const btn=$('autoScanToggleBtn');btn.disabled=true;
+try{const r=await fetch('/api/trading/auto-scan/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+const d=await r.json();
+showToast(d.message);
+setTimeout(loadAutoScanStatus,500);
+}catch(e){showToast('Baglanti hatasi')}
+btn.disabled=false;
+}
+
+async function runAutoScanNow(){
+const btn=$('scanNowBtn');btn.disabled=true;btn.innerHTML='<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Taranıyor...';
+try{const r=await fetch('/api/trading/auto-scan/run-now',{method:'POST'});const d=await r.json();
+if(d.error){showToast(d.error);return}
+showToast(d.count+' guclu sinyal bulundu! Telegrama gonderildi.');
+if(d.last_run)$('autoScanLastRun').textContent=d.last_run.split(' ')[1]||d.last_run;
+loadAutoScanStatus();
+}catch(e){showToast('Tarama hatasi')}
+btn.disabled=false;btn.innerHTML='<span class="material-symbols-outlined text-sm">play_arrow</span> Hemen Tara';
 }
 
 let uploadedImageBase64='';
@@ -2023,38 +2064,34 @@ if(el)el.className='tf-btn '+(id===btnId?'active':'');});
 if(dfCurSym)loadDFChart(dfCurSym);
 }
 
-function renderDFTable(items, containerId, emptyMsg){
+function renderDFTable(items, containerId, emptyMsg, compact){
 const c=$(containerId);
-if(!items||!items.length){c.innerHTML='<div class="p-6 text-center text-[#909096] text-xs">'+emptyMsg+'</div>';return}
-var h='<table class="price-table"><thead><tr><th>Sembol</th><th>Sirket</th><th style="text-align:right">Fiyat</th><th style="text-align:right">Degisim</th><th style="text-align:right">Skor</th></tr></thead><tbody>';
+if(!c)return;
+if(!items||!items.length){c.innerHTML='<div class="p-4 text-center text-[#909096] text-xs">'+emptyMsg+'</div>';return}
+var h='';
 for(var i=0;i<items.length;i++){
 var f=items[i];
 var pCls=f.change_pct>=0?'text-up':'text-down';
-var bCls=f.change_pct>=0?'buy':'sell';
 var arrow=f.change_pct>=0?'▲':'▼';
-h+='<tr onclick="loadDFChart(\''+f.symbol+'\')" style="cursor:pointer">';
-h+='<td class="sym" style="color:'+(f.change_pct>=0?'#10B981':'#EF4444')+'">'+f.symbol+'</td>';
-h+='<td class="name">'+f.name.slice(0,35)+'</td>';
-h+='<td class="pr '+pCls+'">'+f.price.toFixed(2)+'</td>';
-h+='<td class="chg '+pCls+'" style="text-align:right">'+arrow+' '+(f.change_pct>=0?'+':'')+f.change_pct+'%</td>';
-h+='<td style="text-align:right"><span class="badge '+bCls+'">'+f.score+'</span></td>';
-h+='</tr>';
+h+='<div onclick="quickPrice(\''+f.symbol+'\')" class="flex items-center justify-between px-3 py-2 border-b border-white/3 hover:bg-white/[.02] cursor-pointer transition-colors">';
+h+='<div class="flex items-center gap-2"><span class="font-mono font-semibold text-xs" style="color:'+(f.change_pct>=0?'#10B981':'#EF4444')+'">'+f.symbol+'</span>';
+h+='<span class="text-[10px] text-[#909096] truncate max-w-[80px]">'+f.name.slice(0,15)+'</span></div>';
+h+='<div class="text-right"><div class="font-mono text-xs '+pCls+'">'+f.price.toFixed(2)+'</div>';
+h+='<div class="text-[10px] font-mono '+pCls+'">'+arrow+(f.change_pct>=0?'+':'')+f.change_pct+'%</div></div></div>';
 }
-h+='</tbody></table>';
 c.innerHTML=h;
 }
 
 async function loadDailyFeatured(){
-const rc=$('dfRisersContainer'),fc=$('dfFallersContainer');
-rc.innerHTML='<div class="p-6 text-center text-[#909096] text-xs">Yukleniyor...</div>';
-fc.innerHTML='<div class="p-6 text-center text-[#909096] text-xs">Yukleniyor...</div>';
+const rc=$('dfRisersContainer');const fc=$('dfFallersContainer2');
+if(rc)rc.innerHTML='<div class="p-4 text-center text-[#909096] text-xs">Yukleniyor...</div>';
+if(fc)fc.innerHTML='<div class="p-4 text-center text-[#909096] text-xs">Yukleniyor...</div>';
 try{const r=await fetch('/api/daily-featured');const d=await r.json();
-if(d.error){rc.innerHTML='<div class="p-6 text-center text-[#EF4444]">'+d.error+'</div>';fc.innerHTML='';return}
-$('dfRisersCount').textContent=d.risers_count+' hisse';
-$('dfFallersCount').textContent=d.fallers_count+' hisse';
-renderDFTable(d.risers,'dfRisersContainer','Bugun yukselen hisse bulunamadi');
-renderDFTable(d.fallers,'dfFallersContainer','Bugun dusen hisse bulunamadi');
-}catch(e){rc.innerHTML='<div class="p-6 text-center text-[#EF4444]">Yuklenemedi</div>';fc.innerHTML=''}
+if(d.error){if(rc)rc.innerHTML='<div class="p-4 text-center text-[#EF4444]">'+d.error+'</div>';if(fc)fc.innerHTML='';return}
+const cnt2=$('dfFallersCount2');if(cnt2)cnt2.textContent='('+d.fallers_count+')';
+renderDFTable(d.risers,'dfRisersContainer','Yukselen yok',true);
+renderDFTable(d.fallers,'dfFallersContainer2','Dusen yok',true);
+}catch(e){if(rc)rc.innerHTML='<div class="p-4 text-center text-[#EF4444]">Yuklenemedi</div>';if(fc)fc.innerHTML=''}
 }
 async function loadDFChart(sym){
 dfCurSym=sym;$('dfChartPlaceholder').style.display='none';const c=$('dfChartCanvas');c.style.display='block';c.style.height='100%';const info=$('dfChartInfo');info.style.display='none';

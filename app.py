@@ -135,6 +135,73 @@ def _bot_worker() -> None:
     _save_logs()
 
 
+_auto_scan_running = False
+_auto_scan_stop_event = threading.Event()
+_auto_scan_last_run = None
+_auto_scan_thread = None
+
+
+def _auto_scan_worker():
+    global _auto_scan_running, _auto_scan_last_run
+    _auto_scan_running = True
+    _add_log('Otomatik tarama baslatildi.')
+    _save_logs()
+
+    while not _auto_scan_stop_event.is_set():
+        try:
+            from risk_manager import load_settings
+            settings = load_settings()
+            interval = settings.get("auto_scan_interval", 30) * 60
+            min_strength = settings.get("auto_scan_min_strength", 82)
+
+            _add_log(f'Tarama basliyor (min guc: {min_strength}%)...')
+            _save_logs()
+
+            from trading_engine import scan_all_stocks
+            prices, _ = get_all_cached_prices()
+            if not prices or len(prices) < 10:
+                refresh_all_prices()
+                prices, _ = get_all_cached_prices()
+
+            if prices:
+                signals = scan_all_stocks(prices, get_historical_prices)
+                strong_signals = [s for s in signals if s.get("strength", 0) >= min_strength]
+
+                _auto_scan_last_run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                if strong_signals:
+                    from telegram_notifier import send_telegram_message
+                    msg = f"🔍 <b>OTOMATIK TARAMA SONUCU</b>\n"
+                    msg += f"📅 {_auto_scan_last_run}\n"
+                    msg += f"📊 {len(strong_signals)} guclu sinyal bulundu (min %{min_strength})\n\n"
+                    for sig in strong_signals[:5]:
+                        direction = "🟢 AL" if sig["direction"] == "BUY" else "🔴 SAT"
+                        msg += f"{direction} <b>{sig['symbol']}</b>\n"
+                        msg += f"  Fiyat: {sig['entry_price']} TL | Guç: %{sig['strength']}\n"
+                        msg += f"  SL: {sig['stop_loss']} | TP: {sig['take_profit']}\n"
+                        msg += f"  Strateji: {sig['strategy']}\n\n"
+                    try:
+                        send_telegram_message(msg)
+                        _add_log(f'Telegrama {len(strong_signals)} sinyal gonderildi.')
+                    except Exception as e:
+                        _add_log(f'Telegram hatasi: {e}')
+                else:
+                    _add_log(f'Tarama tamamlandi, guclu sinyal yok (min %{min_strength}).')
+            else:
+                _add_log('Fiyat verisi alinamadi.')
+
+            _save_logs()
+            _auto_scan_stop_event.wait(timeout=interval)
+        except Exception as e:
+            _add_log(f'Tarama hatasi: {e}')
+            _save_logs()
+            _auto_scan_stop_event.wait(timeout=300)
+
+    _auto_scan_running = False
+    _add_log('Otomatik tarama durduruldu.')
+    _save_logs()
+
+
 @app.route("/")
 def index():
     _ensure_bot_started()
@@ -493,6 +560,92 @@ def api_bot_logs():
     return jsonify({"logs": _bot_logs[-50:]})
 
 
+@app.route("/api/trading/auto-scan/status")
+def api_auto_scan_status():
+    return jsonify({
+        "running": _auto_scan_running,
+        "last_run": _auto_scan_last_run,
+    })
+
+
+@app.route("/api/trading/auto-scan/toggle", methods=["POST"])
+def api_auto_scan_toggle():
+    global _auto_scan_thread
+    data = request.get_json(silent=True) or {}
+    enable = data.get("enable")
+
+    if enable is None:
+        enable = not _auto_scan_running
+
+    if enable:
+        if _auto_scan_running:
+            return jsonify({"running": True, "message": "Zaten calisiyor"})
+        _auto_scan_stop_event.clear()
+        _auto_scan_thread = threading.Thread(target=_auto_scan_worker, daemon=True)
+        _auto_scan_thread.start()
+        return jsonify({"running": True, "message": "Otomatik tarama baslatildi"})
+    else:
+        if not _auto_scan_running:
+            return jsonify({"running": False, "message": "Zaten durmus"})
+        _auto_scan_stop_event.set()
+        return jsonify({"running": False, "message": "Otomatik tarama durduruldu"})
+
+
+@app.route("/api/trading/auto-scan/run-now", methods=["POST"])
+def api_auto_scan_run_now():
+    try:
+        from risk_manager import load_settings
+        settings = load_settings()
+        min_strength = settings.get("auto_scan_min_strength", 82)
+
+        _add_log('Manuel tarama baslatildi...')
+        _save_logs()
+
+        prices, _ = get_all_cached_prices()
+        if not prices or len(prices) < 10:
+            refresh_all_prices()
+            prices, _ = get_all_cached_prices()
+
+        if not prices:
+            return jsonify({"error": "Fiyat verisi alinamadi"}), 400
+
+        from trading_engine import scan_all_stocks
+        signals = scan_all_stocks(prices, get_historical_prices)
+        strong_signals = [s for s in signals if s.get("strength", 0) >= min_strength]
+
+        global _auto_scan_last_run
+        _auto_scan_last_run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        if strong_signals:
+            from telegram_notifier import send_telegram_message
+            msg = f"🔍 <b>MANUEL TARAMA SONUCU</b>\n"
+            msg += f"📅 {_auto_scan_last_run}\n"
+            msg += f"📊 {len(strong_signals)} guclu sinyal bulundu\n\n"
+            for sig in strong_signals[:5]:
+                direction = "🟢 AL" if sig["direction"] == "BUY" else "🔴 SAT"
+                msg += f"{direction} <b>{sig['symbol']}</b>\n"
+                msg += f"  Fiyat: {sig['entry_price']} TL | Guç: %{sig['strength']}\n"
+                msg += f"  SL: {sig['stop_loss']} | TP: {sig['take_profit']}\n"
+                msg += f"  Strateji: {sig['strategy']}\n\n"
+            try:
+                send_telegram_message(msg)
+                _add_log(f'Telegrama {len(strong_signals)} sinyal gonderildi.')
+            except Exception as e:
+                _add_log(f'Telegram hatasi: {e}')
+        else:
+            _add_log('Tarama tamamlandi, guclu sinyal yok.')
+
+        _save_logs()
+        return jsonify({
+            "signals": strong_signals,
+            "count": len(strong_signals),
+            "last_run": _auto_scan_last_run,
+            "all_count": len(signals),
+        })
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 def _start_price_cache_refresher():
     _load_file_cache()
     def _run():
@@ -691,7 +844,7 @@ def api_settings_test_telegram():
 
 def _auto_start_bot():
     """Render gibi ortamlarda botu otomatik baslatir."""
-    global _bot_running
+    global _bot_running, _auto_scan_thread
     if _bot_running:
         return
     telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -702,6 +855,18 @@ def _auto_start_bot():
         _bot_stop_event.clear()
         t = threading.Thread(target=_bot_worker, daemon=True)
         t.start()
+
+        try:
+            from risk_manager import load_settings
+            settings = load_settings()
+            if settings.get("auto_scan_enabled", False):
+                _add_log('Otomatik tarama aktif, baslatiliyor...')
+                _save_logs()
+                _auto_scan_stop_event.clear()
+                _auto_scan_thread = threading.Thread(target=_auto_scan_worker, daemon=True)
+                _auto_scan_thread.start()
+        except Exception:
+            pass
     else:
         _add_log('Telegram ayarlari bulunamadi! .env veya Render Environment Variables ayarlayin.')
         _save_logs()
